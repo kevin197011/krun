@@ -6,13 +6,13 @@
 
 if [ "update" = $1 ]; then
     echo "krun update!"
-    curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun >/dev/null 2>&1 && chmod +x /usr/bin/krun
+    curl -o -s /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun >/dev/null 2>&1 && chmod +x /usr/bin/krun
     exit 0
 fi
 
 if [ "list" = $1 ]; then
   echo "shell name list:"
-  curl https://github.com/kevin197011/sh/tree/main/lib | grep -Eo '[a-zA-Z0-9-]+\.sh' | uniq | sed 's/.sh//g'
+  curl -s https://github.com/kevin197011/sh/tree/main/lib | grep -Eo '[a-zA-Z0-9-]+\.sh' | uniq | sed 's/.sh//g'
   exit 0
 fi
 
