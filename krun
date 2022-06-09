@@ -4,10 +4,9 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-
 if [ "list" = $1 ]; then
-  echo "Usage: $0 [--help]"
-  echo "  --help: show this help message and exit"
+  echo "Shell name list:"
+  curl https://github.com/kevin197011/sh/tree/main/lib | grep -Eo '[a-zA-Z0-9-]+\.sh' | uniq | sed 's/.sh//g'
   exit 0
 fi
 
