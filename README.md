@@ -8,8 +8,13 @@ curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun
 
 ## usage
 ```bash
-krun list
-krun ${shell_name}
+[root@localhost ~]# krun list
+shell name list:
+- hello-world
+- install-ruby
+- set-vim-paste-mode
+[root@localhost ~]# krun hello-world
+hello world
 ```
 
 ## update
