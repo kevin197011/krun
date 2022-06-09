@@ -5,9 +5,9 @@
 # https://opensource.org/licenses/MIT
 
 if [ "update" = $1 ]; then
-    echo "krun update!"
-    curl -o -s /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun >/dev/null 2>&1 && chmod +x /usr/bin/krun
-    exit 0
+  echo "krun update!"
+  curl -o -s /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun >/dev/null 2>&1 && chmod +x /usr/bin/krun
+  exit 0
 fi
 
 if [ "list" = $1 ]; then
