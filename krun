@@ -4,7 +4,7 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-if ( $1 == "list" ) then
+if [ $1 == "list" ]; then
   echo "Usage: $0 [--help]"
   echo "  --help: show this help message and exit"
   exit 0
