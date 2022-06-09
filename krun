@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+# Copyright (c) 2022 Operator
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+if ( $1 == "list" ) then
+  echo "Usage: $0 [--help]"
+  echo "  --help: show this help message and exit"
+  exit 0
+fi
+
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/sh/main/lib/$1.sh)"
