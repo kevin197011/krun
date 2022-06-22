@@ -13,7 +13,7 @@ fi
 if [ "list" = $1 ]; then
     echo "shell name list:"
     # curl -s https://github.com/kevin197011/sh/tree/main/lib | grep -Eo '[a-zA-Z0-9-]+\.sh' | uniq | sed 's/.sh//g' | sed 's/^/- /g'
-    curl -s https://github.com/kevin197011/sh/tree/main/lib | grep -Eo '[a-zA-Z0-9-]+\.[sh|pl]' | uniq | sed 's/^/- /g'
+    curl -s https://github.com/kevin197011/sh/tree/main/lib | grep -Eo '[a-zA-Z0-9-]+\.(sh|pl)' | uniq | sed 's/^/- /g'
     exit 0
 fi
 
