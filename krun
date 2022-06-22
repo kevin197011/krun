@@ -20,7 +20,7 @@ fi
 # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/sh/main/lib/$1.sh)"
 cd /tmp
 
-curl -fosSL $1  https://raw.githubusercontent.com/kevin197011/sh/main/lib/$1
+curl -s -o $1 https://raw.githubusercontent.com/kevin197011/sh/main/lib/$1
 
 if [ "${1##*.}" = "sh" ]; then
     sh $1
