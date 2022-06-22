@@ -9,11 +9,11 @@ curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun
 ## usage
 ```bash
 [root@localhost ~]# krun list
-shell name list:
-- hello-world
-- install-ruby
-- set-vim-paste-mode
-[root@localhost ~]# krun hello-world
+- hello-world.sh
+- install-cfssl.pl
+- install-ruby.sh
+- set-vim-paste-mode.sh
+[root@localhost ~]# krun hello-world.sh
 hello world
 ```
 
