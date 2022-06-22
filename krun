@@ -5,15 +5,30 @@
 # https://opensource.org/licenses/MIT
 
 if [ "update" = $1 ]; then
-  echo "krun update!"
-  curl -o -s /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun && chmod +x /usr/bin/krun
-  exit 0
+    echo "krun update!"
+    curl -o -s /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun && chmod +x /usr/bin/krun
+    exit 0
 fi
 
 if [ "list" = $1 ]; then
-  echo "shell name list:"
-  curl -s https://github.com/kevin197011/sh/tree/main/lib | grep -Eo '[a-zA-Z0-9-]+\.sh' | uniq | sed 's/.sh//g' | sed 's/^/- /g'
-  exit 0
+    echo "shell name list:"
+    # curl -s https://github.com/kevin197011/sh/tree/main/lib | grep -Eo '[a-zA-Z0-9-]+\.sh' | uniq | sed 's/.sh//g' | sed 's/^/- /g'
+    curl -s https://github.com/kevin197011/sh/tree/main/lib | grep -Eo '[a-zA-Z0-9-]+\.[sh|pl]' | uniq | sed 's/^/- /g'
+    exit 0
 fi
 
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/sh/main/lib/$1.sh)"
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/sh/main/lib/$1.sh)"
+cd /tmp
+
+curl -fosSL $1  https://raw.githubusercontent.com/kevin197011/sh/main/lib/$1
+
+if [ "${1##*.}" = "sh" ]; then
+    sh $1
+fi
+
+if [ "${1##*.}" = "pl" ]; then
+    perl $1
+fi
+
+# end detele script file
+rm -rf $1
