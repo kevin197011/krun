@@ -4,4 +4,12 @@
 # https://opensource.org/licenses/MIT
 
 # git push
-system 'rake'
+# system 'rake'
+
+require 'tty-command'
+require 'rake'
+
+cmd = TTY::Command.new
+Dir.chdir('sh') do
+  cmd.run(:rake)
+end
