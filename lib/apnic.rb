@@ -17,7 +17,7 @@ unless File.exist?(cache_file) || File.size?(cache_file)
     Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
       http.request(request)
     end
-  File.write('apnic.txt', response.body)
+  File.write(cache_file, response.body)
 end
 
 pattern = /apnic\|#{count_sn}\|ipv4\|(?<ip>\d+\.\d+\.\d+\.\d+)\|(?<hosts>\d+)\|\d+\|allocated/mi
