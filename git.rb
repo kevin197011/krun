@@ -6,10 +6,11 @@
 # git push
 # system 'rake'
 
-require 'tty-command'
-require 'rake'
+# require 'tty-command'
+# require 'rake'
 
-cmd = TTY::Command.new
+# cmd = TTY::Command.new
 Dir.chdir('sh') do
-  cmd.run(:rake)
+  # cmd.run(:rake)
+  system 'rake'
 end
