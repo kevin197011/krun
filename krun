@@ -4,12 +4,6 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-# status
-if [[ "status" = $1 ]]; then
-    echo "[INFO] krun ready!"
-    exit 0
-fi
-
 # update
 if [[ "update" = $1 ]]; then
     echo "[INFO] krun update!"
@@ -20,10 +14,10 @@ fi
 # custom config first
 custom_config='/etc/krun/config.sh'
 [[ -d /etc/krun ]] || mkdir -p /etc/krun
-[[ -f /etc/krun/config.sh ]] || each 'github_repo_name=""' /etc/krun/config.sh
+[[ -f ${custom_config} ]] || each 'github_repo_name=""' ${custom_config}
 
 # import config
-source /etc/krun/config.sh
+source ${custom_config}
 [[ ! -z "${github_repo_name}" ]] && github_repo="https://github.com/${github_repo_name}/sh-libs/tree/main/lib" || github_repo="https://github.com/kevin197011/sh/tree/main/lib"
 
 # list script
@@ -51,6 +45,12 @@ fi
 
 if [[ "${1##*.}" = "rb" ]]; then
     ruby $1
+fi
+
+# status
+if [[ "status" = $1 ]]; then
+    echo "[INFO] krun ready!"
+    exit 0
 fi
 
 # end detele script file
