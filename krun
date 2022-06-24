@@ -14,7 +14,7 @@ fi
 # custom config first
 custom_config='/etc/krun/config.sh'
 [[ -d /etc/krun ]] || mkdir -p /etc/krun
-[[ -f ${custom_config} ]] || each 'github_repo_name=""' ${custom_config}
+[[ -f ${custom_config} ]] || echo 'github_repo_name=""' ${custom_config}
 
 # import config
 source ${custom_config}
