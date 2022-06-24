@@ -11,7 +11,7 @@ curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun
 [INFO] krun ready!
 ```
 ## 需要自定义仓库[非必要配置项]
-在自己的github新建仓库`sh-libs`, 然后讲自己的脚本上传到自己的仓库。
+在自己的github新建仓库`sh-libs`, 然后将自己的脚本上传到自己的仓库。
 完成上步然后配置自己的仓库地址
 ```bash
 [root@localhost ~]# vim /etc/krun/config.sh
