@@ -36,21 +36,14 @@ github_repo_sh="https://raw.githubusercontent.com/kevin197011/sh/main/lib"
 
 curl -s -o $1 ${github_repo_sh}/$1
 
-if [[ "${1##*.}" = "sh" ]]; then
-    sh $1
-fi
+# hashmap
+declare -A file_map
+file_map["sh"]="sh"
+file_map["rb"]="ruby"
+file_map["py"]="python"
+file_map["pl"]="perl"
 
-if [[ "${1##*.}" = "pl" ]]; then
-    perl $1
-fi
-
-if [[ "${1##*.}" = "py" ]]; then
-    python $1
-fi
-
-if [[ "${1##*.}" = "rb" ]]; then
-    ruby $1
-fi
+${file_map["${1##*.}"]} $1
 
 # status
 if [[ "status" = $1 ]]; then
