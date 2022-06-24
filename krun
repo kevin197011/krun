@@ -22,7 +22,7 @@ source ${custom_config}
 # list script
 if [[ "list" = $1 ]]; then
     echo "[INFO] script list:"
-    [[ ! -z "${github_repo_name}" ]] && github_repo="https://github.com/${github_repo_name}/sh-libs/tree/main/lib" || \
+    [[ ! -z "${github_repo_name}" ]] && github_repo="https://github.com/${github_repo_name}/sh-libs/tree/main" || \
     github_repo="https://github.com/kevin197011/sh/tree/main/lib"
     curl -s ${github_repo} | grep -Eo '[a-zA-Z0-9-]+\.(sh|pl|py|rb)' | uniq | sed 's/^/- /g'
     exit 0
