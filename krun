@@ -13,7 +13,7 @@ fi
 # update
 if [[ "update" = $1 ]]; then
     echo "[INFO] krun update!"
-    curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun && chmod +x /usr/bin/krun
+    curl https://raw.githubusercontent.com/kevin197011/sh/main/krun > /usr/bin/krun && chmod +x /usr/bin/krun
     exit 0
 fi
 
