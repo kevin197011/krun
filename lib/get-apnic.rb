@@ -7,7 +7,7 @@ require 'net/http'
 require 'uri'
 
 count_sn = 'CN'
-cache_file = 'apnic.txt'
+cache_file = '/tmp/apnic.txt'
 
 unless File.exist?(cache_file) || File.size?(cache_file)
   uri = URI.parse('https://ftp.apnic.net/stats/apnic/delegated-apnic-latest')
