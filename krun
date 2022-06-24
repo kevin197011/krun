@@ -18,18 +18,21 @@ custom_config='/etc/krun/config.sh'
 
 # import config
 source ${custom_config}
-[[ ! -z "${github_repo_name}" ]] && github_repo="https://github.com/${github_repo_name}/sh-libs/tree/main/lib" || github_repo="https://github.com/kevin197011/sh/tree/main/lib"
 
 # list script
 if [[ "list" = $1 ]]; then
     echo "[INFO] script list:"
+    [[ ! -z "${github_repo_name}" ]] && github_repo="https://github.com/${github_repo_name}/sh-libs/tree/main/lib" || github_repo="https://github.com/kevin197011/sh/tree/main/lib"
     curl -s ${github_repo} | grep -Eo '[a-zA-Z0-9-]+\.(sh|pl|py|rb)' | uniq | sed 's/^/- /g'
     exit 0
 fi
 
 # tmp download run
 cd /tmp
-curl -s -o $1 https://raw.githubusercontent.com/kevin197011/sh/main/lib/$1
+
+[[ ! -z "${github_repo_name}" ]] && github_repo_sh="https://raw.githubusercontent.com/${github_repo_name}/sh-libs/main" || github_repo_sh="https://raw.githubusercontent.com/kevin197011/sh/main/lib"
+
+curl -s -o $1 ${github_repo_sh}/$1
 
 if [[ "${1##*.}" = "sh" ]]; then
     sh $1
