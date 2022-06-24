@@ -7,14 +7,14 @@
 # update
 if [[ "update" = $1 ]]; then
     echo "[INFO] krun update!"
-    curl -s https://raw.githubusercontent.com/kevin197011/sh/main/krun > /usr/bin/krun && chmod +x /usr/bin/krun
+    curl -s https://raw.githubusercontent.com/kevin197011/sh/main/krun >/usr/bin/krun && chmod +x /usr/bin/krun
     exit 0
 fi
 
 # custom config first
 custom_config='/etc/krun/config.sh'
 [[ -d /etc/krun ]] || mkdir -p /etc/krun
-[[ -f ${custom_config} ]] || echo 'github_repo_name=""' > ${custom_config}
+[[ -f ${custom_config} ]] || echo 'github_repo_name=""' >${custom_config}
 
 # import config
 source ${custom_config}
@@ -22,7 +22,8 @@ source ${custom_config}
 # list script
 if [[ "list" = $1 ]]; then
     echo "[INFO] script list:"
-    [[ ! -z "${github_repo_name}" ]] && github_repo="https://github.com/${github_repo_name}/sh-libs/tree/main/lib" || github_repo="https://github.com/kevin197011/sh/tree/main/lib"
+    [[ ! -z "${github_repo_name}" ]] && github_repo="https://github.com/${github_repo_name}/sh-libs/tree/main/lib" || \
+    github_repo="https://github.com/kevin197011/sh/tree/main/lib"
     curl -s ${github_repo} | grep -Eo '[a-zA-Z0-9-]+\.(sh|pl|py|rb)' | uniq | sed 's/^/- /g'
     exit 0
 fi
@@ -30,7 +31,8 @@ fi
 # tmp download run
 cd /tmp
 
-[[ ! -z "${github_repo_name}" ]] && github_repo_sh="https://raw.githubusercontent.com/${github_repo_name}/sh-libs/main" || github_repo_sh="https://raw.githubusercontent.com/kevin197011/sh/main/lib"
+[[ ! -z "${github_repo_name}" ]] && github_repo_sh="https://raw.githubusercontent.com/${github_repo_name}/sh-libs/main" || \
+github_repo_sh="https://raw.githubusercontent.com/kevin197011/sh/main/lib"
 
 curl -s -o $1 ${github_repo_sh}/$1
 
