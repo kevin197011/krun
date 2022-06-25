@@ -1,8 +1,8 @@
 # sh
-脚本托管github管理执行工具
 
+> 脚本管理执行工具[托管github]
 
-# 支持托管执行脚本类型
+## 支持托管执行脚本类型
 - shell
 - perl
 - ruby
@@ -45,7 +45,7 @@ hello world
 [INFO] krun update!
 ```
 
-# 卸载工具
+## 卸载工具
 ```bash
 krun uninstall
 ```
