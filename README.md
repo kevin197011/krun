@@ -1,6 +1,13 @@
 # sh
 脚本托管github管理执行工具
 
+
+# 支持托管执行脚本类型
+- shell
+- perl
+- ruby
+- python
+
 ## 安装部署
 ```bash
 curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun && chmod +x /usr/bin/krun
