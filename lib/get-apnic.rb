@@ -6,7 +6,7 @@
 require 'net/http'
 require 'uri'
 
-count_sn = 'CN'
+country_sn = 'CN'
 cache_file = '/tmp/apnic.txt'
 
 unless File.exist?(cache_file) || File.size?(cache_file)
@@ -20,7 +20,7 @@ unless File.exist?(cache_file) || File.size?(cache_file)
   File.write(cache_file, response.body)
 end
 
-pattern = /apnic\|#{count_sn}\|ipv4\|(?<ip>\d+\.\d+\.\d+\.\d+)\|(?<hosts>\d+)\|\d+\|allocated/mi
+pattern = /apnic\|#{country_sn}\|ipv4\|(?<ip>\d+\.\d+\.\d+\.\d+)\|(?<hosts>\d+)\|\d+\|allocated/mi
 
 File.readlines(cache_file).select do |line|
   next unless line.match(pattern)
