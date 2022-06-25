@@ -27,6 +27,7 @@ github_repo_name="kevin197011" # 填写自己的github name
 ## 查看脚本清单
 ```bash
 [root@localhost ~]# krun list
+[INFO] script list:
 - hello-world.sh
 - install-cfssl.pl
 - install-ruby.sh
@@ -47,5 +48,6 @@ hello world
 
 ## 卸载工具
 ```bash
-krun uninstall
+[root@localhost ~]# krun uninstall
+[INFO] krun uninstall!
 ```
