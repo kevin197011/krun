@@ -1,5 +1,5 @@
 # sh
-sh
+脚本托管github管理执行工具
 
 ## 安装部署
 ```bash
@@ -36,4 +36,9 @@ hello world
 ```bash
 [root@localhost ~]# krun update
 [INFO] krun update!
+```
+
+# 卸载工具
+```bash
+krun uninstall
 ```

@@ -53,3 +53,10 @@ fi
 
 # end detele script file
 rm -rf $1
+
+# uninstall krun
+if [[ "uninstall" = $1 ]]; then
+    echo "[INFO] krun uninstall!"
+    rm -rf /usr/local/bin/krun
+    rm -rf /etc/krun/config.sh
+fi
