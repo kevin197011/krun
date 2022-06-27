@@ -7,7 +7,7 @@ require 'net/http'
 require 'uri'
 
 country_sn = 'CN'
-cache_file = '/tmp/apnic.txt'
+cache_file = RUBY_PLATFORM.match(/x86_64-linux/) ? '/tmp/apnic.txt' : 'apnic.txt'
 
 unless File.exist?(cache_file) || File.size?(cache_file)
   uri = URI.parse('https://ftp.apnic.net/stats/apnic/delegated-apnic-latest')
