@@ -8,7 +8,7 @@ if [[ command -v yum >/dev/null 2>&1 ]]; then
     yum install -y openssl-devel zlib-devel
 else
     apt install -y git-all build-essential manpages-dev
-    apt install -y libssl-dev zlib1g-dev
+    apt install -y libssl-dev zlib1g zlib1g-dev
 fi
 
 cd /root
