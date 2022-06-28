@@ -19,7 +19,7 @@ domain=${2}
 [[ -f /etc/acme.sh/config.sh ]] && source /etc/acme.sh/config.sh
 
 # acme.sh
-[[ -f /root/.acme.sh/acme.sh ]] || (curl https://get.acme.sh | sh -s email=${req_email})
+[[ -f /root/.acme.sh/acme.sh ]] || (curl -sf https://get.acme.sh | sh -s email=${req_email})
 
 acme.sh --upgrade --auto-upgrade
 
