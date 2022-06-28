@@ -10,7 +10,7 @@
 # sh $0 $1[email]
 req_email=${1:-'kevin197011@outlook.com'}
 # devops.io
-domain=${2}
+domain=$2
 
 # source /etc/acme.sh/config.sh
 # export CF_Email="kevin197011@outlook.com"
