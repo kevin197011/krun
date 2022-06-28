@@ -21,13 +21,13 @@ domain=${2}
 # acme.sh
 [[ -f /root/.acme.sh/acme.sh ]] || (curl -sf https://get.acme.sh | sh -s email=${req_email})
 
-acme.sh --upgrade --auto-upgrade
+/root/.acme.sh/acme.sh --upgrade --auto-upgrade
 
 # issue ssl
 /root/.acme.sh/acme.sh --issue --dns dns_cf -d "*.${domain}"
 
 # install ssl
-acme.sh --install-cert -d ${domain} \
+/root/.acme.sh/acme.sh --install-cert -d ${domain} \
   --key-file       /www/server/panel/vhost/cert/${domain}/${domain}.key  \
   --fullchain-file /www/server/panel/vhost/cert/${domain}/${domain}.crt \
   --ca-file        /www/server/panel/vhost/cert/${domain}/${domain}.ca.crt \
