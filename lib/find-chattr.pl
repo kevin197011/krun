@@ -3,11 +3,11 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-@files = glob('/www/wwwroot/**/.user.ini');
+@files = glob('/www/wwwroot/**/*/.user.ini');
 
 # print "@files\n";
 
 foreach( @files ) {
-  print "chattr -i $_\n";
+  print "chattr -i $_ \n";
   system "chattr -i $_";
 }
