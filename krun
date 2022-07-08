@@ -43,6 +43,10 @@ file_map["rb"]="ruby"
 file_map["py"]="python"
 file_map["pl"]="perl"
 
+if [[ "debug" = $2 ]]; then
+    cat $1 && exit 0
+fi
+
 ${file_map["${1##*.}"]} $1
 
 # status
