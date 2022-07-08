@@ -8,4 +8,3 @@
 current_path=${1:-'/www/wwwroot'}
 
 find ${current_path} -iname '*.log' -delete
-find ./ -iname '*.log' -delete

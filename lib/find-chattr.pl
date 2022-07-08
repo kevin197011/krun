@@ -8,6 +8,6 @@
 # print "@files\n";
 
 foreach( @files ) {
-  print "chattr -i $_";
+  print "chattr -i $_\n";
   system "chattr -i $_";
 }
