@@ -20,7 +20,7 @@ sub find_match_file {
   push @files, $File::Find::name if (-f $File::Find::name and /^\.user\.ini$/);
 }
 
-find(\&find_match_file, @filepath);
+find \&find_match_file, @filepath;
 
 foreach( @files ) {
   print "chattr -i $_\n";
