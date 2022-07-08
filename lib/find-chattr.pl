@@ -1,0 +1,13 @@
+# Copyright (c) 2022 Operator
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+@files = glob('/www/wwwroot/**/.user.ini');
+
+# print "@files\n";
+
+foreach( @files ) {
+  print "chattr -i $_";
+  system "chattr -i $_";
+}
