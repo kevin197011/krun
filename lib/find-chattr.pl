@@ -16,11 +16,11 @@ use File::Find;
 my @files;
 my @filepath=qw(/www/wwwroot/);
 
-sub find_ini_file {
+sub find_match_file {
   push @files, $File::Find::name if (-f $File::Find::name and /^\.user\.ini$/);
 }
 
-find(\&find_ini_file, @filepath);
+find(\&find_match_file, @filepath);
 
 foreach( @files ) {
   print "chattr -i $_\n";
