@@ -16,7 +16,10 @@ import sys
 import os
 import re
 
-_action_argv = sys.argv[1].lower()
+try:
+    _action_argv = sys.argv[1].lower()
+except IndexError:
+    _action_argv = 'help'
 
 try:
     _debug_flag = sys.argv[2].lower()
@@ -25,9 +28,8 @@ except IndexError:
 
 # default url
 _default_repo_name = 'kevin197011'
-_github_repo = "https://github.com/{}/sh/tree/main/lib".format(_default_repo_name)
-_github_repo_sh = "https://raw.githubusercontent.com/{}/sh/main/lib".format(_default_repo_name)
-
+_github_repo = 'https://github.com/{}/sh/tree/main/lib'.format(_default_repo_name)
+_github_repo_sh = 'https://raw.githubusercontent.com/{}/sh/main/lib'.format(_default_repo_name)
 
 # krun need init status
 # custom config file
@@ -44,14 +46,13 @@ import config
 _repo_name = config.github_repo_name
 
 if _repo_name != None and _repo_name != '':
-    _github_repo = "https://github.com/{}/sh-libs/tree/main".format(_repo_name)
-    _github_repo_sh = "https://raw.githubusercontent.com/{}/sh-libs/main".format(_repo_name)
-
+    _github_repo = 'https://github.com/{}/sh-libs/tree/main'.format(_repo_name)
+    _github_repo_sh = 'https://raw.githubusercontent.com/{}/sh-libs/main'.format(_repo_name)
 
 # update krun bin
 if _action_argv == 'update':
     with open('/usr/bin/krun', 'w') as f:
-        _content = urlopen("https://raw.githubusercontent.com/kevin197011/sh/main/krun").read()
+        _content = urlopen('https://raw.githubusercontent.com/kevin197011/sh/main/krun').read()
         f.write(_content)
     sys.exit(0)
 
@@ -78,6 +79,13 @@ if _action_argv == 'uninstall':
     os.rmdir('/etc/krun')
     sys.exit(0)
 
+if _action_argv == 'help':
+    print('''
+        Usage:
+            krun (status|list|script_full_name|update|uninstall|help) (debug[with script together])
+    ''')
+    sys.exit(0)
+
 # krun run script file
 file_ext_mapper = {
     'sh': 'bash',
@@ -86,3 +94,9 @@ file_ext_mapper = {
     'pl': 'perl'
 }
 
+if re.match(_action_argv, r'\S+\.(sh|py|rb|pl)'):
+    with open('/tmp/{}'.format(_action_argv), 'w') as f:
+        f.write(urlopen('{}/{}'.format(_github_repo_sh, _action_argv)).read())
+    script_ext = os.path.splitext(_action_argv)[-1][1:]
+    os.system('{} /tmp/{}'.format(file_ext_mapper[script_ext], _action_argv))
+    os.remove('/tmp/{}'.format(_action_argv))
