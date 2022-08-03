@@ -94,7 +94,7 @@ file_ext_mapper = {
     'pl': 'perl'
 }
 
-if re.match(_action_argv, r'\S+\.(sh|py|rb|pl)'):
+if re.match(r'\S+\.(sh|py|rb|pl)', _action_argv):
     with open('/tmp/{}'.format(_action_argv), 'w') as f:
         f.write(urlopen('{}/{}'.format(_github_repo_sh, _action_argv)).read())
     script_ext = os.path.splitext(_action_argv)[-1][1:]
