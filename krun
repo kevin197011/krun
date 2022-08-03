@@ -15,9 +15,12 @@ except ImportError:
 import sys
 import os
 
-
 _action_argv = sys.argv[1].lower()
-_debug_flag = sys.argv[2].lower()
+
+try:
+    _debug_flag = sys.argv[2].lower()
+except IndexError:
+    _debug_flag = None
 
 # default url
 _default_repo_name = 'kevin197011'
