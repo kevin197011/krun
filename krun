@@ -7,10 +7,10 @@
 
 try:
     # after python 3.x
-    from urllib.request import urlopen
+    from urllib.request import Request, urlopen
 except ImportError:
     # for python 2.x
-    from urllib2 import urlopen
+    from urllib2 import Request, urlopen
 
 import sys
 import os
@@ -30,6 +30,9 @@ except IndexError:
 _default_repo_name = 'kevin197011'
 _github_repo = 'https://github.com/{}/sh/tree/main/lib'.format(_default_repo_name)
 _github_repo_sh = 'https://raw.githubusercontent.com/{}/sh/main/lib'.format(_default_repo_name)
+
+# ua
+ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
 
 # krun need init status
 # custom config file
@@ -52,13 +55,17 @@ if _repo_name != None and _repo_name != '':
 # update krun bin
 if _action_argv == 'update':
     with open('/usr/bin/krun', 'w') as f:
-        _content = urlopen('https://raw.githubusercontent.com/kevin197011/sh/main/krun').read()
+        _req = Request('https://raw.githubusercontent.com/kevin197011/sh/main/krun')
+        _req.add_header('User-Agent', ua)
+        _content = urlopen(req).read()
         f.write(_content)
     sys.exit(0)
 
 if _action_argv == 'list':
     print("[INFO] script list:")
-    _content = urlopen(_github_repo).read()
+    _req = Request(_github_repo)
+    _req.add_header('User-Agent', ua)
+    _content = urlopen(_req).read()
     _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
     _vals = _pattern.findall(_content)
     print('  - ' + '\n  - '.join(_vals))
@@ -95,8 +102,11 @@ file_ext_mapper = {
 }
 
 if re.match(r'\S+\.(sh|py|rb|pl)', _action_argv):
+    _req = Request('{}/{}'.format(_github_repo_sh, _action_argv))
+    _req.add_header('User-Agent', ua)
+    _content = urlopen(_req).read()
     with open('/tmp/{}'.format(_action_argv), 'w') as f:
-        f.write(urlopen('{}/{}'.format(_github_repo_sh, _action_argv)).read())
+        f.write(_content)
     script_ext = os.path.splitext(_action_argv)[-1][1:]
     print('{} /tmp/{}'.format(file_ext_mapper[script_ext], _action_argv))
     os.system('{} /tmp/{}'.format(file_ext_mapper[script_ext], _action_argv))
