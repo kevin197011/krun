@@ -98,5 +98,6 @@ if re.match(r'\S+\.(sh|py|rb|pl)', _action_argv):
     with open('/tmp/{}'.format(_action_argv), 'w') as f:
         f.write(urlopen('{}/{}'.format(_github_repo_sh, _action_argv)).read())
     script_ext = os.path.splitext(_action_argv)[-1][1:]
+    print('{} /tmp/{}'.format(file_ext_mapper[script_ext], _action_argv))
     os.system('{} /tmp/{}'.format(file_ext_mapper[script_ext], _action_argv))
     os.remove('/tmp/{}'.format(_action_argv))
