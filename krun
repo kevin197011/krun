@@ -58,7 +58,7 @@ if _action_argv == 'update':
 if _action_argv == 'list':
     print("[INFO] script list:")
     _content = urlopen(_github_repo).read()
-    _pattern = re.compile(r'>(\S+\.(sh|py|rb|pl))</a>')
+    _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
     _vals = _pattern.findall(_content)
     print('  - ' + '\n  - '.join(_vals))
     sys.exit(0)
