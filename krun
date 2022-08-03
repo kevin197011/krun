@@ -14,6 +14,7 @@ except ImportError:
 
 import sys
 import os
+import re
 
 _action_argv = sys.argv[1].lower()
 
@@ -52,7 +53,7 @@ if _action_argv == 'update':
     with open('/usr/bin/krun', 'w') as f:
         _content = urlopen("https://raw.githubusercontent.com/kevin197011/sh/main/krun").read()
         f.write(_content)
-    os.exit(0)
+    sys.exit(0)
 
 if _action_argv == 'list':
     print("[INFO] script list:")
@@ -60,22 +61,22 @@ if _action_argv == 'list':
     _pattern = re.compile(r'>(\S+\.sh|py|rb|pl)</a>')
     _vals = _pattern.findall(_content)
     print('  - ' + '\n  - '.join(_vals))
-    os.exit(0)
+    sys.exit(0)
 
 if _debug_flag == 'debug':
     pass
-    os.exit(0)
+    sys.exit(0)
 
 if _action_argv == 'status' or _action_argv == 'statu' :
     print("[INFO] krun ready!")
-    os.exit(0)
+    sys.exit(0)
 
 if _action_argv == 'uninstall':
     print("[Info] krun uninstall!")
     os.remove('/etc/krun/config.py')
     os.remove('/usr/bin/krun')
     os.rmdir('/etc/krun')
-    os.exit(0)
+    sys.exit(0)
 
 # krun run script file
 file_ext_mapper = {
