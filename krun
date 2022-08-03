@@ -93,7 +93,7 @@ if _action_argv == 'help':
     ''')
     sys.exit(0)
 
-# krun run script file
+# krun run script file types
 file_ext_mapper = {
     'sh': 'bash',
     'py': 'python',
