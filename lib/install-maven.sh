@@ -12,7 +12,7 @@ _url="https://dlcdn.apache.org/maven/maven-3/${_version}/binaries/apache-maven-$
 _deploy_path='/usr/bin/maven'
 
 cd /tmp
-mkdir ${_deploy_path}
+mkdir --no-check-certificate ${_deploy_path}
 wget ${_url}
 tar -xzf ${_url##*/} --strip-components 1 -C ${_deploy_path}
 
