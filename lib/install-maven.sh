@@ -12,8 +12,8 @@ _url="https://dlcdn.apache.org/maven/maven-3/${_version}/binaries/apache-maven-$
 _deploy_path='/usr/bin/maven'
 
 cd /tmp
-mkdir --no-check-certificate ${_deploy_path}
-wget ${_url}
+mkdir -p ${_deploy_path}
+wget --no-check-certificate ${_url}
 tar -xzf ${_url##*/} --strip-components 1 -C ${_deploy_path}
 
 tee /etc/profile.d/maven.sh &>/dev/null <<EOF
