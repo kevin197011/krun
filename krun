@@ -78,7 +78,7 @@ if _debug_flag == 'debug':
     pass
     sys.exit(0)
 
-if _action_argv == 'status' or _action_argv == 'statu' :
+if _action_argv == 'status' or _action_argv == 'statu' or _action_argv == 'init':
     print("[INFO] krun ready!")
     sys.exit(0)
 
@@ -122,7 +122,7 @@ if re.match(r'\d+', _action_argv):
     _content = urlopen(_req).read()
     _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
     _vals = _pattern.findall(_content)
-    
+
     _val = _vals[_index]
 
     req = Request('{}/{}'.format(_github_repo_sh, _val))
