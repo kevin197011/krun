@@ -116,7 +116,7 @@ if re.match(r'\S+\.(sh|py|rb|pl)', _action_argv):
     os.remove('/tmp/{}'.format(_action_argv))
 
 if re.match(r'\d+', _action_argv):
-    _index = int(_action_argv) + 1
+    _index = int(_action_argv) - 1
     _req = Request(_github_repo)
     _req.add_header('User-Agent', ua)
     _content = urlopen(_req).read()
