@@ -57,7 +57,7 @@ if _action_argv == 'update':
     with open('/usr/bin/krun', 'w') as f:
         _req = Request('https://raw.githubusercontent.com/kevin197011/sh/main/krun')
         _req.add_header('User-Agent', ua)
-        _content = urlopen(_req).read()
+        _content = urlopen(_req).read().decode('utf-8')
         f.write(_content)
     sys.exit(0)
 
@@ -66,7 +66,7 @@ if _action_argv == 'list':
     _index = 1
     _req = Request(_github_repo)
     _req.add_header('User-Agent', ua)
-    _content = urlopen(_req).read()
+    _content = urlopen(_req).read().decode('utf-8')
     _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
     _vals = _pattern.findall(_content)
     for item in _vals:
@@ -107,7 +107,7 @@ file_ext_mapper = {
 if re.match(r'\S+\.(sh|py|rb|pl)', _action_argv):
     _req = Request('{}/{}'.format(_github_repo_sh, _action_argv))
     _req.add_header('User-Agent', ua)
-    _content = urlopen(_req).read()
+    _content = urlopen(_req).read().decode('utf-8')
     with open('/tmp/{}'.format(_action_argv), 'w') as f:
         f.write(_content)
     script_ext = os.path.splitext(_action_argv)[-1][1:]
@@ -119,7 +119,7 @@ if re.match(r'\d+', _action_argv):
     _index = int(_action_argv) - 1
     _req = Request(_github_repo)
     _req.add_header('User-Agent', ua)
-    _content = urlopen(_req).read()
+    _content = urlopen(_req).read().decode('utf-8')
     _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
     _vals = _pattern.findall(_content)
 
@@ -127,7 +127,7 @@ if re.match(r'\d+', _action_argv):
 
     req = Request('{}/{}'.format(_github_repo_sh, _val))
     req.add_header('User-Agent', ua)
-    content = urlopen(req).read()
+    content = urlopen(req).read().decode('utf-8')
     with open('/tmp/{}'.format(_val), 'w') as f:
         f.write(content)
     script_ext = os.path.splitext(_val)[-1][1:]
