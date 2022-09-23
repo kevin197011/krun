@@ -57,7 +57,7 @@ if _action_argv == 'update':
     with open('/usr/bin/krun', 'w') as f:
         _req = Request('https://raw.githubusercontent.com/kevin197011/sh/main/krun')
         _req.add_header('User-Agent', ua)
-        _content = urlopen(req).read()
+        _content = urlopen(_req).read()
         f.write(_content)
     sys.exit(0)
 
