@@ -24,7 +24,8 @@ dirs=(
 
 # delete old logs
 for d in \${dirs[@]}; do
-    find \${d} -name "*.log" -type f -mtime +\${days} -delete
+    find \${d} -name "*.log*" -type f -mtime +\${days} -delete
+    # find \${d} -name "*.out*" -type f -mtime +\${days} -delete
 done
 EOF
 
