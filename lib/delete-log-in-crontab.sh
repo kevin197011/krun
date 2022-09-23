@@ -39,7 +39,7 @@ bash /opt/scripts/${scritp_name}
 EOF
 
 chmod +x /opt/scripts/${scritp_name}
-chown +x /etc/cron.daily/${scritp_name}
+chmod +x /etc/cron.daily/${scritp_name}
 
 
 # delete
