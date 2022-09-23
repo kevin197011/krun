@@ -24,6 +24,11 @@ curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/sh/main/krun
 [root@localhost ~]# vim /etc/krun/config.py
 github_repo_name = "kevin197011" # 填写自己的github name
 ```
+范例
+```bash
+https://github.com/kevin197011/sh-libs
+```
+
 ## 查看脚本清单
 ```bash
 [root@localhost ~]# krun list
