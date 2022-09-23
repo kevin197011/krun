@@ -68,6 +68,7 @@ if _action_argv == 'list':
     _content = urlopen(_req).read()
     _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
     _vals = _pattern.findall(_content)
+    print(_vals)
     print('  - ' + '\n  - '.join(_vals))
     sys.exit(0)
 
