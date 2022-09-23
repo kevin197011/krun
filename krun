@@ -63,13 +63,15 @@ if _action_argv == 'update':
 
 if _action_argv == 'list':
     print("[INFO] script list:")
+    _index = 1
     _req = Request(_github_repo)
     _req.add_header('User-Agent', ua)
     _content = urlopen(_req).read()
     _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
     _vals = _pattern.findall(_content)
-    print(_vals)
-    print('  - ' + '\n  - '.join(_vals))
+    for item in _vals:
+        print("- [{0}]{1}".format(_index, item))
+        _index += 1
     sys.exit(0)
 
 if _debug_flag == 'debug':
@@ -112,3 +114,23 @@ if re.match(r'\S+\.(sh|py|rb|pl)', _action_argv):
     print('{} /tmp/{}'.format(file_ext_mapper[script_ext], _action_argv))
     os.system('{} /tmp/{}'.format(file_ext_mapper[script_ext], _action_argv))
     os.remove('/tmp/{}'.format(_action_argv))
+
+if re.match(r'\d+', _action_argv):
+    _index = _action_argv + 1
+    _req = Request(_github_repo)
+    _req.add_header('User-Agent', ua)
+    _content = urlopen(_req).read()
+    _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
+    _vals = _pattern.findall(_content)
+    
+    _val = _vals[_index]
+
+    req = Request('{}/{}'.format(_github_repo_sh, _val))
+    req.add_header('User-Agent', ua)
+    content = urlopen(req).read()
+    with open('/tmp/{}'.format(_val), 'w') as f:
+        f.write(content)
+    script_ext = os.path.splitext(_val)[-1][1:]
+    print('{} /tmp/{}'.format(file_ext_mapper[script_ext], _val))
+    os.system('{} /tmp/{}'.format(file_ext_mapper[script_ext], _val))
+    os.remove('/tmp/{}'.format(_val))
