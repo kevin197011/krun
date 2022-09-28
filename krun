@@ -54,6 +54,7 @@ if _repo_name != None and _repo_name != '':
 
 # update krun bin
 if _action_argv == 'update':
+    print("[INFO] krun update!")
     with open('/usr/bin/krun', 'w') as f:
         _req = Request('https://raw.githubusercontent.com/kevin197011/krun/main/krun')
         _req.add_header('User-Agent', ua)
