@@ -4,12 +4,13 @@
 # https://opensource.org/licenses/MIT
 
 tee /usr/bin/kssh > /dev/null <<EOF
-
 #!/usr/bin/env ruby
 # Copyright (c) 2022 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
+
+require_relative '~/.kssh/config'
 
 opts = ARGV
 
@@ -17,11 +18,11 @@ opts = ARGV
 default_key_path = '~/.ssh'
 
 # config host list
-kssh_hosts = [
-  { 'name': 'devops-node1', 'ip': '1.2.3.1', 'username': 'root', 'method': 'key', 'passwdOrKey': 'id_rsa' },
-  { 'name': 'devops-node2', 'ip': '1.2.3.2', 'username': 'root', 'method': 'key', 'passwdOrKey': 'id_rsa' },
-  { 'name': 'devops-node3', 'ip': '1.2.3.3', 'username': 'root', 'method': 'key', 'passwdOrKey': 'id_rsa' },
-]
+# kssh_hosts = [
+#   { 'name': 'devops-node1', 'ip': '1.2.3.1', 'username': 'root', 'method': 'key', 'passwdOrKey': 'id_rsa' },
+#   { 'name': 'devops-node2', 'ip': '1.2.3.2', 'username': 'root', 'method': 'key', 'passwdOrKey': 'id_rsa' },
+#   { 'name': 'devops-node3', 'ip': '1.2.3.3', 'username': 'root', 'method': 'key', 'passwdOrKey': 'id_rsa' },
+# ]
 
 unless opts.length >= 1
   print "Usage: \n  kssh [list|host[number]]!"
