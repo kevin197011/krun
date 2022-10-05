@@ -3,12 +3,15 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-if [[ command -v yum >/dev/null 2>&1 ]]; then
+# if [[ command -v yum >/dev/null 2>&1 ]]; then
+if [ -f /etc/redhat-release ]; then
     yum install -y git gcc gcc-c++
-    yum install -y openssl-devel zlib-devel git
-else
+    yum install -y openssl-devel zlib-devel
+fi
+
+if [ -f /etc/lsb-release ]; then
     apt install -y git-all build-essential manpages-dev
-    apt install -y libssl-dev zlib1g zlib1g-dev git
+    apt install -y libssl-dev zlib1g zlib1g-dev
 fi
 
 cd /root
