@@ -5,10 +5,10 @@
 
 if [ command -v yum >/dev/null 2>&1 ]; then
     yum install -y git gcc gcc-c++
-    yum install -y openssl-devel zlib-devel
+    yum install -y openssl-devel zlib-devel git
 else
     apt install -y git-all build-essential manpages-dev
-    apt install -y libssl-dev zlib1g zlib1g-dev
+    apt install -y libssl-dev zlib1g zlib1g-dev git
 fi
 
 cd /root
