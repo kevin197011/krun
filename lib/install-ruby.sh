@@ -3,7 +3,7 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-if [ command -v yum >/dev/null 2>&1 ]; then
+if [[ command -v yum >/dev/null 2>&1 ]]; then
     yum install -y git gcc gcc-c++
     yum install -y openssl-devel zlib-devel git
 else
