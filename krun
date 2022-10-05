@@ -71,7 +71,7 @@ if _action_argv == 'list':
     _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
     _vals = _pattern.findall(_content)
     for item in _vals:
-        print("- [{0}]{1}".format(_index, item))
+        print("  - [{0}]{1}".format(_index, item))
         _index += 1
     sys.exit(0)
 
