@@ -11,7 +11,7 @@ yum remove -y docker \
                   docker-latest-logrotate \
                   docker-logrotate \
                   docker-engine && \
-yum install -y yum-utils && \
+yum install -y yum-utils epel-release && \
 yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo && \
