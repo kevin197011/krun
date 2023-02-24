@@ -10,7 +10,7 @@
 
 ## 安装部署
 ```bash
-curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/krun && chmod +x /usr/bin/krun
+curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/krun && chmod +x /usr/bin/krun && krun status
 ```
 ## 部署完成检查状态
 ```bash
