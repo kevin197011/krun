@@ -5,12 +5,12 @@
 
 # if [[ command -v yum >/dev/null 2>&1 ]]; then
 if [ -f /etc/redhat-release ]; then
-    yum install -y git gcc gcc-c++
+    yum install -y git gcc gcc-c++ make
     yum install -y openssl-devel zlib-devel
 fi
 
 if [ -f /etc/lsb-release ]; then
-    apt install -y git-all build-essential manpages-dev
+    apt install -y git-all build-essential manpages-dev make
     apt install -y libssl-dev zlib1g zlib1g-dev
 fi
 
