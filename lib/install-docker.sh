@@ -20,4 +20,6 @@ yum-config-manager \
 yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \ 
 systemctl start docker && \
 systemctl enable docker && \
+docker version && \
+docker compose version && \
 reboot
