@@ -17,7 +17,8 @@ yum install -y yum-utils epel-release && \
 yum-config-manager \
         --add-repo \
         'https://download.docker.com/linux/centos/docker-ce.repo' && \
-yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \ 
+yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 systemctl start docker && \
 systemctl enable docker && \
 docker version && \
