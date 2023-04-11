@@ -22,4 +22,4 @@ systemctl start docker && \
 systemctl enable docker && \
 docker version && \
 docker compose version && \
-reboot
+# reboot
