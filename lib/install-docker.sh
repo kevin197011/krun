@@ -21,5 +21,5 @@ yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker
 systemctl start docker && \
 systemctl enable docker && \
 docker version && \
-docker compose version && \
+docker compose version
 # reboot
