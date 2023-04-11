@@ -9,7 +9,7 @@ timedatectl set-timezone Asia/Hong_Kong
 yum upgrade -y
 yum update -y
 
-yum install -y ncdu
+yum install -y ncdu vim
 
 yum-config-manager --add-repo=https://copr.fedorainfracloud.org/coprs/carlwgeorge/ripgrep/repo/epel-7/carlwgeorge-ripgrep-epel-7.repo
 yum install -y ripgrep
@@ -58,5 +58,8 @@ EOF
 sysctl -p
 
 perl -pi -e 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+
+
+grep -q 'set paste' /etc/vimrc || echo 'set paste' >> /etc/vimrc
 
 reboot
