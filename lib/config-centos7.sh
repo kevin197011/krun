@@ -48,8 +48,8 @@ net.ipv4.tcp_max_syn_backlog = 20000
 EOF
 
 tee /etc/security/limits.conf > /dev/null <<EOF
-*    soft noproc 65535
-*    hard noproc 65535
+*    soft nproc 65535
+*    hard nproc 65535
 *    soft nofile 65535
 *    hard nofile 65535
 
