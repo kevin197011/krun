@@ -16,9 +16,9 @@ echo ''
 printf "mount path: "
 read m_path
 
-mkdir -p ${m_path}
-
 (lsblk | grep -q -w ${name}) || exit 1
+
+mkdir -p ${m_path}
 
 # mkfs.xfs /dev/${name}
 
