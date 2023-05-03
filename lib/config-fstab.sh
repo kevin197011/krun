@@ -16,7 +16,7 @@ echo ''
 printf "mount path: "
 read m_path
 
-(lsblk | grep -q -w ${name}) || exit 1
+(lsblk | grep -q -w ${name}) || echo "disk name error, exit!"; exit 1
 
 mkdir -p ${m_path}
 
