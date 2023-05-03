@@ -22,7 +22,7 @@ mkdir -p ${m_path}
 
 # mkfs.xfs /dev/${name}
 
-uuid=$(blkid | grep -w '${name}' | grep -Ewo '[[:xdigit:]]{8}(-[[:xdigit:]]{4}){3}-[[:xdigit:]]{12}')
+uuid=$(blkid | grep -w ${name} | grep -Ewo '[[:xdigit:]]{8}(-[[:xdigit:]]{4}){3}-[[:xdigit:]]{12}')
 
 grep -q ${uuid} /etc/fstab && echo 'fstab already config disk name, exit!' && exit 2
 
