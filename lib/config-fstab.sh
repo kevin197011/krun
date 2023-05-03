@@ -20,7 +20,7 @@ mkdir -p ${m_path}
 
 (lsblk | grep -q -w ${name}) || exit 1
 
-mkfs.xfs /dev/${name}
+# mkfs.xfs /dev/${name}
 
 uuid=$(blkid | grep -w '${name}' | grep -Ewo '[[:xdigit:]]{8}(-[[:xdigit:]]{4}){3}-[[:xdigit:]]{12}')
 
