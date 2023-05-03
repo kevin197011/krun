@@ -25,7 +25,7 @@ mkdir -p ${m_path}
 uuid=$(blkid | grep -w ${name} | grep -Ewo '[[:xdigit:]]{8}(-[[:xdigit:]]{4}){3}-[[:xdigit:]]{12}')
 
 grep -q ${uuid} /etc/fstab && echo 'fstab already config disk name, exit!' && exit 2
-
-echo "UUID=${uuid} ${m_path}                       xfs     defaults        0 0"
+echo ": =>"
+echo "  UUID=${uuid} ${m_path}                       xfs     defaults        0 0"
 
 mount /dev/${name} ${m_path} && echo "UUID=${uuid} ${m_path}                       xfs     defaults        0 0" >> /etc/fstab
