@@ -62,4 +62,5 @@ perl -pi -e 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 
 grep -q 'set paste' /etc/vimrc || echo 'set paste' >> /etc/vimrc
 
-reboot
+echo "config finish, please reboot host!"
+# reboot
