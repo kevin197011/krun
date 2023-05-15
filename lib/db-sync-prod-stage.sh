@@ -10,7 +10,7 @@
 #                     |___/
 # Prod db sync to Stage script
 
-# lock host vars
+# lock host
 allow_host='10.10.0.110'
 
 # prod vars
@@ -30,7 +30,7 @@ start_time=$(date +%s)
 
 # only in allow_host can run!
 host_ip=$(ifconfig eth0|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -n 1)
-[[ "${allow_host}" == "${host_ip}" ]] || (echo "Not equal, exit!" && exit -1)
+[[ "${allow_host}" == "${host_ip}" ]] || echo "Not equal, exit!" ; exit -1
 
 
 # backup prod database app
