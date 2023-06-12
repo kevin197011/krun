@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) 2022 Operator
 #
 # This software is released under the MIT License.

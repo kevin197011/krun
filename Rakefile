@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
-# Copyright (c) 2022 Operator
+# Copyright (c) 2022 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
+
+require 'erb'
 
 task default: [:run]
 
@@ -15,12 +17,12 @@ end
 
 task :new do
   print 'action: '
-  @action = gets.strip
+  @action = $stdin.gets.strip
   print 'name: '
-  @name = gets.strip
-
-  # File.open("#{File.dirname(__FILE__)}/lib/#{@action}-#{@name}.rb", 'w') do |f|
-  #   tpl = File.read("#{File.dirname(__FILE__)}/templates/bash.sh.erb")
-  #   f.write(ERB.new(tpl, trim_mode: '-').result(binding))
-  # end
+  @name = $stdin.gets.strip
+  File.open("#{File.dirname(__FILE__)}/lib/#{@action}-#{@name}.sh", 'w') do |f|
+    tpl = File.read("#{File.dirname(__FILE__)}/templates/bash.sh.erb")
+    f.write(ERB.new(tpl, trim_mode: '-').result(binding))
+    puts "Create #{@action}-#{@name}.sh!"
+  end
 end

@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 # Copyright (c) 2022 kk
 #
 # This software is released under the MIT License.
