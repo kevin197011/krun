@@ -1,13 +1,32 @@
-# Copyright (c) 2023 kk
-# 
+#!/usr/bin/env bash
+
+# Copyright (c) 2022 kk
+#
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-(grep -w NAME /etc/os-release | grep -i centos) || echo "System unsupported, exit!"; exit 1
+set -o errexit
+set -o nounset
+set -o pipefail
 
-curl -sS https://webi.sh/k9s | sh
+# base code
+krun::install::k9s::base() {
+  version=$(grep -q 'Debian' /etc/issue && echo -n 'debian' || echo -n 'centos')
+  eval "${FUNCNAME/base/${version}}"
+}
 
-echo 'export PATH="/root/.local/bin:$PATH"' >> /etc/profile
-echo 'source ~/.config/envman/PATH.env' >> /etc/profile
+# centos code
+krun::install::k9s::centos() {
+  # grep -q -i 'centos' /etc/os-release || echo "System unsupported, exit!"; exit 1
+  curl -sS https://webi.sh/k9s | sh
+  echo 'export PATH="/root/.local/bin:$PATH"' >>/root/.bashrc
+  echo 'source ~/.config/envman/PATH.env' >>/root/.bashrc
+}
 
+# debian code
+krun::install::k9s::debian() {
+  echo 'TODO...'
+}
 
+# run main
+krun::install::k9s::base "$@"
