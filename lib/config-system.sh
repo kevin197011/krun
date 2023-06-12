@@ -30,7 +30,6 @@ krun::centos::config::system() {
 
   tee /etc/sysctl.conf > /dev/null <<EOF
 vm.overcommit_memory=1
-
 net.ipv4.ip_local_port_range = 1024 65535
 net.core.rmem_max = 16777216
 net.core.wmem_max = 16777216
@@ -80,5 +79,4 @@ krun::debian::config::system() {
 }
 
 # run main
-# exec krun::base::config::ssh "$@"
 krun::base::config::system "$@"

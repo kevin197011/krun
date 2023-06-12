@@ -10,21 +10,20 @@ set -o nounset
 set -o pipefail
 
 # base code
-krun::base::config::ssh() {
-  grep -q 'Debian' /etc/issue && version='debian'
-  os_version="${version:-'centos'}"
-  eval "${FUNCNAME/base/${os_version}}"
+krun::config::ssh::base() {
+  version=$(grep -q 'Debian' /etc/issue && echo -n 'debian' || echo -n 'centos')
+  eval "${FUNCNAME/base/${version}}"
 }
 
 # centos code
-krun::centos::config::ssh() {
+krun::config::ssh::centos() {
   perl -i -pe 's/(\s*)(#*)(\s*)PasswordAuthentication(.*)/PasswordAuthentication no/g' /etc/ssh/sshd_config
   perl -i -pe 's/(\s*)(#*)(\s*)PermitRootLogin(.*)/PermitRootLogin no/g' /etc/ssh/sshd_config
   systemctl restart sshd
 }
 
 # debian code
-krun::debian::config::ssh() {
+krun::config::ssh::debian() {
   perl -i -pe 's/(\s*)(#*)(\s*)PasswordAuthentication(.*)/PasswordAuthentication no/g' /etc/ssh/sshd_config
   perl -i -pe 's/(\s*)(#*)(\s*)PermitRootLogin(.*)/PermitRootLogin no/g' /etc/ssh/sshd_config
   systemctl restart sshd
@@ -32,4 +31,4 @@ krun::debian::config::ssh() {
 
 # run main
 # exec krun::base::config::ssh "$@"
-krun::base::config::ssh "$@"
+krun::config::ssh::base "$@"
