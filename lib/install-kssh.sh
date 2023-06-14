@@ -7,7 +7,6 @@
 
 # install kssh to mac
 
-
 set -o errexit
 set -o nounset
 set -o pipefail
@@ -32,7 +31,7 @@ krun::install::kssh::base() {
 krun::install::kssh::mac() {
   git clone https://github.com/kevin197011/kssh.git ~/.kssh
   cd .kssh && bundle install
-  grep -q 'export PATH="$PATH:~/.kssh/bin"' ~/.zshrc || echo 'export PATH="$PATH:~/.kssh/bin"' >> ~/.zshrc
+  grep -q 'export PATH="$PATH:~/.kssh/bin"' ~/.zshrc || echo 'export PATH="$PATH:~/.kssh/bin"' >>~/.zshrc
   zsh
 }
 

@@ -10,7 +10,7 @@ set -o nounset
 set -o pipefail
 
 # base code
-krun::base::install::docker() {
+krun::install::docker::base() {
     grep -q 'Debian' /etc/issue && version='debian'
     os="${version:-'centos'}"
     eval "${FUNCNAME/base/${os}}"
