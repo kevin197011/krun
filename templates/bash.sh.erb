@@ -13,7 +13,7 @@ set -o pipefail
 krun::<%= @action %>::<%= @name %>::run() {
   # default debian platform
   platform='debian'
-  <%# command -v apt >/dev/null && platform='debian' %>
+  # command -v apt >/dev/null && platform='debian'
   command -v yum >/dev/null && platform='centos'
   eval "${FUNCNAME/base/${platform}}"
 }
