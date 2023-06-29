@@ -11,19 +11,25 @@ set -o pipefail
 
 # base code
 krun::config::ssh::run() {
-  version=$(grep -q 'Debian' /etc/issue && echo -n 'debian' || echo -n 'centos')
-  eval "${FUNCNAME/base/${version}}"
+  # default debian platform
+  platform='debian'
+
+  command -v yum >/dev/null && platform='centos'
+  eval "${FUNCNAME/base/${platform}}"
 }
 
 # centos code
 krun::config::ssh::centos() {
-  perl -i -pe 's/(\s*)(#*)(\s*)PasswordAuthentication(.*)/PasswordAuthentication no/g' /etc/ssh/sshd_config
-  perl -i -pe 's/(\s*)(#*)(\s*)PermitRootLogin(.*)/PermitRootLogin no/g' /etc/ssh/sshd_config
-  systemctl restart sshd
+  krun::config::ssh::common
 }
 
 # debian code
 krun::config::ssh::debian() {
+  krun::config::ssh::common
+}
+
+# common code
+krun::config::ssh::common() {
   perl -i -pe 's/(\s*)(#*)(\s*)PasswordAuthentication(.*)/PasswordAuthentication no/g' /etc/ssh/sshd_config
   perl -i -pe 's/(\s*)(#*)(\s*)PermitRootLogin(.*)/PermitRootLogin no/g' /etc/ssh/sshd_config
   systemctl restart sshd
