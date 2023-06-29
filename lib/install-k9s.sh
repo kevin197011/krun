@@ -20,16 +20,20 @@ krun::install::k9s::run() {
 
 # centos code
 krun::install::k9s::centos() {
-  curl -sS https://webi.sh/k9s | sh
-  echo 'export PATH="/root/.local/bin:$PATH"' >>/root/.bashrc
-  echo 'source ~/.config/envman/PATH.env' >>/root/.bashrc
+  krun::install::k9s::common
 }
 
 # debian code
 krun::install::k9s::debian() {
+  krun::install::k9s::common
+}
+
+# common code
+krun::install::k9s::common() {
   curl -sS https://webi.sh/k9s | sh
   echo 'export PATH="/root/.local/bin:$PATH"' >>/root/.bashrc
   echo 'source ~/.config/envman/PATH.env' >>/root/.bashrc
+  bash
 }
 
 # run main
