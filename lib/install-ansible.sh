@@ -9,11 +9,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# base code
+# run code
 krun::install::ansible::run() {
   # default debian platform
   platform='debian'
-  
+
   command -v yum >/dev/null && platform='centos'
   eval "${FUNCNAME/base/${platform}}"
 }

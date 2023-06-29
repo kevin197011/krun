@@ -9,7 +9,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# base code
+# run code
 krun::install::nginx::run() {
   version=$(grep -q 'Debian' /etc/issue && echo -n 'debian' || echo -n 'centos')
   eval "${FUNCNAME/base/${version}}"

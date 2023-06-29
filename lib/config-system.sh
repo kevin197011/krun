@@ -9,7 +9,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# base code
+# run code
 krun::config::system::run() {
   # default debian platform
   platform='debian'

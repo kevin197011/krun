@@ -9,7 +9,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# base code
+# run code
 krun::<%= @action %>::<%= @name %>::run() {
   # default debian platform
   platform='debian'
@@ -21,11 +21,13 @@ krun::<%= @action %>::<%= @name %>::run() {
 # centos code
 krun::<%= @action %>::<%= @name %>::centos() {
   echo 'centos todo...'
+  krun::<%= @action %>::<%= @name %>::common
 }
 
 # debian code
 krun::<%= @action %>::<%= @name %>::debian() {
   echo 'debian todo...'
+  krun::<%= @action %>::<%= @name %>::common
 }
 
 # common code
