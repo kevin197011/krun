@@ -10,14 +10,16 @@ set -o nounset
 set -o pipefail
 
 # base code
-krun::install::k9s::base() {
-  version=$(grep -q 'Debian' /etc/issue && echo -n 'debian' || echo -n 'centos')
-  eval "${FUNCNAME/base/${version}}"
+krun::install::k9s::run() {
+  # default debian platform
+  platform='debian'
+
+  command -v yum >/dev/null && platform='centos'
+  eval "${FUNCNAME/base/${platform}}"
 }
 
 # centos code
 krun::install::k9s::centos() {
-  # grep -q -i 'centos' /etc/os-release || echo "System unsupported, exit!"; exit 1
   curl -sS https://webi.sh/k9s | sh
   echo 'export PATH="/root/.local/bin:$PATH"' >>/root/.bashrc
   echo 'source ~/.config/envman/PATH.env' >>/root/.bashrc
@@ -25,8 +27,10 @@ krun::install::k9s::centos() {
 
 # debian code
 krun::install::k9s::debian() {
-  echo 'TODO...'
+  curl -sS https://webi.sh/k9s | sh
+  echo 'export PATH="/root/.local/bin:$PATH"' >>/root/.bashrc
+  echo 'source ~/.config/envman/PATH.env' >>/root/.bashrc
 }
 
 # run main
-krun::install::k9s::base "$@"
+krun::install::k9s::run "$@"

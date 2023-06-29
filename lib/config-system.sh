@@ -10,14 +10,16 @@ set -o nounset
 set -o pipefail
 
 # base code
-krun::base::config::system() {
-  grep -q 'Debian' /etc/issue && version='debian'
-  os_version="${version:-'centos'}"
-  eval "${FUNCNAME/base/${os_version}}"
+krun::config::system::run() {
+  # default debian platform
+  platform='debian'
+
+  command -v yum >/dev/null && platform='centos'
+  eval "${FUNCNAME/base/${platform}}"
 }
 
 # centos code
-krun::centos::config::system() {
+krun::config::system::centos() {
   yum install -y epel-release
   yum install -y bash-completion bash-completion-extras
   timedatectl set-timezone Asia/Hong_Kong
@@ -28,7 +30,7 @@ krun::centos::config::system() {
   yum install -y ripgrep
   yum install lrzsz -y
 
-  tee /etc/sysctl.conf > /dev/null <<EOF
+  tee /etc/sysctl.conf >/dev/null <<EOF
 vm.overcommit_memory=1
 net.ipv4.ip_local_port_range = 1024 65535
 net.core.rmem_max = 16777216
@@ -58,7 +60,7 @@ net.ipv4.tcp_max_syn_backlog = 20000
 
 EOF
 
-  tee /etc/security/limits.conf > /dev/null <<EOF
+  tee /etc/security/limits.conf >/dev/null <<EOF
 *    soft nproc 65535
 *    hard nproc 65535
 *    soft nofile 65535
@@ -68,15 +70,15 @@ EOF
 
   sysctl -p
   perl -pi -e 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-  grep -q 'set paste' /etc/vimrc || echo 'set paste' >> /etc/vimrc
+  grep -q 'set paste' /etc/vimrc || echo 'set paste' >>/etc/vimrc
   echo "config finish, please reboot host!"
   # reboot
 }
 
 # debian code
-krun::debian::config::system() {
-  echo 'TODO!'
+krun::config::system::debian() {
+  echo 'debian todo...'
 }
 
 # run main
-krun::base::config::system "$@"
+krun::config::system::run "$@"

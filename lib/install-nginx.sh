@@ -10,7 +10,7 @@ set -o nounset
 set -o pipefail
 
 # base code
-krun::install::nginx::base() {
+krun::install::nginx::run() {
   version=$(grep -q 'Debian' /etc/issue && echo -n 'debian' || echo -n 'centos')
   eval "${FUNCNAME/base/${version}}"
 }
@@ -26,4 +26,4 @@ krun::install::nginx::debian() {
 }
 
 # run main
-krun::install::nginx::base "$@"
+krun::install::nginx::run "$@"

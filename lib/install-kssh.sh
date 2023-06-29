@@ -12,22 +12,11 @@ set -o nounset
 set -o pipefail
 
 # base code
-krun::install::kssh::base() {
-  # version=$(grep -q 'Debian' /etc/issue && echo -n 'debian' || echo -n 'centos')
-  # eval "${FUNCNAME/base/${version}}"
+krun::install::kssh::run() {
   krun::install::kssh::mac
 }
 
-# # centos code
-# krun::install::kssh::centos() {
-#   echo 'TODO...'
-# }
-
-# # debian code
-# krun::install::kssh::debian() {
-#   echo 'TODO...'
-# }
-
+# mac code
 krun::install::kssh::mac() {
   git clone https://github.com/kevin197011/kssh.git ~/.kssh
   cd .kssh && bundle install
@@ -36,4 +25,4 @@ krun::install::kssh::mac() {
 }
 
 # run main
-krun::install::kssh::base "$@"
+krun::install::kssh::run "$@"

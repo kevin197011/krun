@@ -10,7 +10,7 @@ set -o nounset
 set -o pipefail
 
 # base code
-krun::config::ssh::base() {
+krun::config::ssh::run() {
   version=$(grep -q 'Debian' /etc/issue && echo -n 'debian' || echo -n 'centos')
   eval "${FUNCNAME/base/${version}}"
 }
@@ -30,5 +30,4 @@ krun::config::ssh::debian() {
 }
 
 # run main
-# exec krun::base::config::ssh "$@"
-krun::config::ssh::base "$@"
+krun::config::ssh::run "$@"

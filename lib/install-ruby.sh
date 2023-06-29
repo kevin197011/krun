@@ -1,26 +1,49 @@
-# Copyright (c) 2022 Operator
+#!/usr/bin/env bash
+
+# Copyright (c) 2022 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-# if [[ command -v yum >/dev/null 2>&1 ]]; then
-if [ -f /etc/redhat-release ]; then
-    yum install -y git gcc gcc-c++ make
-    yum install -y openssl-devel zlib-devel
-fi
+set -o errexit
+set -o nounset
+set -o pipefail
 
-if [ -f /etc/lsb-release ]; then
-    apt install -y git-all build-essential manpages-dev make
-    apt install -y libssl-dev zlib1g zlib1g-dev
-fi
+# base code
+krun::install::ruby::run() {
+  # default debian platform
+  platform='debian'
 
-cd /root
-rm -rf /root/.asdf
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch master
-grep -q '. $HOME/.asdf/asdf.sh' ~/.bashrc || echo '. $HOME/.asdf/asdf.sh' >>~/.bashrc
-grep -q '. $HOME/.asdf/completions/asdf.bash' ~/.bashrc || echo '. $HOME/.asdf/completions/asdf.bash' >>~/.bashrc
-. ~/.bashrc
-asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
-asdf install ruby 3.1.2
-asdf global ruby 3.1.2
-ruby -v
+  command -v yum >/dev/null && platform='centos'
+  eval "${FUNCNAME/base/${platform}}"
+}
+
+# centos code
+krun::install::ruby::centos() {
+  yum install -y git gcc gcc-c++ make
+  yum install -y openssl-devel zlib-devel
+  krun::install::ruby::common
+}
+
+# debian code
+krun::install::ruby::debian() {
+  apt install -y git-all build-essential manpages-dev make
+  apt install -y libssl-dev zlib1g zlib1g-dev
+  krun::install::ruby::common
+}
+
+# common code
+krun::install::ruby::common() {
+  rm -rf /opt/.asdf
+  git clone https://github.com/asdf-vm/asdf.git /opt/.asdf --branch master
+  echo 'source /opt/.asdf/asdf.sh' >/etc/profile.d/asdf.sh
+  echo 'source /opt/.asdf/completions/asdf.bash' >>/etc/profile.d/asdf.sh
+  source /etc/profile
+  asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
+  asdf install ruby 3.1.2
+  asdf global ruby 3.1.2
+  ruby -v
+}
+
+# run main
+krun::install::ruby::run "$@"
