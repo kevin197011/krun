@@ -13,7 +13,7 @@ set -o pipefail
 krun::install::docker::run() {
     # default debian platform
     platform='debian'
-
+    # command -v apt >/dev/null && platform='debian'
     command -v yum >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/base/${platform}}"
