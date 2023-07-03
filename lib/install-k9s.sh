@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2022 kk
+# Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT

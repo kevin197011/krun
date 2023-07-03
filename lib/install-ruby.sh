@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2022 kk
+# Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -13,8 +13,9 @@ set -o pipefail
 krun::install::ruby::run() {
   # default debian platform
   platform='debian'
-
+  # command -v apt >/dev/null && platform='debian'
   command -v yum >/dev/null && platform='centos'
+  command -v brew >/dev/null && platform='mac'
   eval "${FUNCNAME/base/${platform}}"
 }
 
@@ -32,13 +33,14 @@ krun::install::ruby::debian() {
   krun::install::ruby::common
 }
 
+# mac code
+krun::install::ruby::mac() {
+  brew install openssl zlib
+  krun::install::ruby::common
+}
+
 # common code
 krun::install::ruby::common() {
-  rm -rf /opt/.asdf
-  git clone https://github.com/asdf-vm/asdf.git /opt/.asdf --branch master
-  echo 'source /opt/.asdf/asdf.sh' >/etc/profile.d/asdf.sh
-  echo 'source /opt/.asdf/completions/asdf.bash' >>/etc/profile.d/asdf.sh
-  source /etc/profile
   asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
   asdf install ruby 3.1.2
   asdf global ruby 3.1.2

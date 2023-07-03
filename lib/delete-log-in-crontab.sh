@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Operator
+# Copyright (c) 2023 Operator
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -7,9 +7,9 @@ mkdir -p /opt/scripts
 
 scritp_name='delete-log.sh'
 
-tee /opt/scripts/${scritp_name} > /dev/null <<EOF
+tee /opt/scripts/${scritp_name} >/dev/null <<EOF
 #!/usr/bin/env sh
-# Copyright (c) 2022 Operator
+# Copyright (c) 2023 Operator
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -20,7 +20,7 @@ days=7
 # log path
 dirs=(
     "/data/logs"
-) 
+)
 
 # delete old logs
 for d in \${dirs[@]}; do
@@ -31,9 +31,9 @@ EOF
 
 echo "add /opt/scripts/${scritp_name} ok!"
 
-tee /etc/cron.daily/${scritp_name} > /dev/null <<EOF
+tee /etc/cron.daily/${scritp_name} >/dev/null <<EOF
 #!/usr/bin/env sh
-# Copyright (c) 2022 Operator
+# Copyright (c) 2023 Operator
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT

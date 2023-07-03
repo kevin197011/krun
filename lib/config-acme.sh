@@ -1,8 +1,7 @@
-# Copyright (c) 2022 Operator
+# Copyright (c) 2023 Operator
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-
 
 # usage: sh $0 kevin197011@outlook.com devops.io
 
@@ -28,7 +27,7 @@ domain=$2
 
 # install ssl
 /root/.acme.sh/acme.sh --install-cert -d ${domain} \
-  --key-file       /www/server/panel/vhost/cert/${domain}/${domain}.key  \
+  --key-file /www/server/panel/vhost/cert/${domain}/${domain}.key \
   --fullchain-file /www/server/panel/vhost/cert/${domain}/${domain}.crt \
-  --ca-file        /www/server/panel/vhost/cert/${domain}/${domain}.ca.crt \
-  --reloadcmd     "systemctl restart nginx"
+  --ca-file /www/server/panel/vhost/cert/${domain}/${domain}.ca.crt \
+  --reloadcmd "systemctl restart nginx"

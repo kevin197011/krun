@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2022 kk
+# Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -15,6 +15,7 @@ krun::install::docker::run() {
     platform='debian'
 
     command -v yum >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/base/${platform}}"
 }
 
@@ -40,26 +41,31 @@ krun::install::docker::debian() {
 }
 
 krun::install::docker::centos() {
-    yum update -y &&
-        yum remove -y docker \
-            docker-client \
-            docker-client-latest \
-            docker-common \
-            docker-latest \
-            docker-latest-logrotate \
-            docker-logrotate \
-            docker-engine &&
-        yum install -y yum-utils epel-release &&
-        yum-config-manager \
-            --add-repo \
-            'https://download.docker.com/linux/centos/docker-ce.repo' &&
-        yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    yum update -y
+    yum remove -y docker \
+        docker-client \
+        docker-client-latest \
+        docker-common \
+        docker-latest \
+        docker-latest-logrotate \
+        docker-logrotate \
+        docker-engine
+    yum install -y yum-utils epel-release
+    yum-config-manager \
+        --add-repo \
+        'https://download.docker.com/linux/centos/docker-ce.repo'
+    yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
     systemctl start docker &&
         systemctl enable docker &&
         docker version &&
         docker compose version
 
+}
+
+# mac code
+krun::install::docker::mac() {
+    brew install docker
 }
 
 # run main

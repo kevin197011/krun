@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022 Operator
+# Copyright (c) 2023 Operator
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -22,8 +22,8 @@ source ${custom_config}
 # list script
 if [[ 'list' = $1 ]]; then
     echo "[INFO] script list:"
-    [[ ! -z "${github_repo_name}" ]] && github_repo="https://github.com/${github_repo_name}/sh-libs/tree/main" || \
-    github_repo="https://github.com/kevin197011/sh/tree/main/lib"
+    [[ ! -z "${github_repo_name}" ]] && github_repo="https://github.com/${github_repo_name}/sh-libs/tree/main" ||
+        github_repo="https://github.com/kevin197011/sh/tree/main/lib"
     curl -s ${github_repo} | grep -Eo '[a-zA-Z0-9-]+\.(sh|pl|py|rb)' | uniq | sed 's/^/- /g'
     exit 0
 fi
@@ -31,8 +31,8 @@ fi
 # tmp download run
 cd /tmp
 
-[[ ! -z "${github_repo_name}" ]] && github_repo_sh="https://raw.githubusercontent.com/${github_repo_name}/sh-libs/main" || \
-github_repo_sh="https://raw.githubusercontent.com/kevin197011/sh/main/lib"
+[[ ! -z "${github_repo_name}" ]] && github_repo_sh="https://raw.githubusercontent.com/${github_repo_name}/sh-libs/main" ||
+    github_repo_sh="https://raw.githubusercontent.com/kevin197011/sh/main/lib"
 
 curl -s -o $1 ${github_repo_sh}/$1
 

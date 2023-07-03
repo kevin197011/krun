@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-# Copyright (c) 2022 kk
+# Copyright (c) <%= @year %> kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -15,6 +14,7 @@ krun::<%= @action %>::<%= @name %>::run() {
   platform='debian'
   # command -v apt >/dev/null && platform='debian'
   command -v yum >/dev/null && platform='centos'
+  command -v brew >/dev/null && platform='mac'
   eval "${FUNCNAME/base/${platform}}"
 }
 
@@ -27,6 +27,12 @@ krun::<%= @action %>::<%= @name %>::centos() {
 # debian code
 krun::<%= @action %>::<%= @name %>::debian() {
   echo 'debian todo...'
+  krun::<%= @action %>::<%= @name %>::common
+}
+
+# mac code
+krun::<%= @action %>::<%= @name %>::mac() {
+  echo 'mac todo...'
   krun::<%= @action %>::<%= @name %>::common
 }
 

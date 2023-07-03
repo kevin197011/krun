@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-# Copyright (c) 2022 kk
+# Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
 require 'erb'
+require 'time'
 
 task default: [:run]
 
@@ -16,6 +17,7 @@ task :run do
 end
 
 task :new do
+  @year = Time.now.year
   print 'action: '
   @action = $stdin.gets.strip
   print 'name: '
