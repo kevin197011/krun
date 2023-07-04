@@ -39,13 +39,14 @@ ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
 # krun need init status
 # custom config file
 custom_cf = '/etc/krun/config.py'
-if not os.path.exists('/etc/krun/config.py'):
+if not os.path.exists(custom_cf):
     os.makedirs('/etc/krun')
-    with open('/etc/krun/config.py', 'w') as f:
+    with open(custom_cf, 'w') as f:
         f.write('github_repo_name = None')
 
 sys.path.append('/etc/krun')
 
+import config
 
 _repo_name = config.github_repo_name
 
