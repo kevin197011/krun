@@ -41,7 +41,7 @@ krun::config::vm::common() {
   kevin_public_key='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCk99LBkbSprNs2D5Gg6Duv281xo5BX8OchomXEu6JTA+1b4iTjrtcInufF+eBIcjdg/Q+8mGsobW5/IRM78LdmYH8tPfjj///LijkiyvdkZ8VjVn/RJSUTpIBUZKQVt7wyDc4CIrb6S6s4HNj9UkUfghiwpau/MFC6Ad6rVoa03chC2etmf1mdcbQbN/p9u/LpDJZEZzREWQ2UTlAJk2+1uWPypwXkYWmw/U/UjRDpZojAJMolKNyas3UqxkkEuxeYBmM1NHxKMxKSA2lbaxx8S0aevkJT8/2HNsTtSmSabO8rOofTfm5zSY5XxigOwn4TKE2izSI9F2RewWYYgWA1web7vZMPSJ7RgZ2A6Wqnnl28PXV/9oGpX8WmdtH/D4UWSdihmfc0pE3ypqXJjVDcVNsJ8g49bbTELCh4DuwqAtLBHyUnHrROisV3aDXKA4358RIDmZ3qCriz8oZawL5ORBLTAQ+XDaqT4zbxZcJq++N1LkQXJI/PK+qkNjZ/M/c='
   mkdir -p /root/.ssh/
   chmod 700 /root/.ssh/
-  tee -f /root/.ssh/authorized_keys <<< "${kevin_public_key}"
+  echo "${kevin_public_key}" > /root/.ssh/authorized_keys
   chmod 600 /root/.ssh/authorized_keys
 }
 
