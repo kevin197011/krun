@@ -6,7 +6,6 @@
 
 
 try:
-    import config
     # after python 3.x
     from urllib.request import Request, urlopen
 except ImportError:
