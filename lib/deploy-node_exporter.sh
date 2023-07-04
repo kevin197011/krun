@@ -15,7 +15,7 @@ krun::deploy::node_exporter::run() {
   platform='debian'
   # command -v apt >/dev/null && platform='debian'
   command -v yum >/dev/null && platform='centos'
-  eval "${FUNCNAME/run/${platform}}"
+  eval "${FUNCNAME/::run/::${platform}}"
 }
 
 # centos code

@@ -15,7 +15,7 @@ krun::config::vim::run() {
   platform='debian'
 
   command -v yum >/dev/null && platform='centos'
-  eval "${FUNCNAME/run/${platform}}"
+  eval "${FUNCNAME/::run/::${platform}}"
 }
 
 # centos code
