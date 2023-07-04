@@ -15,7 +15,7 @@ krun::install::openjdk8::run() {
   platform='debian'
 
   command -v yum >/dev/null && platform='centos'
-  eval "${FUNCNAME/base/${platform}}"
+  eval "${FUNCNAME/run/${platform}}"
 }
 
 # centos code

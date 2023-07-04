@@ -15,7 +15,7 @@ krun::install::xtrabackup::run() {
   # command -v apt >/dev/null && platform='debian'
   command -v yum >/dev/null && platform='centos'
   command -v brew >/dev/null && platform='mac'
-  eval "${FUNCNAME/base/${platform}}"
+  eval "${FUNCNAME/run/${platform}}"
 }
 
 # centos code
