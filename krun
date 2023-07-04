@@ -6,9 +6,9 @@
 
 
 try:
-import config
-# after python 3.x
-from urllib.request import Request, urlopen
+    import config
+    # after python 3.x
+    from urllib.request import Request, urlopen
 except ImportError:
     # for python 2.x
     from urllib2 import Request, urlopen

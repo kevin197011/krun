@@ -29,6 +29,9 @@ krun::config::system::centos() {
   yum-config-manager --add-repo=https://copr.fedorainfracloud.org/coprs/carlwgeorge/ripgrep/repo/epel-7/carlwgeorge-ripgrep-epel-7.repo
   yum install -y ripgrep
   yum install lrzsz -y
+  yum install -y epel-release \
+    centos-release-scl-rh \
+    centos-release-scl
 
   tee /etc/sysctl.conf >/dev/null <<EOF
 vm.overcommit_memory=1
