@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) <%= @year %> kk
+# Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -9,7 +9,7 @@ set -o nounset
 set -o pipefail
 
 # run code
-krun::<%= @action %>::<%= @name %>::run() {
+krun::install::puppet_bolt::run() {
   # default platform
   platform='debian'
   # command -v apt >/dev/null && platform='debian'
@@ -19,24 +19,27 @@ krun::<%= @action %>::<%= @name %>::run() {
 }
 
 # centos code
-krun::<%= @action %>::<%= @name %>::centos() {
-  krun::<%= @action %>::<%= @name %>::common
+krun::install::puppet_bolt::centos() {
+  krun::install::puppet_bolt::common
 }
 
 # debian code
-krun::<%= @action %>::<%= @name %>::debian() {
-  krun::<%= @action %>::<%= @name %>::common
+krun::install::puppet_bolt::debian() {
+  krun::install::puppet_bolt::common
 }
 
 # mac code
-krun::<%= @action %>::<%= @name %>::mac() {
-  krun::<%= @action %>::<%= @name %>::common
+krun::install::puppet_bolt::mac() {
+  brew tap puppetlabs/puppet
+  brew install --cask puppet-bolt
+  brew install --cask puppetlabs/puppet/pdk
+  krun::install::puppet_bolt::common
 }
 
 # common code
-krun::<%= @action %>::<%= @name %>::common() {
+krun::install::puppet_bolt::common() {
   echo 'common todo...'
 }
 
 # run main
-krun::<%= @action %>::<%= @name %>::run "$@"
+krun::install::puppet_bolt::run "$@"
