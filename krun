@@ -72,7 +72,8 @@ if _action_argv == 'list':
     _req = Request(_github_repo)
     _req.add_header('User-Agent', ua)
     _content = urlopen(_req).read().decode('utf-8')
-    _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
+    # _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
+    _pattern = re.compile(r'lib/(.*?)",')
     _vals = _pattern.findall(_content)
     for item in _vals:
         print("  - [{0}]{1}".format(_index, item))
@@ -125,7 +126,8 @@ if re.match(r'\d+', _action_argv):
     _req = Request(_github_repo)
     _req.add_header('User-Agent', ua)
     _content = urlopen(_req).read().decode('utf-8')
-    _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
+    # _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
+    _pattern = re.compile(r'lib/(.*?)",')
     _vals = _pattern.findall(_content)
 
     _val = _vals[_index]
