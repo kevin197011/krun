@@ -1,12 +1,48 @@
-# Copyright (c) 2023 Operator
+#!/usr/bin/env bash
+# Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-# /bin/bash -c "$(curl -fsSL http://www.aapanel.com/script/install_6.0_en.sh)"
-script_tmp='/tmp/install_6.0_en.sh'
+set -o errexit
+set -o nounset
+set -o pipefail
 
-curl -sL http://www.aapanel.com/script/install_6.0_en.sh -o ${script_tmp}
+# run code
+krun::install::aapanel::run() {
+  # default platform
+  platform='debian'
+  # command -v apt >/dev/null && platform='debian'
+  command -v yum >/dev/null && platform='centos'
+  command -v brew >/dev/null && platform='mac'
+  eval "${FUNCNAME/::run/::${platform}}"
+}
 
-echo "[Info] 涉及到交互选择,手动执行下面命令安装:"
-echo "bash ${script_tmp} && rm -rf ${script_tmp}"
+# centos code
+krun::install::aapanel::centos() {
+  krun::install::aapanel::common
+  yum install -y wget
+  wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh
+  bash install.sh aapanel
+}
+
+# debian code
+krun::install::aapanel::debian() {
+  krun::install::aapanel::common
+  apt install -y wget
+  wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh
+  bash install.sh aapanel
+}
+
+# mac code
+krun::install::aapanel::mac() {
+  krun::install::aapanel::common
+}
+
+# common code
+krun::install::aapanel::common() {
+  echo 'install aapanel...'
+}
+
+# run main
+krun::install::aapanel::run "$@"
