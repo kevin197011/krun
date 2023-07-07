@@ -4,6 +4,8 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
+# https://www.aapanel.com/new/download.html#install
+
 set -o errexit
 set -o nounset
 set -o pipefail
