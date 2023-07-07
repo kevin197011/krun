@@ -22,7 +22,9 @@ task :new do
   @action = $stdin.gets.strip
   print 'name: '
   @name = $stdin.gets.strip
-  File.open("#{File.dirname(__FILE__)}/lib/#{@action}-#{@name}.sh", 'w') do |f|
+  script_name = "#{File.dirname(__FILE__)}/lib/#{@action}-#{@name}.sh"
+  File.rename(script_name, "#{script_name}.bak") if File.exist?(script_name)
+  File.open(script_name, 'w') do |f|
     tpl = File.read("#{File.dirname(__FILE__)}/templates/bash.sh.erb")
     f.write(ERB.new(tpl, trim_mode: '-').result(binding))
     puts "Create #{@action}-#{@name}.sh!"

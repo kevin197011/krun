@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
@@ -11,18 +10,32 @@ set -o pipefail
 
 # run code
 krun::install::nginx::run() {
-  version=$(grep -q 'Debian' /etc/issue && echo -n 'debian' || echo -n 'centos')
-  eval "${FUNCNAME/run/${version}}"
+  # default platform
+  platform='debian'
+  # command -v apt >/dev/null && platform='debian'
+  command -v yum >/dev/null && platform='centos'
+  command -v brew >/dev/null && platform='mac'
+  eval "${FUNCNAME/::run/::${platform}}"
 }
 
 # centos code
 krun::install::nginx::centos() {
-  echo 'TODO...'
+  krun::install::nginx::common
 }
 
 # debian code
 krun::install::nginx::debian() {
-  echo 'TODO...'
+  krun::install::nginx::common
+}
+
+# mac code
+krun::install::nginx::mac() {
+  krun::install::nginx::common
+}
+
+# common code
+krun::install::nginx::common() {
+  echo 'common todo...'
 }
 
 # run main
