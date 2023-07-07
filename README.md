@@ -83,7 +83,7 @@ hello world
 > run script No.
 
 ```bash
-[root@localhost ~]# krun 10
+[root@localhost ~]# krun 11
 hello world
 ```
 
