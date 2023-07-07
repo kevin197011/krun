@@ -6,7 +6,6 @@
 
 
 try:
-
     # after python 3.x
     from urllib.request import Request, urlopen
 except ImportError:
@@ -41,13 +40,13 @@ ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
 # krun need init status
 # custom config file
 # custom_cf = '/etc/krun/config.py'
-custom_cf = f"{os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))}/config/config.py"
+custom_cf = "{0}/config/config.py".format(os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir)))
 
 with open(custom_cf, 'w') as f:
     f.write('github_repo_name = None')
 
 sys.path.append(
-    f"{os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))}/config/")
+    "{0}/config/".format(os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))))
 
 import config
 
