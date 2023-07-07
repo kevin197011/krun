@@ -1,83 +1,101 @@
 # krun
 
-> 脚本管理执行工具[托管github]
+> scripts manage tools
 
-## 支持托管执行脚本类型
+## support script language
+
 - shell
 - perl
 - ruby
 - python
 
-## 安装部署
+## install
+
 ```bash
-curl -o /usr/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/krun && chmod +x /usr/bin/krun && krun status
+export deploy_path='/root/.krun' && \
+bash 
 ```
-## 部署完成检查状态
+
+## init
+
 ```bash
 [root@localhost ~]# krun status (krun init)
 [INFO] krun ready!
 ```
-## 需要自定义仓库[非必要配置项]
-在自己的github新建仓库`sh-libs`, 然后将自己的脚本上传到自己的仓库。
-完成上步然后配置自己的仓库地址
+
+## custom yourself script repo
+
+new create `sh-libs` repo.
+
 ```bash
 [root@localhost ~]# vim /etc/krun/config.py
-github_repo_name = "kevin197011" # 填写自己的github name
+github_repo_name = "kevin197011" # your repo github name
 ```
-范例
+
+example
+
 ```bash
 https://github.com/kevin197011/sh-libs
 ```
 
-## 查看脚本清单
+## show script list
+
 ```bash
 [root@localhost ~]# krun list
 [INFO] script list:
-- [1]config-acme.sh
-- [2]config-centos7.sh
-- [3]config-ssh.sh
-- [4]config-vagrant.sh
-- [5]delete-log-in-crontab.sh
-- [6]find-chattr.pl
-- [7]find-log-delete.sh
-- [8]find-webshell.rb
-- [9]get-apnic.rb
-- [10]hello-world.sh
-- [11]install-aapanel.sh
-- [12]install-cfssl.pl
-- [13]install-docker.sh
-- [14]install-maven.sh
-- [15]install-openjdk8.sh
-- [16]install-python3.sh
-- [17]install-ruby.sh
-- [18]install-vagrant-vbox.sh
-- [19]purge-log.pl
-- [20]set-vim-paste-mode.sh
-- [21]update-ubuntu-signatures.pl
-- [22]webhook.py
+  - [1]config-acme.sh
+  - [2]config-fstab.sh
+  - [3]config-locales.sh
+  - [4]config-ssh.sh
+  - [5]config-system.sh
+  - [6]config-vagrant-ssh.sh
+  - [7]config-vim.sh
+  - [8]config-vm.sh
+  - [9]db-sync.sh
+  - [10]deploy-node_exporter.sh
+  - [11]hello-world.sh
+  - [12]install-1panel.sh
+  - [13]install-aapanel.sh
+  - [14]install-asdf.sh
+  - [15]install-awscli.sh
+  - [16]install-docker.sh
+  - [17]install-golang.sh
+  - [18]install-k9s.sh
+  - [19]install-kssh.sh
+  - [20]install-nginx.sh
+  - [21]install-openjdk8.sh
+  - [22]install-puppet_bolt.sh
+  - [23]install-python3.sh
+  - [24]install-ruby.sh
+  - [25]install-vagrant-virtualbox.sh
+  - [26]install-xtrabackup.sh
 ```
 
-## 执行脚本
+## run script
 
-> 根据脚本名字执行
+> run script name
+
 ```bash
 [root@localhost ~]# krun hello-world.sh
 hello world
 ```
 
-> 根据脚本编号执行
+> run script No.
+
 ```bash
 [root@localhost ~]# krun 10
 hello world
 ```
 
-## 更新krun版本
+## update
+
 ```bash
 [root@localhost ~]# krun update
 [INFO] krun update!
 ```
 
-## 卸载工具
+## uninstall
+
 ```bash
 [root@localhost ~]# krun uninstall
 [INFO] krun uninstall!

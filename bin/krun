@@ -6,6 +6,7 @@
 
 
 try:
+
     # after python 3.x
     from urllib.request import Request, urlopen
 except ImportError:
@@ -14,6 +15,7 @@ except ImportError:
 
 import sys
 import os
+import shutil
 import re
 
 try:
@@ -38,13 +40,14 @@ ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
 
 # krun need init status
 # custom config file
-custom_cf = '/etc/krun/config.py'
-if not os.path.exists(custom_cf):
-    os.makedirs('/etc/krun')
-    with open(custom_cf, 'w') as f:
-        f.write('github_repo_name = None')
+# custom_cf = '/etc/krun/config.py'
+custom_cf = f"{os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))}/config/config.py"
 
-sys.path.append('/etc/krun')
+with open(custom_cf, 'w') as f:
+    f.write('github_repo_name = None')
+
+sys.path.append(
+    f"{os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))}/config/")
 
 import config
 
@@ -58,9 +61,9 @@ if _repo_name != None and _repo_name != '':
 # update krun bin
 if _action_argv == 'update':
     print("[INFO] krun update!")
-    with open('/usr/bin/krun', 'w') as f:
+    with open(__file__, 'w') as f:
         _req = Request(
-            'https://raw.githubusercontent.com/kevin197011/krun/main/krun')
+            'https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun')
         _req.add_header('User-Agent', ua)
         _content = urlopen(_req).read().decode('utf-8')
         f.write(_content)
@@ -90,9 +93,9 @@ if _action_argv == 'status' or _action_argv == 'statu' or _action_argv == 'init'
 
 if _action_argv == 'uninstall':
     print("[Info] krun uninstall!")
-    os.remove('/etc/krun/config.py')
-    os.remove('/usr/bin/krun')
-    os.rmdir('/etc/krun')
+    krun_path = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), os.path.pardir))
+    shutil.rmtree(krun_path)
     sys.exit(0)
 
 if _action_argv == 'help':
