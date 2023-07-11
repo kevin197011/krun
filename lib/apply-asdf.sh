@@ -9,7 +9,6 @@ set -o nounset
 set -o pipefail
 
 # vars
-app_name=${1:-''}
 
 # run code
 krun::apply::asdf::run() {
@@ -45,13 +44,14 @@ krun::apply::asdf::common() {
   }
 
   # action
-  [[ -z ${app_name} ]] && echo "app_name is empty, exit!" && exit 1
-  asdf plugin add ${app_name}
-  asdf list all ${app_name}
-  printf "${app_name} version:"
+  printf "app version:"
+  read name
+  asdf plugin add ${name}
+  asdf list all ${name}
+  printf "${name} version:"
   read version
-  asdf install ${app_name} ${version}
-  asdf global ${app_name} ${version}
+  asdf install ${name} ${version}
+  asdf global ${name} ${version}
 }
 
 # run main
