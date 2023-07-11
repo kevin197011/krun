@@ -70,5 +70,6 @@ krun::install::docker::common() {
   docker version
   docker compose version
 }
+
 # run main
 krun::install::docker::run "$@"
