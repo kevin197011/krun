@@ -11,14 +11,12 @@ chmod +x ${install_path}/bin/krun
 
 # mac
 command -v brew >/dev/null && {
-    grep -q "${install_path}/bin" ~/.zshrc || echo "export PATH=\$PATH:${install_path}/bin" >>~/.zshrc
-    zsh
-    krun status
-    exit 0
+  grep -q "${install_path}/bin" ~/.zshrc || echo "export PATH=\$PATH:${install_path}/bin" >>~/.zshrc
+  zsh && krun status
+  exit 0
 }
 
 # other
 grep -q "${install_path}/bin" ~/.bashrc || echo "export PATH=\$PATH:${install_path}/bin" >>~/.bashrc
-bash
-krun status
+bash && krun status
 exit 0

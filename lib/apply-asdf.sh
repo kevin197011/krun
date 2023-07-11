@@ -43,7 +43,7 @@ krun::apply::asdf::common() {
   krun install-asdf.sh && bash
 
   # action
-  [ -z ${app_name} ] && echo "app_name is empty, exit!" && return
+  [[ -z ${app_name} ]] && echo "app_name is empty, exit!" && exit 1
   asdf plugin add ${app_name}
   asdf list all ${app_name}
   printf "${app_name} version:"
