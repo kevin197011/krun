@@ -17,8 +17,8 @@ mkdir -p ${workdir}
 
 # need sync databases
 databases=(
-	database1
-	database2
+  database1
+  database2
 )
 
 # prod vars
@@ -39,30 +39,30 @@ echo "backup prod database ..."
 rm -rf /data/backup/*.sql.gz
 
 for db in "${databases[@]}"; do
-	echo "prod backup $db ..."
-	mysqldump -h$prod_db_host -u$prod_db_user -p$prod_db_pass $db | gzip >/data/backup/$db.sql.gz
-	echo "prod backup $db done."
+  echo "prod backup $db ..."
+  mysqldump -h$prod_db_host -u$prod_db_user -p$prod_db_pass $db | gzip >/data/backup/$db.sql.gz
+  echo "prod backup $db done."
 done
 
 # drop stage database
 for db in "${databases[@]}"; do
-	echo "stage drop $db ..."
-	mysql -h$stage_db_host -u$stage_db_user -p$stage_db_pass -e "DROP DATABASE IF EXISTS $db"
-	echo "stage drop $db done."
+  echo "stage drop $db ..."
+  mysql -h$stage_db_host -u$stage_db_user -p$stage_db_pass -e "DROP DATABASE IF EXISTS $db"
+  echo "stage drop $db done."
 done
 
 # create stage database
 for db in "${databases[@]}"; do
-	echo "stage create $db ..."
-	mysql -h$stage_db_host -u$stage_db_user -p$stage_db_pass -e "CREATE DATABASE $db"
-	echo "stage create $db done."
+  echo "stage create $db ..."
+  mysql -h$stage_db_host -u$stage_db_user -p$stage_db_pass -e "CREATE DATABASE $db"
+  echo "stage create $db done."
 done
 
 # import stage database app
 for db in "${databases[@]}"; do
-	echo "stage import $db ..."
-	zcat /data/backup/$db.sql.gz | mysql -h$stage_db_host -u$stage_db_user -p$stage_db_pass $db
-	echo "stage import $db done."
+  echo "stage import $db ..."
+  zcat /data/backup/$db.sql.gz | mysql -h$stage_db_host -u$stage_db_user -p$stage_db_pass $db
+  echo "stage import $db done."
 done
 
 # end time

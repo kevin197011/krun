@@ -27,7 +27,7 @@ domain=$2
 
 # install ssl
 /root/.acme.sh/acme.sh --install-cert -d ${domain} \
-	--key-file /www/server/panel/vhost/cert/${domain}/${domain}.key \
-	--fullchain-file /www/server/panel/vhost/cert/${domain}/${domain}.crt \
-	--ca-file /www/server/panel/vhost/cert/${domain}/${domain}.ca.crt \
-	--reloadcmd "systemctl restart nginx"
+  --key-file /www/server/panel/vhost/cert/${domain}/${domain}.key \
+  --fullchain-file /www/server/panel/vhost/cert/${domain}/${domain}.crt \
+  --ca-file /www/server/panel/vhost/cert/${domain}/${domain}.ca.crt \
+  --reloadcmd "systemctl restart nginx"

@@ -10,32 +10,32 @@ set -o pipefail
 
 # run code
 krun::install::nginx::run() {
-	# default platform
-	platform='debian'
-	# command -v apt >/dev/null && platform='debian'
-	command -v yum >/dev/null && platform='centos'
-	command -v brew >/dev/null && platform='mac'
-	eval "${FUNCNAME/::run/::${platform}}"
+  # default platform
+  platform='debian'
+  # command -v apt >/dev/null && platform='debian'
+  command -v yum >/dev/null && platform='centos'
+  command -v brew >/dev/null && platform='mac'
+  eval "${FUNCNAME/::run/::${platform}}"
 }
 
 # centos code
 krun::install::nginx::centos() {
-	krun::install::nginx::common
+  krun::install::nginx::common
 }
 
 # debian code
 krun::install::nginx::debian() {
-	krun::install::nginx::common
+  krun::install::nginx::common
 }
 
 # mac code
 krun::install::nginx::mac() {
-	krun::install::nginx::common
+  krun::install::nginx::common
 }
 
 # common code
 krun::install::nginx::common() {
-	echo 'common todo...'
+  echo 'common todo...'
 }
 
 # run main
