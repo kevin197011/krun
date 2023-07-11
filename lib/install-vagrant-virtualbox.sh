@@ -42,20 +42,30 @@ krun::install::vagrant-virtualbox::centos() {
 # debian code
 krun::install::vagrant-virtualbox::debian() {
   echo 'debian todo...'
+  apt install virtualbox
+  wget https://releases.hashicorp.com/vagrant/2.3.7/vagrant_2.3.7-1_amd64.deb -O /tmp/vagrant.deb
+  apt install /tmp/vagrant.deb
+  rm -rf /tmp/vagrant.deb
   krun::install::vagrant-virtualbox::common
 }
 
 # mac code
 krun::install::vagrant-virtualbox::mac() {
-  echo 'mac todo...'
+  brew cask install virtualbox
+  brew cask install vagrant
+  brew cask install vagrant-manager
   krun::install::vagrant-virtualbox::common
 }
 
 # common code
 krun::install::vagrant-virtualbox::common() {
+  # version
+  vagrant --version
+
   # images
   vagrant box add centos/7
   vagrant box add ubuntu/trusty64
+  vagrant box add debian/bullseye64
 }
 
 # run main
