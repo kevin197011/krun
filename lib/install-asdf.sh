@@ -30,11 +30,13 @@ krun::install::asdf::debian() {
 
 # mac code
 krun::install::asdf::mac() {
+  command -v asdf >/dev/null && exit 0
   brew install asdf
 }
 
 # common code
 krun::install::asdf::common() {
+  command -v asdf >/dev/null && exit 0
   rm -rf /opt/.asdf
   git clone https://github.com/asdf-vm/asdf.git /opt/.asdf --branch master
   echo 'source /opt/.asdf/asdf.sh' >/etc/profile.d/asdf.sh
