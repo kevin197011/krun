@@ -11,7 +11,6 @@ set -o pipefail
 # vars
 app_name=${1:-''}
 
-
 # run code
 krun::apply::asdf::run() {
   # default platform
