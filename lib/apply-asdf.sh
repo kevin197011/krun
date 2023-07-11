@@ -39,7 +39,10 @@ krun::apply::asdf::mac() {
 # common code
 krun::apply::asdf::common() {
   # prepare
-  krun install-asdf.sh && bash
+  # krun install-asdf.sh && bash
+  command -v asdf >/dev/null || {
+    echo "asdf need install \n command 'krun install-asdf.sh'" && exit 1
+  }
 
   # action
   [[ -z ${app_name} ]] && echo "app_name is empty, exit!" && exit 1
