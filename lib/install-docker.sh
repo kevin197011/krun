@@ -35,9 +35,7 @@ krun::install::docker::debian() {
 
   systemctl start docker &&
     systemctl enable docker &&
-    docker version &&
-    docker compose version
-
+    krun::install::docker::common
 }
 
 krun::install::docker::centos() {
@@ -58,15 +56,19 @@ krun::install::docker::centos() {
 
   systemctl start docker &&
     systemctl enable docker &&
-    docker version &&
-    docker compose version
-
+    krun::install::docker::common
 }
 
 # mac code
 krun::install::docker::mac() {
   brew install docker
+  krun::install::docker::common
 }
 
+# common code
+krun::install::docker::common() {
+  docker version
+  docker compose version
+}
 # run main
 krun::install::docker::run "$@"
