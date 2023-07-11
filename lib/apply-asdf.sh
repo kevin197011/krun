@@ -46,7 +46,7 @@ krun::apply::asdf::common() {
   # action
   printf "app name:"
   read name
-  asdf plugin add ${name}
+  asdf plugin add ${name} || true
   asdf list all ${name}
   printf "${name} version:"
   read version
