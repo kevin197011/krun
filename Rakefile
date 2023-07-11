@@ -7,10 +7,12 @@
 
 require 'erb'
 require 'time'
+require 'rake'
 
 task default: [:run]
 
 task :run do
+  Rake::Task[:shfmt].invoke
   sh 'git add .'
   # sh 'aicommits'
   sh 'git commit -m "update."'
@@ -30,4 +32,8 @@ task :new do
     f.write(ERB.new(tpl, trim_mode: '-').result(binding))
     puts "Create #{@action}-#{@name}.sh!"
   end
+end
+
+task :shfmt do
+  sh 'shfmt -w -d . || true'
 end

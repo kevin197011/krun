@@ -10,33 +10,33 @@ set -o pipefail
 
 # run code
 krun::install::awscli::run() {
-  # default platform
-  platform='debian'
-  # command -v apt >/dev/null && platform='debian'
-  command -v yum >/dev/null && platform='centos'
-  command -v brew >/dev/null && platform='mac'
-  eval "${FUNCNAME/::run/::${platform}}"
+	# default platform
+	platform='debian'
+	# command -v apt >/dev/null && platform='debian'
+	command -v yum >/dev/null && platform='centos'
+	command -v brew >/dev/null && platform='mac'
+	eval "${FUNCNAME/::run/::${platform}}"
 }
 
 # centos code
 krun::install::awscli::centos() {
-  krun::install::awscli::common
+	krun::install::awscli::common
 }
 
 # debian code
 krun::install::awscli::debian() {
-  krun::install::awscli::common
+	krun::install::awscli::common
 }
 
 # mac code
 krun::install::awscli::mac() {
-  brew install awscli
-  krun::install::awscli::common
+	brew install awscli
+	krun::install::awscli::common
 }
 
 # common code
 krun::install::awscli::common() {
-  echo 'common todo...'
+	echo 'common todo...'
 }
 
 # run main

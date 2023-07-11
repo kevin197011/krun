@@ -11,41 +11,41 @@ set -o pipefail
 
 # run code
 krun::install::ruby::run() {
-  # default debian platform
-  platform='debian'
-  # command -v apt >/dev/null && platform='debian'
-  command -v yum >/dev/null && platform='centos'
-  command -v brew >/dev/null && platform='mac'
-  eval "${FUNCNAME/::run/::${platform}}"
+	# default debian platform
+	platform='debian'
+	# command -v apt >/dev/null && platform='debian'
+	command -v yum >/dev/null && platform='centos'
+	command -v brew >/dev/null && platform='mac'
+	eval "${FUNCNAME/::run/::${platform}}"
 }
 
 # centos code
 krun::install::ruby::centos() {
-  yum install -y git gcc gcc-c++ make
-  yum install -y openssl-devel zlib-devel
-  krun::install::ruby::common
+	yum install -y git gcc gcc-c++ make
+	yum install -y openssl-devel zlib-devel
+	krun::install::ruby::common
 }
 
 # debian code
 krun::install::ruby::debian() {
-  apt install -y git-all build-essential manpages-dev make
-  apt install -y libssl-dev zlib1g zlib1g-dev
-  krun::install::ruby::common
+	apt install -y git-all build-essential manpages-dev make
+	apt install -y libssl-dev zlib1g zlib1g-dev
+	krun::install::ruby::common
 }
 
 # mac code
 krun::install::ruby::mac() {
-  brew install openssl zlib
-  krun::install::ruby::common
+	brew install openssl zlib
+	krun::install::ruby::common
 }
 
 # common code
 krun::install::ruby::common() {
-  krun install-asdf.sh
-  asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
-  asdf install ruby 3.1.2
-  asdf global ruby 3.1.2
-  ruby -v
+	krun install-asdf.sh
+	asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
+	asdf install ruby 3.1.2
+	asdf global ruby 3.1.2
+	ruby -v
 }
 
 # run main

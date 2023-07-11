@@ -1,5 +1,5 @@
 # Copyright (c) 2023 kk
-# 
+#
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
@@ -16,7 +16,8 @@ echo ''
 printf "mount path: "
 read m_path
 
-(lsblk | grep -q -w ${name}) || echo "disk name error, exit!"; exit 1
+(lsblk | grep -q -w ${name}) || echo "disk name error, exit!"
+exit 1
 
 mkdir -p ${m_path}
 
@@ -28,4 +29,4 @@ grep -q ${uuid} /etc/fstab && echo 'fstab already config disk name, exit!' && ex
 echo ": =>"
 echo "  UUID=${uuid} ${m_path}                       xfs     defaults        0 0"
 
-mount /dev/${name} ${m_path} && echo "UUID=${uuid} ${m_path}                       xfs     defaults        0 0" >> /etc/fstab
+mount /dev/${name} ${m_path} && echo "UUID=${uuid} ${m_path}                       xfs     defaults        0 0" >>/etc/fstab
