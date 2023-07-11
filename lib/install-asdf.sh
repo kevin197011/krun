@@ -30,7 +30,7 @@ krun::install::asdf::debian() {
 
 # mac code
 krun::install::asdf::mac() {
-  command -v asdf >/dev/null && exit 0
+  command -v asdf >/dev/null && echo "asdf is installed, exit!" && exit 0
   brew install asdf
 }
 
