@@ -41,7 +41,7 @@ krun::install::asdf::common() {
   git clone https://github.com/asdf-vm/asdf.git /opt/.asdf --branch master
   echo 'source /opt/.asdf/asdf.sh' >/etc/profile.d/asdf.sh
   echo 'source /opt/.asdf/completions/asdf.bash' >>/etc/profile.d/asdf.sh
-  source /etc/profile
+  source /etc/profile.d/asdf.sh
 }
 
 # run main
