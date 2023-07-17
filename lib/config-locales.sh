@@ -25,15 +25,12 @@ krun::config::locales::centos() {
 
 # debian code
 krun::config::locales::debian() {
-  apt clean -y
-  apt update -y
-  apt install locales -y
-  grep -q 'LC_ALL=en_US.UTF-8' /etc/environment || echo "LC_ALL=en_US.UTF-8" >>/etc/environment
-  grep -q 'en_US.UTF-8 UTF-8' /etc/locale.gen || echo "en_US.UTF-8 UTF-8" >>/etc/locale.gen
-  echo "LANG=en_US.UTF-8" >/etc/locale.conf
-  locale-gen en_US.UTF-8
-  export LC_ALL="en_US.UTF-8"
-  dpkg-reconfigure locales
+  apt-get purge -y locales
+  apt-get purge -y language-pack-en
+  apt-get install -y locales
+  apt-get install -y language-pack-en
+  locale-gen en_us.utf-8
+  localedef -i en_US -f UTF-8 en_US.UTF-8
 }
 
 # common code
