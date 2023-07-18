@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # by Kk
-# Prod db sync to Stage script
+# mysql or mariadb db sync script
 
 echo -e " \
 ________________     _________  ______   __________
@@ -13,6 +13,19 @@ _  /_/ /_  /_/ /     ____/ /_  / _  /|  / / /___
 Powered by Kk
 "
 
+# import .env
+# cat ~/.env
+# # prod vars
+# source_db_host='10.20.0.110'
+# source_db_user='root'
+# source_db_pass='password'
+
+# # stage vars
+# destination_db_host='10.10.0.110'
+# destination_db_user='root'
+# destination_db_pass='password'
+source ~/.env
+
 # prepare working directory
 workdir='/data/backup'
 
@@ -24,16 +37,6 @@ databases=(
   database2
 )
 
-# prod vars
-prod_db_host='10.20.0.110'
-prod_db_user='root'
-prod_db_pass='password'
-
-# stage vars
-stage_db_host='10.10.0.110'
-stage_db_user='root'
-stage_db_pass='password'
-
 # start time
 start_time=$(date +%s)
 
@@ -43,28 +46,28 @@ rm -rf /data/backup/*.sql.gz
 
 for db in "${databases[@]}"; do
   echo "prod backup $db ..."
-  mysqldump -h$prod_db_host -u$prod_db_user -p$prod_db_pass $db | gzip >/data/backup/$db.sql.gz
+  mysqldump -h$source_db_host -u$source_db_user -p$source_db_pass $db | gzip >/data/backup/$db.sql.gz
   echo "prod backup $db done."
 done
 
 # drop stage database
 for db in "${databases[@]}"; do
   echo "stage drop $db ..."
-  mysql -h$stage_db_host -u$stage_db_user -p$stage_db_pass -e "DROP DATABASE IF EXISTS $db"
+  mysql -h$destination_db_host -u$destination_db_user -p$destination_db_pass -e "DROP DATABASE IF EXISTS $db"
   echo "stage drop $db done."
 done
 
 # create stage database
 for db in "${databases[@]}"; do
   echo "stage create $db ..."
-  mysql -h$stage_db_host -u$stage_db_user -p$stage_db_pass -e "CREATE DATABASE $db"
+  mysql -h$destination_db_host -u$destination_db_user -p$destination_db_pass -e "CREATE DATABASE $db"
   echo "stage create $db done."
 done
 
 # import stage database app
 for db in "${databases[@]}"; do
   echo "stage import $db ..."
-  zcat /data/backup/$db.sql.gz | mysql -h$stage_db_host -u$stage_db_user -p$stage_db_pass $db
+  zcat /data/backup/$db.sql.gz | mysql -h$destination_db_host -u$destination_db_user -p$destination_db_pass $db
   echo "stage import $db done."
 done
 
