@@ -5,7 +5,8 @@
 
 install_path=${deploy_path:-'/root/.krun'}
 
-mkdir -pv ${install_path}/{bin, config}
+mkdir -pv ${install_path}/bin
+mkdir -pv ${install_path}/config
 curl -o ${install_path}/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun
 chmod +x ${install_path}/bin/krun
 
