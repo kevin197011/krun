@@ -24,7 +24,7 @@ Powered by Kk
 # destination_db_host='10.10.0.110'
 # destination_db_user='root'
 # destination_db_pass='password'
-source ~/.env
+source ~/.env >>/dev/null 2>&1  || { echo "~/.env not found, exit!"; exit 1 }
 
 # prepare working directory
 workdir='/data/backup'
