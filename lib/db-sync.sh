@@ -28,6 +28,7 @@ source ~/.env >/dev/null 2>&1 || {
   echo "~/.env not found, exit!"
   exit 1
 }
+
 # prepare working directory
 workdir='/data/backup'
 
