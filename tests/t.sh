@@ -3,6 +3,7 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
+# very useful
 source tests/.env
 
 ssh -Tq ${t_ip} <<EOF
