@@ -3,7 +3,7 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-install_path=${deploy_path:-'/root/.krun'}
+install_path=${deploy_path:-'~/.krun'}
 
 mkdir -pv ${install_path}/bin
 mkdir -pv ${install_path}/config

@@ -12,8 +12,8 @@
 ## install
 
 ```bash
-export deploy_path='/root/.krun' && \
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh)"
+export deploy_path='~/.krun' && \
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh)"
 ```
 
 ## init
