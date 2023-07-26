@@ -20,7 +20,7 @@ krun::install::docker::run() {
 }
 
 krun::install::docker::debian() {
-  apt-get -y remove docker docker-engine docker.io containerd runc
+  apt-get -y remove docker docker-engine docker.io containerd runc || true
   apt-get -y update
   apt-get install -y ca-certificates curl gnupg
   install -m 0755 -d /etc/apt/keyrings
