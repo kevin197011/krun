@@ -9,14 +9,13 @@ require 'erb'
 require 'time'
 require 'rake'
 
-task default: [:run]
+task default: %w[push]
 
-task :run do
+task :push do
   Rake::Task[:shfmt].invoke
   sh 'git add .'
-  # sh 'aicommits'
-  sh 'git commit -m "update."'
-  sh 'git push -u origin main'
+  sh "git commit -m 'Update #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}.'"
+  sh 'git push origin main'
 end
 
 task :new do
