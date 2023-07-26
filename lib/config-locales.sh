@@ -25,8 +25,8 @@ krun::config::locales::centos() {
 
 # debian code
 krun::config::locales::debian() {
-  apt-get purge -y locales
-  apt-get purge -y language-pack-en
+  apt-get purge -y locales || true
+  apt-get purge -y language-pack-en || true
   apt-get install -y locales
   apt-get install -y language-pack-en
   locale-gen en_us.utf-8

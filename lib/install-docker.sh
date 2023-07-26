@@ -47,7 +47,7 @@ krun::install::docker::centos() {
     docker-latest \
     docker-latest-logrotate \
     docker-logrotate \
-    docker-engine
+    docker-engine || true
   yum install -y yum-utils epel-release
   yum-config-manager \
     --add-repo \
