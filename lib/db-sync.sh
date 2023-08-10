@@ -25,8 +25,8 @@ Powered by Kk
 # destination_db_user='root'
 # destination_db_pass='password'
 source ~/.env >/dev/null 2>&1 || {
-  echo "~/.env not found, exit!"
-  exit 1
+    echo "~/.env not found, exit!"
+    exit 1
 }
 
 # prepare working directory
@@ -36,8 +36,8 @@ mkdir -p ${workdir}
 
 # need sync databases
 databases=(
-  database1
-  database2
+    database1
+    database2
 )
 
 # start time
@@ -48,30 +48,30 @@ echo "backup prod database ..."
 rm -rf /data/backup/*.sql.gz
 
 for db in "${databases[@]}"; do
-  echo "prod backup $db ..."
-  mysqldump -h$source_db_host -u$source_db_user -p$source_db_pass $db | gzip >/data/backup/$db.sql.gz
-  echo "prod backup $db done."
+    echo "prod backup $db ..."
+    mysqldump -h$source_db_host -u$source_db_user -p$source_db_pass $db | gzip >/data/backup/$db.sql.gz
+    echo "prod backup $db done."
 done
 
 # drop stage database
 for db in "${databases[@]}"; do
-  echo "stage drop $db ..."
-  mysql -h$destination_db_host -u$destination_db_user -p$destination_db_pass -e "DROP DATABASE IF EXISTS $db"
-  echo "stage drop $db done."
+    echo "stage drop $db ..."
+    mysql -h$destination_db_host -u$destination_db_user -p$destination_db_pass -e "DROP DATABASE IF EXISTS $db"
+    echo "stage drop $db done."
 done
 
 # create stage database
 for db in "${databases[@]}"; do
-  echo "stage create $db ..."
-  mysql -h$destination_db_host -u$destination_db_user -p$destination_db_pass -e "CREATE DATABASE $db"
-  echo "stage create $db done."
+    echo "stage create $db ..."
+    mysql -h$destination_db_host -u$destination_db_user -p$destination_db_pass -e "CREATE DATABASE $db"
+    echo "stage create $db done."
 done
 
 # import stage database app
 for db in "${databases[@]}"; do
-  echo "stage import $db ..."
-  zcat /data/backup/$db.sql.gz | mysql -h$destination_db_host -u$destination_db_user -p$destination_db_pass $db
-  echo "stage import $db done."
+    echo "stage import $db ..."
+    zcat /data/backup/$db.sql.gz | mysql -h$destination_db_host -u$destination_db_user -p$destination_db_pass $db
+    echo "stage import $db done."
 done
 
 # end time

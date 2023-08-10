@@ -13,15 +13,15 @@ set -o pipefail
 
 # run code
 krun::install::kssh::run() {
-  krun::install::kssh::mac
+    krun::install::kssh::mac
 }
 
 # mac code
 krun::install::kssh::mac() {
-  git clone https://github.com/kevin197011/kssh.git ~/.kssh
-  cd .kssh && bundle install
-  grep -q 'export PATH="$PATH:~/.kssh/bin"' ~/.zshrc || echo 'export PATH="$PATH:~/.kssh/bin"' >>~/.zshrc
-  zsh
+    git clone https://github.com/kevin197011/kssh.git ~/.kssh
+    cd .kssh && bundle install
+    grep -q 'export PATH="$PATH:~/.kssh/bin"' ~/.zshrc || echo 'export PATH="$PATH:~/.kssh/bin"' >>~/.zshrc
+    zsh
 }
 
 # run main

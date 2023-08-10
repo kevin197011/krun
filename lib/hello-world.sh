@@ -12,32 +12,32 @@ set -o pipefail
 
 # run code
 krun::hello::world::run() {
-  # default platform
-  platform='debian'
-  # command -v apt >/dev/null && platform='debian'
-  command -v yum >/dev/null && platform='centos'
-  command -v brew >/dev/null && platform='mac'
-  eval "${FUNCNAME/::run/::${platform}}"
+    # default platform
+    platform='debian'
+    # command -v apt >/dev/null && platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
 # centos code
 krun::hello::world::centos() {
-  krun::hello::world::common
+    krun::hello::world::common
 }
 
 # debian code
 krun::hello::world::debian() {
-  krun::hello::world::common
+    krun::hello::world::common
 }
 
 # mac code
 krun::hello::world::mac() {
-  krun::hello::world::common
+    krun::hello::world::common
 }
 
 # common code
 krun::hello::world::common() {
-  echo 'hello world!...'
+    echo 'hello world!...'
 }
 
 # run main

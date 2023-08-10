@@ -34,5 +34,5 @@ task :new do
 end
 
 task :shfmt do
-  sh 'shfmt -i 2 -w -d . || true'
+  sh 'shfmt -i 4 -w -d . || true'
 end

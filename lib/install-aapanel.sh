@@ -12,38 +12,38 @@ set -o pipefail
 
 # run code
 krun::install::aapanel::run() {
-  # default platform
-  platform='debian'
-  # command -v apt >/dev/null && platform='debian'
-  command -v yum >/dev/null && platform='centos'
-  command -v brew >/dev/null && platform='mac'
-  eval "${FUNCNAME/::run/::${platform}}"
+    # default platform
+    platform='debian'
+    # command -v apt >/dev/null && platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
 # centos code
 krun::install::aapanel::centos() {
-  krun::install::aapanel::common
-  yum install -y wget
-  wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh
-  bash install.sh aapanel
+    krun::install::aapanel::common
+    yum install -y wget
+    wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh
+    bash install.sh aapanel
 }
 
 # debian code
 krun::install::aapanel::debian() {
-  krun::install::aapanel::common
-  apt install -y wget
-  wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh
-  bash install.sh aapanel
+    krun::install::aapanel::common
+    apt install -y wget
+    wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh
+    bash install.sh aapanel
 }
 
 # mac code
 krun::install::aapanel::mac() {
-  krun::install::aapanel::common
+    krun::install::aapanel::common
 }
 
 # common code
 krun::install::aapanel::common() {
-  echo 'install aapanel...'
+    echo 'install aapanel...'
 }
 
 # run main
