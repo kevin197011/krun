@@ -12,32 +12,32 @@ set -o pipefail
 
 # run code
 krun::<%= @action %>::<%= @name %>::run() {
-  # default platform
-  platform='debian'
-  # command -v apt >/dev/null && platform='debian'
-  command -v yum >/dev/null && platform='centos'
-  command -v brew >/dev/null && platform='mac'
-  eval "${FUNCNAME/::run/::${platform}}"
+    # default platform
+    platform='debian'
+    # command -v apt >/dev/null && platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
 # centos code
 krun::<%= @action %>::<%= @name %>::centos() {
-  krun::<%= @action %>::<%= @name %>::common
+    krun::<%= @action %>::<%= @name %>::common
 }
 
 # debian code
 krun::<%= @action %>::<%= @name %>::debian() {
-  krun::<%= @action %>::<%= @name %>::common
+    krun::<%= @action %>::<%= @name %>::common
 }
 
 # mac code
 krun::<%= @action %>::<%= @name %>::mac() {
-  krun::<%= @action %>::<%= @name %>::common
+    krun::<%= @action %>::<%= @name %>::common
 }
 
 # common code
 krun::<%= @action %>::<%= @name %>::common() {
-  echo 'common todo...'
+    echo 'common todo...'
 }
 
 # run main
