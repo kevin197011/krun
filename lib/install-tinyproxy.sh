@@ -23,6 +23,11 @@ krun::install::tinyproxy::run() {
 # centos code
 krun::install::tinyproxy::centos() {
     krun::install::tinyproxy::common
+    yum install -y epel-release
+    yum update -y
+    yum install -y tinyproxy
+    systemctl enable tinyproxy
+    systemctl start tinyproxy
 }
 
 # debian code
@@ -36,12 +41,7 @@ krun::install::tinyproxy::debian() {
 
 # mac code
 krun::install::tinyproxy::mac() {
-    # krun::install::tinyproxy::common
-    yum install -y epel-release
-    yum update -y
-    yum install -y tinyproxy
-    systemctl enable tinyproxy
-    systemctl start tinyproxy
+    krun::install::tinyproxy::common
 }
 
 # common code
