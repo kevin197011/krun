@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2023 Operator
+# Copyright (c) 2023 Kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT

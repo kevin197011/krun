@@ -1,4 +1,5 @@
-# Copyright (c) 2023 Operator
+#!/usr/bin/env bash
+# Copyright (c) 2023 Kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT

@@ -8,11 +8,13 @@
 require 'erb'
 require 'time'
 require 'rake'
+require 'json'
 
 task default: %w[push]
 
 task :push do
   Rake::Task[:shfmt].invoke
+  Rake::Task[:generate_json].invoke
   sh 'git add .'
   sh "git commit -m 'Update #{Time.now}.'"
   sh 'git push origin main'
@@ -35,4 +37,11 @@ end
 
 task :shfmt do
   sh 'shfmt -i 4 -w -d . || true'
+end
+
+task :generate_json do
+  fs = Dir.glob("#{__dir__}/lib/*.sh").map { |f| File.basename(f) }
+  File.open("#{__dir__}/resources/krun.json", 'w') do |f|
+    f.write(fs.to_json)
+  end
 end
