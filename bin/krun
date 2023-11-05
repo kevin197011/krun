@@ -41,7 +41,6 @@ class Krun:
         url = "https://raw.githubusercontent.com/kevin197011/krun/main/lib/{0}".format(self._list()[num - 1])
         with open('/tmp/{}'.format(_sh), 'w') as f:
             f.write(self._get(url))
-
         os.system('bash /tmp/{}'.format(_sh))
         os.remove('/tmp/{}'.format(_sh))
 
