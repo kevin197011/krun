@@ -24,10 +24,10 @@ class Krun:
     UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
 
     def run(self, args):
-        if args[0] == 'list':
+        if args[1] == 'list':
             self.list()
-        if re.match(r'\d+', args[0]):
-            self._run(int(args[0]))
+        if re.match(r'\d+', args[1]):
+            self._run(int(args[1]))
 
     def list(self):
         num = 1
