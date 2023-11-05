@@ -1,0 +1,145 @@
+#!/usr/bin/env python
+# Copyright (c) 2023 kk
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+
+try:
+    # after python 3.x
+    from urllib.request import Request, urlopen
+except ImportError:
+    # for python 2.x
+    from urllib2 import Request, urlopen
+
+import sys
+import os
+import shutil
+import re
+
+try:
+    _action_argv = sys.argv[1].lower()
+except IndexError:
+    _action_argv = 'help'
+
+try:
+    _debug_flag = sys.argv[2].lower()
+except IndexError:
+    _debug_flag = None
+
+# default url
+_default_repo_name = 'kevin197011'
+_github_repo = 'https://github.com/{}/krun/tree/main/lib'.format(
+    _default_repo_name)
+_github_repo_sh = 'https://raw.githubusercontent.com/{}/krun/main/lib'.format(
+    _default_repo_name)
+
+# ua
+ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+
+# krun need init status
+# custom config file
+# custom_cf = '/etc/krun/config.py'
+custom_cf = "{0}/config/config.py".format(os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir)))
+
+with open(custom_cf, 'w') as f:
+    f.write('github_repo_name = None')
+
+sys.path.append(
+    "{0}/config/".format(os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))))
+
+import config
+
+_repo_name = config.github_repo_name
+
+if _repo_name != None and _repo_name != '':
+    _github_repo = 'https://github.com/{}/sh-libs/tree/main'.format(_repo_name)
+    _github_repo_sh = 'https://raw.githubusercontent.com/{}/sh-libs/main'.format(
+        _repo_name)
+
+# update krun bin
+if _action_argv == 'update':
+    print("[INFO] krun update!")
+    with open(__file__, 'w') as f:
+        _req = Request(
+            'https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun')
+        _req.add_header('User-Agent', ua)
+        _content = urlopen(_req).read().decode('utf-8')
+        f.write(_content)
+    sys.exit(0)
+
+if _action_argv == 'list':
+    print("[INFO] script list:")
+    _index = 1
+    _req = Request(_github_repo)
+    _req.add_header('User-Agent', ua)
+    _content = urlopen(_req).read().decode('utf-8')
+    # _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
+    _pattern = re.compile(r'lib/(.*?)",')
+    _vals = _pattern.findall(_content)
+    for item in _vals:
+        print("  - [{0}]{1}".format(_index, item))
+        _index += 1
+    sys.exit(0)
+
+if _debug_flag == 'debug':
+    pass
+    sys.exit(0)
+
+if _action_argv == 'status' or _action_argv == 'statu' or _action_argv == 'init':
+    print("[INFO] krun ready!")
+    sys.exit(0)
+
+if _action_argv == 'uninstall':
+    print("[Info] krun uninstall!")
+    krun_path = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), os.path.pardir))
+    shutil.rmtree(krun_path)
+    sys.exit(0)
+
+if _action_argv == 'help':
+    print('''
+        Usage:
+            krun (status|list|script_full_name|update|uninstall|help) (debug[with script together])
+    ''')
+    sys.exit(0)
+
+# krun run script file types
+file_ext_mapper = {
+    'sh': 'bash',
+    'py': 'python',
+    'rb': 'ruby',
+    'pl': 'perl'
+}
+
+if re.match(r'\S+\.(sh|py|rb|pl)', _action_argv):
+    _req = Request('{}/{}'.format(_github_repo_sh, _action_argv))
+    _req.add_header('User-Agent', ua)
+    _content = urlopen(_req).read().decode('utf-8')
+    with open('/tmp/{}'.format(_action_argv), 'w') as f:
+        f.write(_content)
+    script_ext = os.path.splitext(_action_argv)[-1][1:]
+    print('{} /tmp/{}'.format(file_ext_mapper[script_ext], _action_argv))
+    os.system('{} /tmp/{}'.format(file_ext_mapper[script_ext], _action_argv))
+    os.remove('/tmp/{}'.format(_action_argv))
+
+if re.match(r'\d+', _action_argv):
+    _index = int(_action_argv) - 1
+    _req = Request(_github_repo)
+    _req.add_header('User-Agent', ua)
+    _content = urlopen(_req).read().decode('utf-8')
+    # _pattern = re.compile(r'>(\S+\.(?:sh|py|rb|pl))</a>')
+    _pattern = re.compile(r'lib/(.*?)",')
+    _vals = _pattern.findall(_content)
+
+    _val = _vals[_index]
+
+    req = Request('{}/{}'.format(_github_repo_sh, _val))
+    req.add_header('User-Agent', ua)
+    content = urlopen(req).read().decode('utf-8')
+    with open('/tmp/{}'.format(_val), 'w') as f:
+        f.write(content)
+    script_ext = os.path.splitext(_val)[-1][1:]
+    print('{} /tmp/{}'.format(file_ext_mapper[script_ext], _val))
+    os.system('{} /tmp/{}'.format(file_ext_mapper[script_ext], _val))
+    os.remove('/tmp/{}'.format(_val))
