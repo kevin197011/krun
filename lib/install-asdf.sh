@@ -41,7 +41,7 @@ krun::install::asdf::common() {
     git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf --branch master
     grep -q 'source ${HOME}/.asdf/asdf.sh' ${HOME}/.bashrc || echo 'source ${HOME}/.asdf/asdf.sh' >>${HOME}/.bashrc
     grep -q 'source ${HOME}/.asdf/completions/asdf.bash' ${HOME}/.bashrc || echo 'source ${HOME}/.asdf/completions/asdf.bash' >>${HOME}/.bashrc
-    source ${HOME}/.bashrc
+    exec bash
 }
 
 # run main
