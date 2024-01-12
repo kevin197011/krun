@@ -37,10 +37,10 @@ krun::install::asdf::mac() {
 # common code
 krun::install::asdf::common() {
     command -v asdf >/dev/null && exit 0
-    rm -rf /opt/.asdf
-    git clone https://github.com/asdf-vm/asdf.git /opt/.asdf --branch master
-    echo 'source /opt/.asdf/asdf.sh' >/etc/profile.d/asdf.sh
-    echo 'source /opt/.asdf/completions/asdf.bash' >>/etc/profile.d/asdf.sh
+    rm -rf ${HOME}/.asdf
+    git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf --branch master
+    echo 'source ${HOME}/.asdf/asdf.sh' >/etc/profile.d/asdf.sh
+    echo 'source ${HOME}/.asdf/completions/asdf.bash' >>/etc/profile.d/asdf.sh
     source /etc/profile.d/asdf.sh
 }
 
