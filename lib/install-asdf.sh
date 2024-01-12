@@ -39,9 +39,9 @@ krun::install::asdf::common() {
     command -v asdf >/dev/null && exit 0
     rm -rf ${HOME}/.asdf
     git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf --branch master
-    echo 'source ${HOME}/.asdf/asdf.sh' >/etc/profile.d/asdf.sh
-    echo 'source ${HOME}/.asdf/completions/asdf.bash' >>/etc/profile.d/asdf.sh
-    source /etc/profile.d/asdf.sh
+    grep -q 'source ${HOME}/.asdf/asdf.sh' ${HOME}/.bashrc || echo 'source ${HOME}/.asdf/asdf.sh' >>${HOME}/.bashrc
+    grep -q 'source ${HOME}/.asdf/completions/asdf.bash' ${HOME}/.bashrc || echo 'source ${HOME}/.asdf/completions/asdf.bash' >>${HOME}/.bashrc
+    source ${HOME}/.bashrc
 }
 
 # run main
