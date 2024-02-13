@@ -20,25 +20,26 @@ krun::install::python3::run() {
 
 # centos code
 krun::install::python3::centos() {
-    echo 'centos todo...'
     krun::install::python3::common
 }
 
 # debian code
 krun::install::python3::debian() {
-    echo 'debian todo...'
     krun::install::python3::common
 }
 
 # mac code
 krun::install::python3::mac() {
-    echo 'mac todo...'
     krun::install::python3::common
 }
 
 # common code
 krun::install::python3::common() {
-    echo 'common todo...'
+    version=${python_version:-3.11.0}
+    asdf plugin-add python
+    asdf install python ${version}
+    asdf global python ${version}
+    python --version
 }
 
 # run main
