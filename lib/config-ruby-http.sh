@@ -11,7 +11,7 @@ set -o pipefail
 # vars
 
 # run code
-krun::get::ipaddr::run() {
+krun::config::ruby-http::run() {
     # default platform
     platform='debian'
     # command -v apt >/dev/null && platform='debian'
@@ -21,25 +21,24 @@ krun::get::ipaddr::run() {
 }
 
 # centos code
-krun::get::ipaddr::centos() {
-    krun::get::ipaddr::common
+krun::config::ruby-http::centos() {
+    krun::config::ruby-http::common
 }
 
 # debian code
-krun::get::ipaddr::debian() {
-    krun::get::ipaddr::common
+krun::config::ruby-http::debian() {
+    krun::config::ruby-http::common
 }
 
 # mac code
-krun::get::ipaddr::mac() {
-    krun::get::ipaddr::common
+krun::config::ruby-http::mac() {
+    krun::config::ruby-http::common
 }
 
 # common code
-krun::get::ipaddr::common() {
-    local ips=$(hostname -I)
-    echo ${ips%% *}
+krun::config::ruby-http::common() {
+    ruby -run -e httpd . -p 8080
 }
 
 # run main
-krun::get::ipaddr::run "$@"
+krun::config::ruby-http::run "$@"
