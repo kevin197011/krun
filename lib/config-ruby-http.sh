@@ -37,7 +37,7 @@ krun::config::ruby-http::mac() {
 
 # common code
 krun::config::ruby-http::common() {
-    ruby -run -e httpd . -p 8080
+    ruby -run -e httpd . -p 8080 -b 0.0.0.0
 }
 
 # run main
