@@ -42,6 +42,7 @@ krun::install::ruby::mac() {
 # common code
 krun::install::ruby::common() {
     local version=${ruby_version:-3.0.0}
+    command -v yum >/dev/null || krun 18
     asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git || true
     asdf install ruby ${version}
     asdf global ruby ${version}
