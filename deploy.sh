@@ -18,6 +18,7 @@ command -v brew >/dev/null && {
 }
 
 # other
+grep -q 'ubuntu' /etc/os-release && apt install python
 grep -q "${install_path}/bin" ~/.bashrc || echo "export PATH=\$PATH:${install_path}/bin" >>~/.bashrc
 bash && krun status
 exit 0
