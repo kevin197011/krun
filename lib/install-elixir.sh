@@ -27,6 +27,8 @@ krun::install::elixir::centos() {
 
 # debian code
 krun::install::elixir::debian() {
+    apt update -y
+    apt install build-essential wget git -y
     krun::install::elixir::common
 }
 
@@ -37,7 +39,11 @@ krun::install::elixir::mac() {
 
 # common code
 krun::install::elixir::common() {
-    echo 'common todo...'
+    asdf plugin add erlang
+    asdf install erlang 24.0
+    asdf plugin add elixir
+    asdf install elixir 1.12.3
+    asdf global elixir 1.12.3
 }
 
 # run main
