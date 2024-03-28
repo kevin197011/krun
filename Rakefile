@@ -15,9 +15,10 @@ task default: %w[shfmt push]
 task :push do
   Rake::Task[:shfmt].invoke
   Rake::Task[:generate_json].invoke
-  sh 'git add .'
-  sh "git commit -m 'Update #{Time.now}.'"
-  sh 'git push origin main'
+  system 'git add .'
+  system "git commit -m 'Update #{Time.now}.'"
+  system 'git pull'
+  system 'git push origin main'
 end
 
 task :new do
@@ -36,7 +37,7 @@ task :new do
 end
 
 task :shfmt do
-  sh 'shfmt -i 4 -w -d . || true'
+  system 'shfmt -i 4 -w -d . || true'
 end
 
 task :generate_json do
