@@ -10,7 +10,7 @@ require 'time'
 require 'rake'
 require 'json'
 
-task default: %w[push]
+task default: %w[shfmt push]
 
 task :push do
   Rake::Task[:shfmt].invoke
