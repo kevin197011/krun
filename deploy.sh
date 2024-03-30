@@ -37,3 +37,6 @@ deploy::main() {
     deploy::config
     deploy::status
 }
+
+# run main
+deploy::main "$@"
