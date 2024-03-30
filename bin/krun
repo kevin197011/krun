@@ -31,9 +31,9 @@ class Krun:
 
     def list(self):
         num = 1
-        print("Krun Script List:")
+        print("  Krun Script List:")
         for item in self._list():
-            print("  - [{0}] {1}".format(num, item))
+            print("    - [{0}] {1}".format(num, item))
             num += 1
 
     def _run(self, num):
