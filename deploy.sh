@@ -25,7 +25,7 @@ deploy::config() {
 }
 
 deploy::status() {
-    bash && krun status
+    sh && krun status
 }
 
 deploy::uninstall() {
