@@ -1,24 +1,39 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-install_path=${deploy_path:-'$HOME/.krun'}
+export deploy_path=${deploy_path:-"$HOME/.krun"}
 
-mkdir -pv ${install_path}/bin
-mkdir -pv ${install_path}/config
-curl -o ${install_path}/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun
-chmod +x ${install_path}/bin/krun
-
-# mac
-command -v brew >/dev/null && {
-    grep -q "${install_path}/bin" ~/.zshrc || echo "export PATH=\$PATH:${install_path}/bin" >>~/.zshrc
-    zsh && krun status
-    exit 0
+deploy::install() {
+    mkdir -pv ${deploy_path}/bin
+    mkdir -pv ${deploy_path}/config
+    curl -o ${deploy_path}/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun
+    chmod +x ${deploy_path}/bin/krun
 }
 
-# other
-grep -q 'ubuntu' /etc/os-release && apt install python3 -y && ln -sf /usr/bin/python3 /usr/bin/python
-grep -q "${install_path}/bin" ~/.bashrc || echo "export PATH=\$PATH:${install_path}/bin" >>~/.bashrc
-bash && krun status
-exit 0
+deploy::config() {
+    # mac
+    command -v brew >/dev/null && (grep -q "${deploy_path}/bin" ~/.zshrc || echo "export PATH=\$PATH:${deploy_path}/bin" >>~/.zshrc)
+    # ubuntu
+    [[ -f /etc/lsb-release ]] && grep -qi "ubuntu" /etc/lsb-release &&
+        apt update && apt install python3 -y && ln -sf /usr/bin/python3 /usr/bin/python
+    grep -q "${deploy_path}/bin" ~/.bashrc || echo "export PATH=\$PATH:${deploy_path}/bin" >>~/.bashrc
+
+}
+
+deploy::status() {
+    bash && krun status
+}
+
+deploy::uninstall() {
+    rm -rf ${deploy_path}
+}
+
+deploy::main() {
+    deploy::install
+    deploy::config
+    deploy::status
+}

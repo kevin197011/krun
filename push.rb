@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'time'
+# Copyright (c) 2023 kk
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
-system 'git add .'
-system "git commit -m \"Update #{Time.now}.\""
-system 'git pull'
-system 'git push'
+system 'rake'
