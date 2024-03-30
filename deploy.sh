@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
@@ -21,11 +19,10 @@ deploy::config() {
     [[ -f /etc/lsb-release ]] && grep -qi "ubuntu" /etc/lsb-release &&
         apt update && apt install python3 -y && ln -sf /usr/bin/python3 /usr/bin/python
     grep -q "${deploy_path}/bin" ~/.bashrc || echo "export PATH=\$PATH:${deploy_path}/bin" >>~/.bashrc
-
+    command -v brew >/dev/null && source ~/.zshrc || source ~/.bashrc
 }
 
 deploy::status() {
-    command -v brew >/dev/null && zsh || bash
     krun status
 }
 

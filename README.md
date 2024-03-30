@@ -13,7 +13,8 @@
 
 ```bash
 # export deploy_path="/opt/.krun"  # custom deploy path
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh)"
+zsh -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh)" # zsh
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh)" # bash
 
 ```
 
