@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Copyright (c) 2023 kk
 #
@@ -10,7 +10,7 @@ export deploy_path=${deploy_path:-"$HOME/.krun"}
 deploy::install() {
     mkdir -pv ${deploy_path}/bin
     mkdir -pv ${deploy_path}/config
-    curl -o ${deploy_path}/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun
+    curl -s -o ${deploy_path}/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun
     chmod +x ${deploy_path}/bin/krun
 }
 
@@ -25,7 +25,8 @@ deploy::config() {
 }
 
 deploy::status() {
-    sh && krun status
+    command -v brew >/dev/null && zsh || bash
+    krun status
 }
 
 deploy::uninstall() {
