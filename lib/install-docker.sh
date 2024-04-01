@@ -20,7 +20,7 @@ krun::install::docker::run() {
 }
 
 krun::install::docker::debian() {
-    apt-get -y remove docker docker-engine docker.io containerd runc || true
+    apt-get -y remove docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc || true
     apt-get -y update
     apt-get install -y ca-certificates curl gnupg
     install -m 0755 -d /etc/apt/keyrings
@@ -31,7 +31,7 @@ krun::install::docker::debian() {
         "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" |
         tee /etc/apt/sources.list.d/docker.list >/dev/null
     apt-get -y update
-    apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
     systemctl start docker &&
         systemctl enable docker &&
