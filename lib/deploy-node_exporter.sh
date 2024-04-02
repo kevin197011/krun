@@ -30,11 +30,9 @@ krun::deploy::node_exporter::debian() {
 
 # common code
 krun::deploy::node_exporter::common() {
-    mkdir -pv /opt/docker-compose/node_exporter/ &&
-        tee /opt/docker-compose/node_exporter/compose.yml <<EOF
+    mkdir -pv /opt/compose/node_exporter/ &&
+        tee /opt/compose/node_exporter/compose.yml <<EOF
 ---
-version: '3.8'
-
 services:
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
@@ -48,7 +46,7 @@ services:
       - '/:/host:ro,rslave'
 EOF
 
-    cd /opt/docker-compose/node_exporter/ &&
+    cd /opt/compose/node_exporter/ &&
         docker compose up -d &&
         curl http://localhost:9100/metrics
 }
