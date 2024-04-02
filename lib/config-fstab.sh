@@ -52,7 +52,7 @@ krun::config::fstab::common() {
     read mount_path
 
     (lsblk | grep -q -w ${name}) || echo "disk name error, exit!"
-    exit 1
+    # exit 1
 
     mkdir -p ${mount_path}
 
