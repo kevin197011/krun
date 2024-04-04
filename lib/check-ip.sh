@@ -22,23 +22,23 @@ krun::check::ip::run() {
 
 # centos code
 krun::check::ip::centos() {
-    yum install jq -y
-    yum install curl -y
+    yum install jq -y >/dev/null
+    yum install curl -y >/dev/null
     krun::check::ip::common
 }
 
 # debian code
 krun::check::ip::debian() {
-    apt-get update
-    apt-get install jq -y
-    apt-get install curl -y
+    apt-get update >/dev/null
+    apt-get install jq -y >/dev/null
+    apt-get install curl -y >/dev/null
     krun::check::ip::common
 }
 
 # mac code
 krun::check::ip::mac() {
-    brew install jq
-    brew install curl
+    brew install jq >/dev/null
+    brew install curl >/dev/null
     krun::check::ip::common
 }
 
