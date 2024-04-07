@@ -12,10 +12,8 @@
 ## install krun
 
 ```bash
-# export deploy_path="/opt/.krun"  # custom deploy path
-zsh -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh)" # zsh
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh)" # bash
-
+# export deploy_path="/root/.krun"  # custom deploy path
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
 ```
 
 ## list script
