@@ -19,11 +19,11 @@ deploy::config() {
     [[ -f /etc/lsb-release ]] && grep -qi "ubuntu" /etc/lsb-release &&
         apt-get update && apt-get install python3 -y && ln -sf /usr/bin/python3 /usr/bin/python
     grep -q "${deploy_path}/bin" ~/.bashrc || echo "export PATH=\$PATH:${deploy_path}/bin" >>~/.bashrc
-    command -v brew >/dev/null && source ~/.zshrc || source ~/.bashrc
+    # command -v brew >/dev/null && source ~/.zshrc || source ~/.bashrc
 }
 
 deploy::status() {
-    bash
+    command -v brew >/dev/null && source ~/.zshrc || source ~/.bashrc
     krun status
 }
 
