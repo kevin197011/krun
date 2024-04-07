@@ -6,10 +6,10 @@
 export deploy_path=${deploy_path:-"$HOME/.krun"}
 
 deploy::install() {
-    mkdir -pv ${deploy_path}/bin
-    mkdir -pv ${deploy_path}/config
-    curl -s -o ${deploy_path}/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun
-    chmod +x ${deploy_path}/bin/krun
+    mkdir -pv "${deploy_path}"/bin
+    mkdir -pv "${deploy_path}"/config
+    curl -s -o "${deploy_path}"/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun
+    chmod +x "${deploy_path}"/bin/krun
 }
 
 deploy::config() {
@@ -28,7 +28,7 @@ deploy::status() {
 }
 
 deploy::uninstall() {
-    rm -rf ${deploy_path}
+    rm -rf "${deploy_path}"
 }
 
 deploy::main() {
