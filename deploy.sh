@@ -22,7 +22,7 @@ deploy::config() {
 }
 
 deploy::status() {
-    command -v brew >/dev/null && zsh || source bash
+    command -v brew >/dev/null && /bin/zsh || source /bin/bash
     krun status
 }
 
