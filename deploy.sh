@@ -23,6 +23,7 @@ deploy::config() {
 }
 
 deploy::status() {
+    bash
     krun status
 }
 
