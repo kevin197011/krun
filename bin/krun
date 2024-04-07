@@ -27,9 +27,9 @@ class Krun:
         if args[1] == "list":
             self.list()
         if args[1] == "help":
-            print("  Usage: krun [list | help | <number>]")
+            self._help()
         if args[1] == "status":
-            print("Krun ready!")
+            self._status()
         if re.match(r"\d+", args[1]):
             self._run(int(args[1]))
 
@@ -53,6 +53,12 @@ class Krun:
     def _list(self):
         url = "https://raw.githubusercontent.com/kevin197011/krun/main/resources/krun.json"
         return json.loads(self._get(url))
+
+    def _status(self):
+        print("Krun ready!")
+
+    def _help(self):
+        print("  Usage: krun [list | help | <number>]")
 
     def _get(self, url):
         req = Request(url)
