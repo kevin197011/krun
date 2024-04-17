@@ -43,8 +43,8 @@ class Krun:
             num += 1
 
     def _url(self, options):
-        if isinstance(options, init):
-            sh = self._list()[num - 1]
+        if isinstance(options, int):
+            sh = self._list()[options - 1]
         else:
             sh = options
         url = "https://raw.githubusercontent.com/kevin197011/krun/main/lib/{0}".format(_sh)
