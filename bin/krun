@@ -7,9 +7,11 @@
 
 try:
     # after python 3.x
+    from urllib.parse import urlparse
     from urllib.request import Request, urlopen
 except ImportError:
     # for python 2.x
+    from urllib2.parse import urlparse
     from urllib2 import Request, urlopen
 
 import sys
@@ -52,11 +54,13 @@ class Krun:
 
     def _run(self, options):
         url = self._url(options)
+        parsed_url = urlparse(url)
+        sh = os.path.basename(parsed_url.path)
 
-        with open("/tmp/{}".format(_sh), "w") as f:
+        with open("/tmp/{}".format(sh), "w") as f:
             f.write(self._get(url))
-        os.system("bash /tmp/{}".format(_sh))
-        os.remove("/tmp/{}".format(_sh))
+        os.system("bash /tmp/{}".format(sh))
+        os.remove("/tmp/{}".format(sh))
 
     def _list(self):
         url = "https://raw.githubusercontent.com/kevin197011/krun/main/resources/krun.json"
