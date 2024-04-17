@@ -11,7 +11,7 @@ try:
     from urllib.request import Request, urlopen
 except ImportError:
     # for python 2.x
-    from urllib2.parse import urlparse
+    from urlparse import urlparse
     from urllib2 import Request, urlopen
 
 import sys
