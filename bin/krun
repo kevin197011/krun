@@ -47,7 +47,7 @@ class Krun:
             sh = self._list()[options - 1]
         else:
             sh = options
-        url = "https://raw.githubusercontent.com/kevin197011/krun/main/lib/{0}".format(_sh)
+        url = "https://raw.githubusercontent.com/kevin197011/krun/main/lib/{0}".format(sh)
         return url
 
     def _run(self, options):
