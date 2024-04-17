@@ -32,6 +32,8 @@ class Krun:
             self._status()
         if re.match(r"\d+", args[1]):
             self._run(int(args[1]))
+        if re.match(r".*\.sh", args[1]):
+            self._run(str(args[1]))
 
     def list(self):
         num = 1
@@ -40,11 +42,17 @@ class Krun:
             print("    - [{0}] {1}".format(num, item))
             num += 1
 
-    def _run(self, num):
-        _sh = self._list()[num - 1]
-        url = "https://raw.githubusercontent.com/kevin197011/krun/main/lib/{0}".format(
-            self._list()[num - 1]
-        )
+    def _url(self, options):
+        if isinstance(options, init):
+            sh = self._list()[num - 1]
+        else:
+            sh = options
+        url = "https://raw.githubusercontent.com/kevin197011/krun/main/lib/{0}".format(_sh)
+        return url
+
+    def _run(self, options):
+        url = self._url(options)
+
         with open("/tmp/{}".format(_sh), "w") as f:
             f.write(self._get(url))
         os.system("bash /tmp/{}".format(_sh))
