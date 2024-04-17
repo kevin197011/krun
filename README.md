@@ -40,3 +40,10 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | b
 [root@localhost ~]# krun 8
 hello world
 ```
+
+> run script name
+
+```bash
+[root@localhost ~]# krun hello-world.sh
+hello world
+```
