@@ -6,11 +6,11 @@
 
 
 try:
-    # after python 3.x
+    # python 3.x
     from urllib.parse import urlparse
     from urllib.request import Request, urlopen
 except ImportError:
-    # for python 2.x
+    # python 2.x
     from urlparse import urlparse
     from urllib2 import Request, urlopen
 
