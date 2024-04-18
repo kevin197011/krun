@@ -20,22 +20,30 @@ krun::install::nginx::run() {
 
 # centos code
 krun::install::nginx::centos() {
+    sudo yum-config-manager --save --setopt=openresty.baseurl=https://openresty.org/package/centos/7/x86_64/
+    sudo yum install openresty -y
     krun::install::nginx::common
 }
 
 # debian code
 krun::install::nginx::debian() {
+    wget -qO - https://openresty.org/package/pubkey.gpg | sudo apt-key add -
+    sudo apt-get -y install software-properties-common -y
+    sudo add-apt-repository -y "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main"
+    sudo apt-get update
+    sudo apt-get install openresty -y
     krun::install::nginx::common
 }
 
 # mac code
 krun::install::nginx::mac() {
+    brew install openresty/brew/openresty
     krun::install::nginx::common
 }
 
 # common code
 krun::install::nginx::common() {
-    echo 'common todo...'
+    nginx -v
 }
 
 # run main
