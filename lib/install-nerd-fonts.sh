@@ -36,9 +36,9 @@ krun::install::nerd_fonts::mac() {
 
 # common code
 krun::install::nerd_fonts::common() {
-    git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git
-    ./nerd-fonts/install.sh FiraCode
-    rm -rf nerd-fonts
+    git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git /tmp/nerd-fonts
+    /tmp/nerd-fonts/install.sh FiraCode
+    rm -rf /tmp/nerd-fonts/
 }
 
 # run main
