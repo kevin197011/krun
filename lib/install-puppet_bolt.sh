@@ -25,6 +25,11 @@ krun::install::puppet_bolt::centos() {
 
 # debian code
 krun::install::puppet_bolt::debian() {
+    wget https://apt.puppet.com/puppet-tools-release-jammy.deb
+    sudo dpkg -i puppet-tools-release-jammy.deb
+    rm -rf puppet-tools-release-jammy.deb
+    sudo apt-get update -y
+    sudo apt-get install puppet-bolt -y
     krun::install::puppet_bolt::common
 }
 
@@ -38,7 +43,7 @@ krun::install::puppet_bolt::mac() {
 
 # common code
 krun::install::puppet_bolt::common() {
-    echo 'common todo...'
+    bolt --version
 }
 
 # run main
