@@ -38,7 +38,7 @@ krun::install::spacevim::mac() {
 # common code
 krun::install::spacevim::common() {
     # https://spacevim.org/quick-start-guide/
-    curl -sLf https://spacevim.org/install.sh | bash
+    curl -fsSL https://spacevim.org/install.sh | bash
 }
 
 # run main
