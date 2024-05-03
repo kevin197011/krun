@@ -37,13 +37,8 @@ krun::apply::asdf::mac() {
 
 # common code
 krun::apply::asdf::common() {
-    # prepare
-    # krun install-asdf.sh && bash
-    command -v asdf >/dev/null || {
-        echo "asdf need install \n command 'krun install-asdf.sh'" && exit 1
-    }
+    command -v asdf >/dev/null || krun install-asdf.sh
 
-    # action
     printf "app name:"
     read name
     asdf plugin add ${name} || true

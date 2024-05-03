@@ -23,22 +23,21 @@ krun::install::aapanel::run() {
 # centos code
 krun::install::aapanel::centos() {
     krun::install::aapanel::common
-    yum install -y wget
-    wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh
-    bash install.sh aapanel
+    yum install -y curl
+    curl -fsSL http://www.aapanel.com/script/install_6.0_en.sh | bash
 }
 
 # debian code
 krun::install::aapanel::debian() {
     krun::install::aapanel::common
-    apt install -y wget
-    wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh
-    bash install.sh aapanel
+    apt install -y curl
+    curl -fsSL http://www.aapanel.com/script/install-ubuntu_6.0_en.sh | bash
 }
 
 # mac code
 krun::install::aapanel::mac() {
     krun::install::aapanel::common
+    echo "mac skip install aapanel..."
 }
 
 # common code

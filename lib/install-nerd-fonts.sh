@@ -20,18 +20,20 @@ krun::install::nerd_fonts::run() {
 
 # centos code
 krun::install::nnerd_fontsginx::centos() {
+    yum install git -y
     krun::install::nerd_fonts::common
 }
 
 # debian code
 krun::install::nerd_fonts::debian() {
+    apt-get install git -y
     krun::install::nerd_fonts::common
 }
 
 # mac code
 krun::install::nerd_fonts::mac() {
     # krun::install::nerd_fonts::common
-    echo 'pass'
+    echo 'skip...'
 }
 
 # common code
