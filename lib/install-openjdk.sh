@@ -20,30 +20,28 @@ krun::install::openjdk::run() {
 
 # centos code
 krun::install::openjdk::centos() {
-    yum install -y java-1.8.0-openjdk
     krun::install::openjdk::common
 }
 
 # debian code
 krun::install::openjdk::debian() {
-    apt update
-    apt install openjdk-8-jdk
     krun::install::openjdk::common
 }
 
 # mac code
 krun::install::openjdk::mac() {
-    asdf plugin-add java
-    asdf list-all java
-    # asdf install java openjdk-8 not available
-    asdf install java openjdk-20
-    asdf global java openjdk-20
     krun::install::openjdk::common
 }
 
 # common code
 krun::install::openjdk::common() {
-    java --version
+    command -v asdf >/dev/null || krun install-asdf.sh
+    asdf plugin-add java
+    asdf list-all java
+    # asdf install java openjdk-8 not available
+    asdf install java openjdk-20
+    asdf global java openjdk-20
+    java -version
 }
 
 # run main
