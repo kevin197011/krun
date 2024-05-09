@@ -82,7 +82,7 @@ class Krun:
         print("Krun ready!")
 
     def _help(self):
-        print("  Usage: krun [list | help | <number>]")
+        print("  Usage: krun [list | help | <number> | <number> --debug ]")
 
     def _get(self, url):
         req = Request(url)
