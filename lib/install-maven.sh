@@ -38,7 +38,7 @@ krun::install::maven::mac() {
 # common code
 krun::install::maven::common() {
     command -v asdf >/dev/null || krun install-asdf.sh
-    asdf plugin-add maven https://github.com/skotchpine/asdf-maven.git
+    asdf plugin-add maven # https://github.com/skotchpine/asdf-maven.git
     asdf list-all maven
     asdf install maven 3.9.6
     asdf global maven 3.9.6
