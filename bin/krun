@@ -34,13 +34,13 @@ class Krun:
             self._status()
         if re.match(r"\d+", args[1]):
             opt = int(args[1])
-            if len(args) == 2 and args[2] == "--debug":
+            if len(args) == 3 and args[2] == "--debug":
                 self._debug(opt)
                 return
             self._run(int(args[1]))
         if re.match(r".*\.sh", args[1]):
             opt = str(args[1])
-            if len(args) == 2 and args[2] == "--debug":
+            if len(args) == 3 and args[2] == "--debug":
                 self._debug(opt)
                 return
             self._run(str(args[1]))
