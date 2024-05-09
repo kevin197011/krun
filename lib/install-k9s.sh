@@ -36,7 +36,7 @@ krun::install::k9s::mac() {
 
 # common code
 krun::install::k9s::common() {
-    curl -sS https://webi.sh/k9s | sh
+    curl -fsSL https://webi.sh/k9s | bash
     echo 'export PATH="/root/.local/bin:$PATH"' >>/root/.bashrc
     echo 'source ~/.config/envman/PATH.env' >>/root/.bashrc
     bash
