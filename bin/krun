@@ -33,8 +33,16 @@ class Krun:
         if args[1] == "status":
             self._status()
         if re.match(r"\d+", args[1]):
+            opt = int(args[1])
+            if len(args) == 2 and args[2] == "--debug":
+                self._debug(opt)
+                return
             self._run(int(args[1]))
         if re.match(r".*\.sh", args[1]):
+            opt = str(args[1])
+            if len(args) == 2 and args[2] == "--debug":
+                self._debug(opt)
+                return
             self._run(str(args[1]))
 
     def list(self):
@@ -44,16 +52,16 @@ class Krun:
             print("    - [{0}] {1}".format(num, item))
             num += 1
 
-    def _url(self, options):
-        if isinstance(options, int):
-            sh = self._list()[options - 1]
+    def _url(self, opt):
+        if isinstance(opt, int):
+            sh = self._list()[opt - 1]
         else:
-            sh = options
+            sh = opt
         url = "https://raw.githubusercontent.com/kevin197011/krun/main/lib/{0}".format(sh)
         return url
 
-    def _run(self, options):
-        url = self._url(options)
+    def _run(self, opt):
+        url = self._url(opt)
         parsed_url = urlparse(url)
         sh = os.path.basename(parsed_url.path)
 
@@ -65,6 +73,10 @@ class Krun:
     def _list(self):
         url = "https://raw.githubusercontent.com/kevin197011/krun/main/resources/krun.json"
         return json.loads(self._get(url))
+
+    def _debug(self, opt):
+        url = self._url(opt)
+        print(self._get(url))
 
     def _status(self):
         print("Krun ready!")
