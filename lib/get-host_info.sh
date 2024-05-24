@@ -45,7 +45,7 @@ krun::get::host_info::mac() {
 
 # common code
 krun::get::host_info::common() {
-    echo 'common todo...'
+    echo "${FUNCNAME}..."
 }
 
 # run main

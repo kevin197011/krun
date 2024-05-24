@@ -37,7 +37,7 @@ krun::<%= @action %>::<%= @name %>::mac() {
 
 # common code
 krun::<%= @action %>::<%= @name %>::common() {
-    echo 'common todo...'
+    echo "${FUNCNAME}"
 }
 
 # run main
