@@ -20,6 +20,10 @@ krun::install::asdf::run() {
 
 # centos code
 krun::install::asdf::centos() {
+    yum install xz-devel -y
+    yum install sqlite-devel -y
+    yum install bzip2-devel -y
+    yum install libffi-devel -y
     krun::install::asdf::common
 }
 
