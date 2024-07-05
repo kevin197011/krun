@@ -20,6 +20,10 @@ krun::install::python3::run() {
 
 # centos code
 krun::install::python3::centos() {
+    yum install xz-devel -y
+    yum install sqlite-devel -y
+    yum install bzip2-devel -y
+    yum install libffi-devel -y
     krun::install::python3::common
 }
 
