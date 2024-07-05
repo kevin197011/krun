@@ -29,6 +29,11 @@ krun::install::python3::centos() {
 
 # debian code
 krun::install::python3::debian() {
+    apt-get update -y
+    apt-get install liblzma-dev -y
+    apt-get install libsqlite3-dev -y
+    apt-get install libbz2-dev -y
+    apt-get install libffi-dev -y
     krun::install::python3::common
 }
 
