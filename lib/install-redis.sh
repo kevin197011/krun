@@ -28,8 +28,11 @@ krun::install::redis::centos() {
 # debian code
 krun::install::redis::debian() {
     krun::install::redis::common
-    apt-get update -y
-    apt-get install redis-server -y
+    curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+
+    sudo apt-get update
+    sudo apt-get install redis
     systemctl start redis-server
     systemctl enable redis-server
     systemctl status redis-server
