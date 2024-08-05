@@ -37,6 +37,7 @@ krun::install::golang::mac() {
 
 # common code
 krun::install::golang::common() {
+    # https://go.dev/dl/?mode=json
     default_version='1.20'
     version=${golang_version:-$default_version}
     asdf plugin-add golang https://github.com/kennyp/asdf-golang.git
