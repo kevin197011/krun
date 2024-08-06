@@ -25,6 +25,7 @@ deploy::config() {
 deploy::status() {
     command -v brew >/dev/null && /bin/zsh || /bin/bash
     "${deploy_path}"/bin/krun status
+    exec bash
 }
 
 deploy::uninstall() {
