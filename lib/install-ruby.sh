@@ -9,6 +9,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-ruby.sh | bash
+
+# vars
+
 # run code
 krun::install::ruby::run() {
     # default debian platform

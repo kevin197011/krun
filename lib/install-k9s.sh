@@ -8,6 +8,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-k9s.sh | bash
+
+# vars
+
 # run code
 krun::install::k9s::run() {
     # default platform
