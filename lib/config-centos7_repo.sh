@@ -87,7 +87,6 @@ enabled=1
 EOF
 
     yum clean all
-
     yum makecache fast
 }
 
