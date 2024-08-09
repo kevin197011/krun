@@ -50,7 +50,7 @@ krun::install::mc::common() {
     mc -v
 
     # Set minio token key
-    # mc alias set myminio http://vcs.slleisure.com:9000 xxxxx xxxxxxxxxxxxxxxxxxxxxxx
+    # mc alias set myminio http://minio.devops.io:9000 xxxxx xxxxxxxxxxxxxxxxxxxxxxx
 
     # # sync local dir to minio bucket
     # mc mirror /local/test myminio/bucket
