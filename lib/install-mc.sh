@@ -45,7 +45,6 @@ krun::install::mc::common() {
         --create-dirs \
         -o /usr/bin/mc
 
-    curl -fssL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/bin/mc
     chmod +x /usr/bin/mc
 
     mc -v
