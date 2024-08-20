@@ -26,6 +26,7 @@ krun::install::lsyncd::run() {
 # centos code
 krun::install::lsyncd::centos() {
     krun::install::lsyncd::common
+    yum install -y lsyncd
 }
 
 # debian code
