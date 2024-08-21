@@ -45,7 +45,7 @@ sync {
         archive = true,
         compress = true,
         verbose = true,
-        rsh = "/usr/bin/ssh -p 51337 -o StrictHostKeyChecking=no"
+        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
     }
 }
 
@@ -60,7 +60,7 @@ sync {
         archive = true,
         compress = true,
         verbose = true,
-        rsh = "/usr/bin/ssh -p 51337 -o StrictHostKeyChecking=no"
+        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
     }
 }
 
@@ -105,7 +105,7 @@ sync {
         archive = true,
         compress = true,
         verbose = true,
-        rsh = "/usr/bin/ssh -p 51337 -o StrictHostKeyChecking=no"
+        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
     }
 }
 
@@ -120,7 +120,7 @@ sync {
         archive = true,
         compress = true,
         verbose = true,
-        rsh = "/usr/bin/ssh -p 51337 -o StrictHostKeyChecking=no"
+        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
     }
 }
 
