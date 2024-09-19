@@ -27,6 +27,7 @@ krun::install::lsyncd::run() {
 krun::install::lsyncd::centos() {
     krun::install::lsyncd::common
     yum install -y lsyncd
+    # Set up SSH key-based authentication
     tee /etc/lsyncd.conf <<EOF
 settings {
     logfile = "/var/log/lsyncd/lsyncd.log",
