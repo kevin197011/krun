@@ -25,11 +25,6 @@ krun::check::system_resources::run() {
 
 # centos code
 krun::check::system_resources::centos() {
-    krun::check::system_resources::common
-}
-
-# debian code
-krun::check::system_resources::debian() {
     echo "------ CPU 信息 ------"
     lscpu | grep -E 'Model name|Socket|Core|Thread'
 
@@ -41,6 +36,11 @@ krun::check::system_resources::debian() {
 
     echo "------ 磁盘大小 ------"
     lsblk
+}
+
+# debian code
+krun::check::system_resources::debian() {
+    krun::check::system_resources::common
 }
 
 # mac code
