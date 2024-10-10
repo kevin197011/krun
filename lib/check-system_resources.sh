@@ -41,7 +41,6 @@ krun::check::system_resources::debian() {
 
     echo "------ 磁盘大小 ------"
     lsblk
-
 }
 
 # mac code
