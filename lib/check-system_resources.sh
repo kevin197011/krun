@@ -25,6 +25,9 @@ krun::check::system_resources::run() {
 
 # centos code
 krun::check::system_resources::centos() {
+    echo "------ IP 地址 ------"
+    hostname -I
+
     echo "------ CPU 信息 ------"
     lscpu | grep -E 'Model name|Socket|Core|Thread'
 
