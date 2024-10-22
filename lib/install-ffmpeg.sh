@@ -25,8 +25,8 @@ krun::install::ffmpeg::run() {
 
 # centos code
 krun::install::ffmpeg::centos() {
-    yum reinstall epel-release -y
-    yum reinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm -y
+    # yum reinstall epel-release -y
+    yum install --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm -y
     yum install ffmpeg ffmpeg-devel -y
     krun::install::ffmpeg::common
 }
