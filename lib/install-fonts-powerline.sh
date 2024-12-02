@@ -40,9 +40,9 @@ krun::install::fonts-powerline::mac() {
 
 # common code
 krun::install::fonts-powerline::common() {
-    git clone https://github.com/powerline/fonts.git /tmp/fonts && \
-      cd /tmp/fonts && ./install.sh && \
-      rm -rf /tmp/fonts
+    git clone https://github.com/powerline/fonts.git /tmp/fonts &&
+        cd /tmp/fonts && ./install.sh &&
+        rm -rf /tmp/fonts
 }
 
 # run main

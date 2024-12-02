@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
-# Copyright (c) 2023 kk
+# Copyright (c) 2024 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-# install specify version golang
-# export golang_version=1.20
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-golang.sh | bash
+
+# vars
+
 # run code
 krun::install::golang::run() {
-    # default debian platform
+    # default platform
     platform='debian'
     # command -v apt >/dev/null && platform='debian'
     command -v yum >/dev/null && platform='centos'
@@ -32,13 +35,13 @@ krun::install::golang::debian() {
 
 # mac code
 krun::install::golang::mac() {
-    krun::insta#ll::golang::common
+    krun::install::golang::common
 }
 
 # common code
 krun::install::golang::common() {
     # https://go.dev/dl/?mode=json
-    default_version='1.20'
+    default_version='latest'
     version=${golang_version:-$default_version}
     asdf plugin-add golang https://github.com/kennyp/asdf-golang.git
     asdf install golang $version
