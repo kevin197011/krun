@@ -47,7 +47,7 @@ krun::install::geoipupdate::mac() {
 # common code
 krun::install::geoipupdate::common() {
     mkdir -p /data/geoip
-    tee /usr/local/etc/GeoIP.conf <<EOF
+    tee /etc/GeoIP.conf <<EOF
 AccountID <id>
 LicenseKey <key>
 EditionIDs GeoLite2-ASN GeoLite2-City GeoLite2-Country
