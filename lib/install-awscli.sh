@@ -25,17 +25,23 @@ krun::install::awscli::run() {
 # centos code
 krun::install::awscli::centos() {
     yum remove awscli -y
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+    cd /tmp
     unzip awscliv2.zip
     ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+    rm -rf /tmp/aws
+    rm -rf /tmp/awscliv2.zip
     krun::install::awscli::common
 }
 
 # debian code
 krun::install::awscli::debian() {
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+    cd /tmp
     unzip awscliv2.zip
     ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+    rm -rf /tmp/aws
+    rm -rf /tmp/awscliv2.zip
     krun::install::awscli::common
 }
 
