@@ -8,11 +8,15 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-awscli.sh | bash
+
+# vars
+
 # run code
 krun::install::awscli::run() {
     # default platform
     platform='debian'
-    # command -v apt >/dev/null && platform='debian'
     command -v yum >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
@@ -20,11 +24,18 @@ krun::install::awscli::run() {
 
 # centos code
 krun::install::awscli::centos() {
+    yum remove awscli -y
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
     krun::install::awscli::common
 }
 
 # debian code
 krun::install::awscli::debian() {
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
     krun::install::awscli::common
 }
 
@@ -36,7 +47,7 @@ krun::install::awscli::mac() {
 
 # common code
 krun::install::awscli::common() {
-    echo 'common todo...'
+    aws --version
 }
 
 # run main
