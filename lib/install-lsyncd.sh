@@ -26,6 +26,7 @@ krun::install::lsyncd::run() {
 # centos code
 krun::install::lsyncd::centos() {
     krun::install::lsyncd::common
+    yum install -y epel-release
     yum install -y lsyncd
     # Set up SSH key-based authentication
     tee /etc/lsyncd.conf <<EOF
