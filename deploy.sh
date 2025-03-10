@@ -8,7 +8,7 @@ export deploy_path=${deploy_path:-"$HOME/.krun"}
 deploy::install() {
     mkdir -pv "${deploy_path}"/bin
     mkdir -pv "${deploy_path}"/config
-    command -v python >/dev/null && curl -s -o "${deploy_path}"/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun ||
+    command -v python3 >/dev/null && curl -s -o "${deploy_path}"/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun ||
         curl -s -o "${deploy_path}"/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun-go/krun
     chmod +x "${deploy_path}"/bin/krun
 }
