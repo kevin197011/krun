@@ -28,6 +28,8 @@ krun::install::ruby::run() {
 krun::install::ruby::centos() {
     yum install -y git gcc gcc-c++ make
     yum install -y openssl-devel zlib-devel
+    source /etc/os-release
+    [[ $VERSION_ID == '9' ]] && dnf install -y perl-FindBin perl-File-Compare
     krun::install::ruby::common
 }
 
