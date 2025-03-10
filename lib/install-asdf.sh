@@ -25,17 +25,20 @@ krun::install::asdf::run() {
 
 # centos code
 krun::install::asdf::centos() {
+    yum install -y gnupg2 curl gawk
     krun::install::asdf::common
 }
 
 # debian code
 krun::install::asdf::debian() {
+    apt-get install -y dirmngr gpg curl gawk
     krun::install::asdf::common
 }
 
 # mac code
 krun::install::asdf::mac() {
     command -v asdf >/dev/null && echo "asdf is installed, exit!" && exit 0
+    brew install gpg gawk
     brew install asdf
 }
 
@@ -45,7 +48,8 @@ krun::install::asdf::common() {
     rm -rf ${HOME}/.asdf
     git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf --branch master
     grep -q 'source ${HOME}/.asdf/asdf.sh' ${HOME}/.bashrc || echo 'source ${HOME}/.asdf/asdf.sh' >>${HOME}/.bashrc
-    grep -q 'source ${HOME}/.asdf/completions/asdf.bash' ${HOME}/.bashrc || echo 'source ${HOME}/.asdf/completions/asdf.bash' >>${HOME}/.bashrc
+    # export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+    # grep -q 'source ${HOME}/.asdf/completions/asdf.bash' ${HOME}/.bashrc || echo 'source ${HOME}/.asdf/completions/asdf.bash' >>${HOME}/.bashrc
     exec bash
 }
 
