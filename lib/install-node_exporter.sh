@@ -25,6 +25,7 @@ krun::install::node_exporter::run() {
 
 # centos code
 krun::install::node_exporter::centos() {
+    systemctl stop node_exporter || true
     # Define variables
     NODE_EXPORTER_VERSION="1.9.0" # Change the version as needed
     NODE_EXPORTER_URL="https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz"
