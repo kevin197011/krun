@@ -3,73 +3,90 @@
 # Copyright (c) 2024 Kk
 # MIT License: https://opensource.org/licenses/MIT
 
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
 
-export deploy_path=${deploy_path:-"$HOME/.krun"}
-export bin_path="${deploy_path}/bin"
+# ====== Config ======
+deploy_path="${deploy_path:-"$HOME/.krun"}"
+bin_path="${deploy_path}/bin"
+config_path="${deploy_path}/config"
+binary_base_url="https://raw.githubusercontent.com/kevin197011/krun/main/bin"
+default_shell_rc="$HOME/.bashrc"
 
-detect_platform() {
-    unameOut="$(uname -s)"
-    case "${unameOut}" in
-    Linux*) os=linux ;;
-    Darwin*) os=darwin ;;
-    CYGWIN* | MINGW* | MSYS*) os=windows ;;
+# ====== Functions ======
+
+deploy::platform() {
+    local os arch
+    case "$(uname -s)" in
+    Linux*) os="linux" ;;
+    Darwin*) os="darwin" ;;
     *)
-        echo "Unsupported OS: ${unameOut}"
+        echo "❌ Unsupported OS: $(uname -s)" >&2
         exit 1
         ;;
     esac
 
-    arch=$(uname -m)
-    case "${arch}" in
-    x86_64) arch=amd64 ;;
-    arm64 | aarch64) arch=arm64 ;;
+    case "$(uname -m)" in
+    x86_64) arch="amd64" ;;
+    arm64 | aarch64) arch="arm64" ;;
     *)
-        echo "Unsupported architecture: ${arch}"
+        echo "❌ Unsupported architecture: $(uname -m)" >&2
         exit 1
         ;;
     esac
 
-    extension=""
-    [ "$os" = "windows" ] && extension=".exe"
-
-    platform="${os}-${arch}"
-    echo "$platform$extension"
+    echo "${os}-${arch}"
 }
 
 deploy::install() {
-    mkdir -pv "${bin_path}"
-    mkdir -pv "${deploy_path}/config"
+    mkdir -p "$bin_path" "$config_path"
 
-    binary_name=$(detect_platform)
+    local platform binary_url
+    binary_url="${binary_base_url}/krun"
 
-    url_base="https://raw.githubusercontent.com/kevin197011/krun/main/bin"
-    echo "Downloading krun for platform: $binary_name"
+    if ! command -v python >/dev/null 2>&1; then
+        platform="$(deploy::platform)"
+        binary_url="${binary_base_url}/krun-${platform}"
+    fi
 
-    curl -fsSL -o "${bin_path}/krun${binary_name##*.exe}" "$url_base/krun-${binary_name}"
+    echo "🔽 Downloading krun from ${binary_url}..."
+    curl -fsSL -o "${bin_path}/krun" "$binary_url"
     chmod +x "${bin_path}/krun"
+    echo "✅ Installed krun to ${bin_path}/krun"
+}
+
+deploy::detect_shell_rc() {
+    if [[ "${SHELL:-}" == */zsh ]] || command -v brew >/dev/null; then
+        echo "$HOME/.zshrc"
+    else
+        echo "$default_shell_rc"
+    fi
 }
 
 deploy::config() {
-    # macOS shell config
-    if command -v brew >/dev/null; then
-        grep -q "${bin_path}" ~/.zshrc || echo "export PATH=\$PATH:${bin_path}" >>~/.zshrc
-    fi
+    local shell_rc
+    shell_rc="$(deploy::detect_shell_rc)"
 
-    # Ubuntu shell config
-    if [[ -f /etc/lsb-release ]] && grep -qi "ubuntu" /etc/lsb-release; then
-        grep -q "${bin_path}" ~/.bashrc || echo "export PATH=\$PATH:${bin_path}" >>~/.bashrc
+    if ! grep -qs "${bin_path}" "$shell_rc"; then
+        echo "export PATH=\"\$PATH:${bin_path}\"" >>"$shell_rc"
+        echo "🛠️  Added ${bin_path} to PATH in ${shell_rc}"
+    else
+        echo "ℹ️  ${bin_path} is already in PATH"
     fi
 }
 
 deploy::status() {
-    echo "Running krun status..."
-    "${bin_path}/krun" status || echo "krun status failed"
+    echo "🚀 Running krun status..."
+    if ! "${bin_path}/krun" status; then
+        echo "⚠️ krun status failed"
+    fi
 }
 
 deploy::uninstall() {
-    echo "Uninstalling krun..."
+    echo "🧹 Uninstalling krun..."
     rm -rf "${deploy_path}"
+    echo "✅ Removed ${deploy_path}"
 }
 
 deploy::main() {
@@ -78,5 +95,5 @@ deploy::main() {
     deploy::status
 }
 
-# Run main
+# ====== Entry Point ======
 deploy::main "$@"
