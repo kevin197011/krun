@@ -1,34 +1,74 @@
-# Copyright (c) 2023 kk
-#
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
+#!/usr/bin/env bash
+
+# Copyright (c) 2024 Kk
+# MIT License: https://opensource.org/licenses/MIT
+
+set -e
 
 export deploy_path=${deploy_path:-"$HOME/.krun"}
+export bin_path="${deploy_path}/bin"
+
+detect_platform() {
+    unameOut="$(uname -s)"
+    case "${unameOut}" in
+    Linux*) os=linux ;;
+    Darwin*) os=darwin ;;
+    CYGWIN* | MINGW* | MSYS*) os=windows ;;
+    *)
+        echo "Unsupported OS: ${unameOut}"
+        exit 1
+        ;;
+    esac
+
+    arch=$(uname -m)
+    case "${arch}" in
+    x86_64) arch=amd64 ;;
+    arm64 | aarch64) arch=arm64 ;;
+    *)
+        echo "Unsupported architecture: ${arch}"
+        exit 1
+        ;;
+    esac
+
+    extension=""
+    [ "$os" = "windows" ] && extension=".exe"
+
+    platform="${os}-${arch}"
+    echo "$platform$extension"
+}
 
 deploy::install() {
-    mkdir -pv "${deploy_path}"/bin
-    mkdir -pv "${deploy_path}"/config
-    command -v python3 >/dev/null && curl -s -o "${deploy_path}"/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun ||
-        curl -s -o "${deploy_path}"/bin/krun https://raw.githubusercontent.com/kevin197011/krun/main/bin/krun-go/krun
-    chmod +x "${deploy_path}"/bin/krun
+    mkdir -pv "${bin_path}"
+    mkdir -pv "${deploy_path}/config"
+
+    binary_name=$(detect_platform)
+
+    url_base="https://raw.githubusercontent.com/kevin197011/krun/main/bin"
+    echo "Downloading krun for platform: $binary_name"
+
+    curl -fsSL -o "${bin_path}/krun${binary_name##*.exe}" "$url_base/krun-${binary_name}"
+    chmod +x "${bin_path}/krun"
 }
 
 deploy::config() {
-    # mac
-    command -v brew >/dev/null && (grep -q "${deploy_path}/bin" ~/.zshrc || echo "export PATH=\$PATH:${deploy_path}/bin" >>~/.zshrc)
-    # ubuntu
-    [[ -f /etc/lsb-release ]] && grep -qi "ubuntu" /etc/lsb-release &&
-        apt-get update >/dev/null && apt-get install python3 -y && ln -sf /usr/bin/python3 /usr/bin/python
-    grep -q "${deploy_path}/bin" ~/.bashrc || echo "export PATH=\$PATH:${deploy_path}/bin" >>~/.bashrc
+    # macOS shell config
+    if command -v brew >/dev/null; then
+        grep -q "${bin_path}" ~/.zshrc || echo "export PATH=\$PATH:${bin_path}" >>~/.zshrc
+    fi
+
+    # Ubuntu shell config
+    if [[ -f /etc/lsb-release ]] && grep -qi "ubuntu" /etc/lsb-release; then
+        grep -q "${bin_path}" ~/.bashrc || echo "export PATH=\$PATH:${bin_path}" >>~/.bashrc
+    fi
 }
 
 deploy::status() {
-    command -v brew >/dev/null && /bin/zsh || /bin/bash
-    "${deploy_path}"/bin/krun status
-    exec bash
+    echo "Running krun status..."
+    "${bin_path}/krun" status || echo "krun status failed"
 }
 
 deploy::uninstall() {
+    echo "Uninstalling krun..."
     rm -rf "${deploy_path}"
 }
 
@@ -38,5 +78,5 @@ deploy::main() {
     deploy::status
 }
 
-# run main
+# Run main
 deploy::main "$@"
