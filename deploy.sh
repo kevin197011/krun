@@ -7,14 +7,14 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# ====== Config ======
+# Config
 deploy_path="${deploy_path:-"$HOME/.krun"}"
 bin_path="${deploy_path}/bin"
 config_path="${deploy_path}/config"
 binary_base_url="https://raw.githubusercontent.com/kevin197011/krun/main/bin"
 default_shell_rc="$HOME/.bashrc"
 
-# ====== Functions ======
+# Functions
 
 deploy::platform() {
     local os arch
