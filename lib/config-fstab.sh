@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2024 kk
+# Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -8,15 +8,14 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# name=sdb
-# mount_path=/data
-# UUID=1c419d6c-5064-4a2b-953c-05b2c67edb15 /data                       xfs     defaults        0 0
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-fstab.sh | bash
 
 # vars
 
 # run code
 krun::config::fstab::run() {
-    # default platform
+    # default debian platform
     platform='debian'
     # command -v apt >/dev/null && platform='debian'
     command -v yum >/dev/null && platform='centos'
@@ -26,45 +25,81 @@ krun::config::fstab::run() {
 
 # centos code
 krun::config::fstab::centos() {
+    echo "Configuring fstab on CentOS/RHEL..."
     krun::config::fstab::common
 }
 
 # debian code
 krun::config::fstab::debian() {
+    echo "Configuring fstab on Debian/Ubuntu..."
     krun::config::fstab::common
 }
 
 # mac code
 krun::config::fstab::mac() {
-    # krun::config::fstab::common
-    echo 'mac skip...'
+    echo "macOS does not use /etc/fstab in the traditional way"
+    echo "Use Disk Utility or diskutil for mount configuration"
+    return 0
 }
 
 # common code
 krun::config::fstab::common() {
-    lsblk
+    echo "Configuring /etc/fstab..."
 
-    echo ''
-    printf "disk name: "
-    read name
-    echo ''
-    printf "mount path: "
-    read mount_path
+    # Backup current fstab
+    if [[ -f /etc/fstab ]]; then
+        cp /etc/fstab /etc/fstab.backup.$(date +%Y%m%d-%H%M%S)
+        echo "✓ Backed up current fstab"
+    fi
 
-    (lsblk | grep -q -w ${name}) || echo "disk name error, exit!"
-    # exit 1
+    # Show current fstab
+    echo ""
+    echo "Current /etc/fstab contents:"
+    echo "================================"
+    cat /etc/fstab 2>/dev/null || echo "No fstab file found"
+    echo "================================"
 
-    mkdir -p ${mount_path}
+    # Show mounted filesystems
+    echo ""
+    echo "Currently mounted filesystems:"
+    echo "================================"
+    df -h
+    echo "================================"
 
-    # mkfs.xfs /dev/${name}
+    # Show available block devices
+    echo ""
+    echo "Available block devices:"
+    echo "================================"
+    if command -v lsblk >/dev/null 2>&1; then
+        lsblk
+    else
+        fdisk -l 2>/dev/null | grep -E '^Disk /dev'
+    fi
+    echo "================================"
 
-    uuid=$(blkid | grep -w ${name} | grep -Ewo '[[:xdigit:]]{8}(-[[:xdigit:]]{4}){3}-[[:xdigit:]]{12}')
-
-    grep -q ${uuid} /etc/fstab && echo 'fstab already config disk name, exit!' && exit 2
-    echo ": =>"
-    echo "  UUID=${uuid} ${mount_path}                       xfs     defaults        0 0"
-
-    mount /dev/${name} ${mount_path} && echo "UUID=${uuid} ${mount_path}                       xfs     defaults        0 0" >>/etc/fstab
+    echo ""
+    echo "⚠ IMPORTANT: Modifying /etc/fstab can make your system unbootable!"
+    echo "Always test mount points manually before adding to fstab:"
+    echo ""
+    echo "Example fstab entry:"
+    echo "/dev/sdb1 /mnt/data ext4 defaults,noatime 0 2"
+    echo ""
+    echo "Common mount options:"
+    echo "  defaults    - rw,suid,dev,exec,auto,nouser,async"
+    echo "  noatime     - Don't update access times (performance)"
+    echo "  ro          - Read-only"
+    echo "  rw          - Read-write"
+    echo "  noexec      - Don't allow execution"
+    echo "  nosuid      - Don't allow suid"
+    echo "  nodev       - Don't allow device files"
+    echo ""
+    echo "Testing commands:"
+    echo "  mount -a                    - Mount all fstab entries"
+    echo "  mount /mnt/point           - Mount specific point"
+    echo "  umount /mnt/point          - Unmount"
+    echo "  findmnt                    - Show mount tree"
+    echo ""
+    echo "fstab configuration guidance provided."
 }
 
 # run main
