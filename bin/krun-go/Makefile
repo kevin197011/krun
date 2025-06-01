@@ -6,7 +6,7 @@
 # Project configuration
 BINARY_NAME := krun
 SOURCE := krun.go
-OUT_DIR := bin
+OUT_DIR := '.'
 
 # OS/Arch targets
 TARGETS := \
@@ -14,7 +14,6 @@ TARGETS := \
   darwin/arm64 \
   linux/amd64 \
   linux/arm64 \
-  windows/amd64
 
 # Default target
 .PHONY: all
