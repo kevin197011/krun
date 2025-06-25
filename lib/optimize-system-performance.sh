@@ -320,7 +320,43 @@ krun::optimize::system_performance::common() {
     krun::optimize::system_performance::optimize_io
 
     # set timezone to Asia/Shanghai
-    timedatectl set-timezone Asia/Shanghai
+    echo -e "${BLUE}🕐 Setting timezone to Asia/Shanghai...${NC}"
+
+    # Method 1: Try timedatectl (systemd)
+    if command -v timedatectl >/dev/null 2>&1; then
+        if timedatectl set-timezone Asia/Shanghai 2>/dev/null; then
+            echo -e "${GREEN}✓ Timezone set to Asia/Shanghai using timedatectl${NC}"
+        else
+            echo -e "${YELLOW}⚠️  timedatectl failed, trying alternative method${NC}"
+            # Method 2: Manual timezone file copy
+            if [[ -f /usr/share/zoneinfo/Asia/Shanghai ]]; then
+                ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+                echo 'Asia/Shanghai' >/etc/timezone 2>/dev/null || true
+                echo -e "${GREEN}✓ Timezone set to Asia/Shanghai using manual method${NC}"
+            else
+                echo -e "${RED}✗ Failed to set timezone: /usr/share/zoneinfo/Asia/Shanghai not found${NC}"
+            fi
+        fi
+    else
+        # Method 2: Manual timezone file copy for systems without timedatectl
+        echo -e "${BLUE}timedatectl not available, using manual method...${NC}"
+        if [[ -f /usr/share/zoneinfo/Asia/Shanghai ]]; then
+            ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+            echo 'Asia/Shanghai' >/etc/timezone 2>/dev/null || true
+            echo -e "${GREEN}✓ Timezone set to Asia/Shanghai using manual method${NC}"
+        else
+            echo -e "${RED}✗ Failed to set timezone: /usr/share/zoneinfo/Asia/Shanghai not found${NC}"
+        fi
+    fi
+
+    # Verify timezone setting
+    if command -v timedatectl >/dev/null 2>&1; then
+        echo -e "${BLUE}Current timezone status:${NC}"
+        timedatectl status | grep -E "(Time zone|Local time)" || true
+    else
+        echo -e "${BLUE}Current timezone: $(cat /etc/timezone 2>/dev/null || readlink /etc/localtime | sed 's|/usr/share/zoneinfo/||')${NC}"
+        echo -e "${BLUE}Current local time: $(date)${NC}"
+    fi
 
     # enable time synchronization
     echo -e "${BLUE}🕐 Configuring time synchronization...${NC}"
