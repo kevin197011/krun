@@ -42,6 +42,9 @@ krun::optimize::system_performance::run() {
     # apply common optimizations
     krun::optimize::system_performance::common
 
+    # configure development and ops tools
+    krun::optimize::system_performance::configure_tools
+
     echo -e "${GREEN}✅ System performance optimization completed!${NC}"
     echo -e "${YELLOW}⚠️  Please reboot the system to apply all changes!${NC}"
 }
@@ -62,6 +65,7 @@ krun::optimize::system_performance::centos() {
         numactl \
         bash-completion \
         vim \
+        vim-enhanced \
         curl \
         wget \
         rsync \
@@ -69,7 +73,43 @@ krun::optimize::system_performance::centos() {
         strace \
         tcpdump \
         nmap-ncat \
-        bind-utils ||
+        bind-utils \
+        git \
+        tree \
+        unzip \
+        zip \
+        screen \
+        tmux \
+        net-tools \
+        telnet \
+        traceroute \
+        mtr \
+        iperf3 \
+        jq \
+        ncdu \
+        tar \
+        gzip \
+        bzip2 \
+        xz \
+        which \
+        nano \
+        less \
+        grep \
+        sed \
+        awk \
+        find \
+        psmisc \
+        procps-ng \
+        util-linux \
+        coreutils \
+        iftop \
+        nethogs \
+        nmon \
+        dstat \
+        atop \
+        glances \
+        multitail \
+        parallel ||
         yum install -y \
             htop \
             iotop \
@@ -79,6 +119,7 @@ krun::optimize::system_performance::centos() {
             numactl \
             bash-completion \
             vim \
+            vim-enhanced \
             curl \
             wget \
             rsync \
@@ -86,7 +127,43 @@ krun::optimize::system_performance::centos() {
             strace \
             tcpdump \
             nmap-ncat \
-            bind-utils
+            bind-utils \
+            git \
+            tree \
+            unzip \
+            zip \
+            screen \
+            tmux \
+            net-tools \
+            telnet \
+            traceroute \
+            mtr \
+            iperf3 \
+            jq \
+            ncdu \
+            tar \
+            gzip \
+            bzip2 \
+            xz \
+            which \
+            nano \
+            less \
+            grep \
+            sed \
+            gawk \
+            findutils \
+            psmisc \
+            procps-ng \
+            util-linux \
+            coreutils \
+            iftop \
+            nethogs \
+            nmon \
+            dstat \
+            atop \
+            glances \
+            multitail \
+            parallel
 
     # enable and start performance services
     systemctl enable --now tuned
@@ -138,6 +215,7 @@ krun::optimize::system_performance::debian() {
         numactl \
         bash-completion \
         vim \
+        vim-nox \
         curl \
         wget \
         rsync \
@@ -148,7 +226,42 @@ krun::optimize::system_performance::debian() {
         dnsutils \
         cpufrequtils \
         linux-tools-common \
-        linux-tools-generic
+        linux-tools-generic \
+        git \
+        tree \
+        unzip \
+        zip \
+        screen \
+        tmux \
+        net-tools \
+        telnet \
+        traceroute \
+        mtr-tiny \
+        iperf3 \
+        jq \
+        ncdu \
+        tar \
+        gzip \
+        bzip2 \
+        xz-utils \
+        nano \
+        less \
+        grep \
+        sed \
+        gawk \
+        findutils \
+        psmisc \
+        procps \
+        util-linux \
+        coreutils \
+        iftop \
+        nethogs \
+        nmon \
+        dstat \
+        atop \
+        glances \
+        multitail \
+        parallel
 
     # enable and start performance services
     systemctl enable --now irqbalance
@@ -497,6 +610,342 @@ ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue
 EOF
 
     echo -e "${GREEN}✓ I/O scheduler optimized${NC}"
+}
+
+# configure development and ops tools
+krun::optimize::system_performance::configure_tools() {
+    echo -e "${BLUE}🔧 Configuring development and ops tools...${NC}"
+
+    # configure vim
+    krun::optimize::system_performance::configure_vim
+
+    # configure git
+    krun::optimize::system_performance::configure_git
+
+    # configure tmux
+    krun::optimize::system_performance::configure_tmux
+
+    # configure bash aliases
+    krun::optimize::system_performance::configure_bash_aliases
+
+    echo -e "${GREEN}✓ Development and ops tools configured${NC}"
+}
+
+# configure vim for better ops experience
+krun::optimize::system_performance::configure_vim() {
+    echo -e "${BLUE}🔧 Configuring Vim...${NC}"
+
+    # create global vimrc
+    cat >/etc/vim/vimrc.local <<'EOF'
+" Enhanced Vim configuration for DevOps
+
+" Basic settings
+set nocompatible              " Use Vim defaults
+set encoding=utf-8            " UTF-8 encoding
+set fileencoding=utf-8        " File encoding
+
+" UI settings
+set number                    " Show line numbers
+set relativenumber            " Show relative line numbers
+set ruler                     " Show cursor position
+set showcmd                   " Show command in status line
+set wildmenu                  " Enhanced command completion
+set laststatus=2              " Always show status line
+set scrolloff=8               " Keep 8 lines when scrolling
+set sidescrolloff=15          " Keep 15 columns when side scrolling
+
+" Indentation and formatting
+set autoindent                " Auto indentation
+set smartindent               " Smart indentation
+set tabstop=4                 " Tab width
+set shiftwidth=4              " Shift width
+set expandtab                 " Use spaces instead of tabs
+set softtabstop=4             " Soft tab stop
+set backspace=indent,eol,start " Backspace behavior
+
+" Search settings
+set hlsearch                  " Highlight search results
+set incsearch                 " Incremental search
+set ignorecase                " Case insensitive search
+set smartcase                 " Smart case sensitivity
+
+" Backup and swap
+set nobackup                  " No backup files
+set noswapfile                " No swap files
+set undofile                  " Persistent undo
+set undodir=/tmp/vim-undo     " Undo directory
+
+" File handling
+set autoread                  " Auto reload files
+set hidden                    " Allow hidden buffers
+
+" Syntax and colors
+syntax enable                 " Enable syntax highlighting
+set background=dark           " Dark background
+colorscheme default           " Default color scheme
+
+" Key mappings
+nnoremap <Space> <Nop>
+let mapleader = " "           " Space as leader key
+
+" Quick save and quit
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>x :x<CR>
+
+" Buffer navigation
+nnoremap <leader>bn :bnext<CR>
+nnoremap <leader>bp :bprev<CR>
+nnoremap <leader>bd :bdelete<CR>
+
+" Split navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Clear search highlight
+nnoremap <leader>/ :nohlsearch<CR>
+
+" File type specific settings
+autocmd FileType yaml setlocal tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType yml setlocal tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType json setlocal tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType sh setlocal tabstop=4 shiftwidth=4 softtabstop=4
+autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4
+autocmd FileType go setlocal tabstop=4 shiftwidth=4 noexpandtab
+
+" Status line
+set statusline=%f\ %m%r%h%w\ [%{&ff}]\ [%Y]\ [%04l,%04v]\ [%p%%]\ [%L\ lines]
+
+" Auto create undo directory
+if !isdirectory('/tmp/vim-undo')
+    call mkdir('/tmp/vim-undo', 'p', 0700)
+endif
+EOF
+
+    # create user-specific vimrc for root
+    if [[ ! -f /root/.vimrc ]]; then
+        cat >/root/.vimrc <<'EOF'
+" Personal Vim configuration
+source /etc/vim/vimrc.local
+
+" Additional personal settings can go here
+EOF
+    fi
+
+    # ensure vim directory exists
+    mkdir -p /etc/vim
+
+    echo -e "${GREEN}✓ Vim configured${NC}"
+}
+
+# configure git global settings
+krun::optimize::system_performance::configure_git() {
+    echo -e "${BLUE}🔧 Configuring Git...${NC}"
+
+    # global git configuration
+    git config --global init.defaultBranch main
+    git config --global core.editor vim
+    git config --global color.ui auto
+    git config --global push.default simple
+    git config --global pull.rebase false
+
+    # useful git aliases
+    git config --global alias.st status
+    git config --global alias.co checkout
+    git config --global alias.br branch
+    git config --global alias.ci commit
+    git config --global alias.lg "log --oneline --graph --decorate --all"
+    git config --global alias.last "log -1 HEAD"
+    git config --global alias.unstage "reset HEAD --"
+
+    echo -e "${GREEN}✓ Git configured${NC}"
+}
+
+# configure tmux
+krun::optimize::system_performance::configure_tmux() {
+    echo -e "${BLUE}🔧 Configuring Tmux...${NC}"
+
+    cat >/etc/tmux.conf <<'EOF'
+# Enhanced Tmux configuration for DevOps
+
+# Basic settings
+set -g default-terminal "screen-256color"
+set -g history-limit 10000
+set -g mouse on
+
+# Prefix key
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+# Window and pane indexing
+set -g base-index 1
+set -g pane-base-index 1
+set -g renumber-windows on
+
+# Key bindings
+bind | split-window -h
+bind - split-window -v
+unbind '"'
+unbind %
+
+# Pane navigation
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# Pane resizing
+bind H resize-pane -L 5
+bind J resize-pane -D 5
+bind K resize-pane -U 5
+bind L resize-pane -R 5
+
+# Reload config
+bind r source-file /etc/tmux.conf \; display-message "Config reloaded!"
+
+# Status bar
+set -g status-position bottom
+set -g status-bg black
+set -g status-fg white
+set -g status-left-length 20
+set -g status-right-length 50
+set -g status-left '#[fg=green]#S #[fg=white]| '
+set -g status-right '#[fg=yellow]%Y-%m-%d #[fg=white]| #[fg=cyan]%H:%M'
+
+# Window status
+setw -g window-status-current-style 'fg=black bg=white bold'
+setw -g window-status-current-format ' #I:#W#F '
+setw -g window-status-style 'fg=white bg=black'
+setw -g window-status-format ' #I:#W#F '
+
+# Pane borders
+set -g pane-border-style 'fg=colour8'
+set -g pane-active-border-style 'fg=colour14'
+
+# Message style
+set -g message-style 'fg=black bg=yellow'
+EOF
+
+    echo -e "${GREEN}✓ Tmux configured${NC}"
+}
+
+# configure useful bash aliases
+krun::optimize::system_performance::configure_bash_aliases() {
+    echo -e "${BLUE}🔧 Configuring Bash aliases...${NC}"
+
+    cat >/etc/profile.d/ops-aliases.sh <<'EOF'
+# DevOps useful aliases
+
+# System monitoring
+alias cpu='top -o %CPU'
+alias mem='top -o %MEM'
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+alias ps='ps aux'
+alias pstree='pstree -p'
+
+# Network
+alias netstat='netstat -tuln'
+alias ss='ss -tuln'
+alias ports='netstat -tuln | grep LISTEN'
+alias ping='ping -c 4'
+
+# File operations
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias tree='tree -C'
+
+# Log viewing
+alias tailf='tail -f'
+alias logs='journalctl -f'
+alias syslog='tail -f /var/log/syslog'
+alias messages='tail -f /var/log/messages'
+
+# Process management
+alias killall='killall -v'
+alias pgrep='pgrep -l'
+
+# Disk usage
+alias ncdu='ncdu --color dark'
+alias ducks='du -cks * | sort -rn | head -11'
+
+# Git shortcuts
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gl='git log --oneline'
+alias gp='git push'
+alias gd='git diff'
+
+# Docker shortcuts
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias di='docker images'
+alias dex='docker exec -it'
+alias dlogs='docker logs -f'
+
+# System info
+alias sysinfo='uname -a && cat /etc/os-release'
+alias cpuinfo='cat /proc/cpuinfo'
+alias meminfo='cat /proc/meminfo'
+
+# File permissions
+alias 644='chmod 644'
+alias 755='chmod 755'
+alias 777='chmod 777'
+
+# Quick navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Service management
+alias start='systemctl start'
+alias stop='systemctl stop'
+alias restart='systemctl restart'
+alias status='systemctl status'
+alias enable='systemctl enable'
+alias disable='systemctl disable'
+
+# JSON/YAML processing
+alias json='jq .'
+alias yaml='python3 -c "import sys, yaml, json; print(json.dumps(yaml.safe_load(sys.stdin), indent=2))"'
+
+# Useful functions
+weather() { curl -s "wttr.in/${1:-Shanghai}?format=3"; }
+myip() { curl -s https://httpbin.org/ip | jq -r .origin; }
+extract() {
+    if [ -f "$1" ]; then
+        case "$1" in
+            *.tar.bz2)   tar xjf "$1"     ;;
+            *.tar.gz)    tar xzf "$1"     ;;
+            *.bz2)       bunzip2 "$1"     ;;
+            *.rar)       unrar x "$1"     ;;
+            *.gz)        gunzip "$1"      ;;
+            *.tar)       tar xf "$1"      ;;
+            *.tbz2)      tar xjf "$1"     ;;
+            *.tgz)       tar xzf "$1"     ;;
+            *.zip)       unzip "$1"       ;;
+            *.Z)         uncompress "$1"  ;;
+            *.7z)        7z x "$1"        ;;
+            *)           echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+EOF
+
+    chmod +x /etc/profile.d/ops-aliases.sh
+
+    echo -e "${GREEN}✓ Bash aliases configured${NC}"
 }
 
 # run main
