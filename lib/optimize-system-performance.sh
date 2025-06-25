@@ -323,9 +323,19 @@ krun::optimize::system_performance::common() {
     timedatectl set-timezone Asia/Shanghai
 
     # enable time synchronization
-    systemctl enable --now systemd-timesyncd ||
-        systemctl enable --now chronyd ||
-        systemctl enable --now ntpd || true
+    echo -e "${BLUE}🕐 Configuring time synchronization...${NC}"
+    if systemctl list-unit-files | grep -q systemd-timesyncd; then
+        systemctl enable --now systemd-timesyncd
+        echo -e "${GREEN}✓ systemd-timesyncd enabled${NC}"
+    elif systemctl list-unit-files | grep -q chronyd; then
+        systemctl enable --now chronyd
+        echo -e "${GREEN}✓ chronyd enabled${NC}"
+    elif systemctl list-unit-files | grep -q ntpd; then
+        systemctl enable --now ntpd
+        echo -e "${GREEN}✓ ntpd enabled${NC}"
+    else
+        echo -e "${YELLOW}⚠️  No time synchronization service found${NC}"
+    fi
 
     # apply all changes
     sysctl -p /etc/sysctl.d/99-performance.conf || true
@@ -635,6 +645,9 @@ krun::optimize::system_performance::configure_tools() {
 krun::optimize::system_performance::configure_vim() {
     echo -e "${BLUE}🔧 Configuring Vim...${NC}"
 
+    # ensure vim directory exists
+    mkdir -p /etc/vim
+
     # create global vimrc
     cat >/etc/vim/vimrc.local <<'EOF'
 " Enhanced Vim configuration for DevOps
@@ -733,9 +746,6 @@ source /etc/vim/vimrc.local
 " Additional personal settings can go here
 EOF
     fi
-
-    # ensure vim directory exists
-    mkdir -p /etc/vim
 
     echo -e "${GREEN}✓ Vim configured${NC}"
 }
