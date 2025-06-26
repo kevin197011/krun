@@ -14,7 +14,7 @@ set -o pipefail
 # vars
 
 # run code
-krun::install::fonts-nerd::run() {
+krun::install::fonts_nerd::run() {
     # default platform
     platform='debian'
     # command -v apt >/dev/null && platform='debian'
@@ -24,22 +24,22 @@ krun::install::fonts-nerd::run() {
 }
 
 # centos code
-krun::install::fonts-nerd::centos() {
-    krun::install::fonts-nerd::common
+krun::install::fonts_nerd::centos() {
+    krun::install::fonts_nerd::common
 }
 
 # debian code
-krun::install::fonts-nerd::debian() {
-    krun::install::fonts-nerd::common
+krun::install::fonts_nerd::debian() {
+    krun::install::fonts_nerd::common
 }
 
 # mac code
-krun::install::fonts-nerd::mac() {
-    krun::install::fonts-nerd::common
+krun::install::fonts_nerd::mac() {
+    krun::install::fonts_nerd::common
 }
 
 # common code
-krun::install::fonts-nerd::common() {
+krun::install::fonts_nerd::common() {
     echo "${FUNCNAME}"
     git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git /tmp/nerd-fonts &&
         /tmp/nerd-fonts/install.sh FiraCode &&
@@ -47,4 +47,4 @@ krun::install::fonts-nerd::common() {
 }
 
 # run main
-krun::install::fonts-nerd::run "$@"
+krun::install::fonts_nerd::run "$@"

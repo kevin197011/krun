@@ -40,7 +40,7 @@ krun::install::percona_toolkit::mac() {
 
 # common code
 krun::install::percona_toolkit::common() {
-
+    echo "Percona Toolkit installation completed"
 }
 
 # run main
