@@ -313,11 +313,6 @@ http {
 
     # Security Settings
     server_tokens off;
-    add_header X-Frame-Options DENY always;
-    add_header X-Content-Type-Options nosniff always;
-    add_header X-XSS-Protection "1; mode=block" always;
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
 
     # Gzip Settings
     gzip on;
@@ -346,9 +341,9 @@ http {
                     '"$http_user_agent" "$http_x_forwarded_for"';
     access_log /var/log/nginx/access.log main;
 
-    # Rate Limiting
-    limit_req_zone $binary_remote_addr zone=login:10m rate=10r/m;
-    limit_req_zone $binary_remote_addr zone=api:10m rate=100r/m;
+    # Rate Limiting (defined in conf.d/security.conf)
+    # limit_req_zone $binary_remote_addr zone=login:10m rate=10r/m;
+    # limit_req_zone $binary_remote_addr zone=api:10m rate=100r/m;
 
     # Include additional configurations
     include /etc/nginx/conf.d/*.conf;
@@ -427,11 +422,6 @@ server {
     index index.html index.htm;
 
     server_name _;
-
-    # Security headers
-    add_header X-Frame-Options DENY always;
-    add_header X-Content-Type-Options nosniff always;
-    add_header X-XSS-Protection "1; mode=block" always;
 
     # Main location
     location / {
@@ -838,48 +828,29 @@ krun::install::nginx::create_security_config() {
     cat >"$config_path/conf.d/security.conf" <<'EOF'
 # Security configurations for Nginx
 
-# Hide nginx version
-server_tokens off;
-
-# Prevent clickjacking
+# Additional security headers
 add_header X-Frame-Options DENY always;
-
-# Prevent MIME type sniffing
 add_header X-Content-Type-Options nosniff always;
-
-# Enable XSS protection
 add_header X-XSS-Protection "1; mode=block" always;
-
-# Referrer policy
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-
-# Content Security Policy
 add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
 
 # HSTS (uncomment when using HTTPS)
 # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-# Disable server signature
-server_tokens off;
-
-# Limit file upload size
-client_max_body_size 20M;
-
-# Buffer overflow protection
-client_body_buffer_size 1K;
-client_header_buffer_size 1k;
-client_max_body_size 1k;
-large_client_header_buffers 2 1k;
-
-# Control timeouts
-client_body_timeout 12;
-client_header_timeout 12;
-keepalive_timeout 15;
-send_timeout 10;
-
-# Control simultaneous connections
+# Rate limiting zones
 limit_conn_zone $binary_remote_addr zone=conn_limit_per_ip:10m;
 limit_req_zone $binary_remote_addr zone=req_limit_per_ip:10m rate=5r/s;
+
+# Apply rate limiting to specific locations
+# location /login {
+#     limit_req zone=req_limit_per_ip burst=5 nodelay;
+# }
+
+# location /api {
+#     limit_req zone=req_limit_per_ip burst=10 nodelay;
+#     limit_conn conn_limit_per_ip 10;
+# }
 EOF
 
     krun::install::nginx::log "INFO" "✅ Security configuration created"
