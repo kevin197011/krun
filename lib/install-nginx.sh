@@ -73,8 +73,6 @@ krun::install::nginx::success_message() {
 
 # detect platform
 krun::install::nginx::detect_platform() {
-    krun::install::nginx::log "INFO" "Detecting platform..."
-
     if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "macos"
     elif [[ -f /etc/os-release ]]; then
@@ -249,7 +247,6 @@ include /usr/share/nginx/modules/*.conf;
 
 events {
     worker_connections 1024;
-    use epoll;
     multi_accept on;
 }
 
@@ -314,13 +311,18 @@ http {
 }
 EOF
 
-    # Adjust paths for macOS
+    # Adjust paths and settings for different platforms
     if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS specific adjustments
         sed -i '' 's|user nginx;|#user nginx;|g' "$config_path/nginx.conf"
         sed -i '' 's|/var/log/nginx/|/usr/local/var/log/nginx/|g' "$config_path/nginx.conf"
         sed -i '' 's|/var/run/nginx.pid|/usr/local/var/run/nginx.pid|g' "$config_path/nginx.conf"
         sed -i '' 's|/usr/share/nginx/modules/|/usr/local/share/nginx/modules/|g' "$config_path/nginx.conf"
         sed -i '' 's|/etc/nginx/|/usr/local/etc/nginx/|g' "$config_path/nginx.conf"
+        sed -i '' 's|multi_accept on;|use kqueue;\n    multi_accept on;|g' "$config_path/nginx.conf"
+    else
+        # Linux specific adjustments
+        sed -i 's|multi_accept on;|use epoll;\n    multi_accept on;|g' "$config_path/nginx.conf"
     fi
 
     krun::install::nginx::log "INFO" "Optimized nginx.conf created"
