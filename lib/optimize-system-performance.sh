@@ -756,6 +756,32 @@ nnoremap <C-l> <C-w>l
 " Clear search highlight
 nnoremap <leader>/ :nohlsearch<CR>
 
+" Paste mode settings
+set pastetoggle=<F2>          " Toggle paste mode with F2
+nnoremap <leader>p :set paste!<CR>:set paste?<CR>  " Toggle paste with leader+p
+
+" Clipboard settings
+if has('clipboard')
+    if has('unnamedplus')
+        set clipboard=unnamed,unnamedplus  " Use system clipboard
+    else
+        set clipboard=unnamed
+    endif
+endif
+
+" Better paste behavior
+nnoremap <leader>P "+P       " Paste from system clipboard before cursor
+nnoremap <leader>y "+y       " Yank to system clipboard
+vnoremap <leader>y "+y       " Yank selection to system clipboard
+vnoremap <leader>d "+d       " Delete to system clipboard
+
+" Paste without overwriting register in visual mode
+vnoremap p "_dP
+
+" Better indentation in visual mode
+vnoremap < <gv
+vnoremap > >gv
+
 " File type specific settings
 autocmd FileType yaml setlocal tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType yml setlocal tabstop=2 shiftwidth=2 softtabstop=2
@@ -764,12 +790,45 @@ autocmd FileType sh setlocal tabstop=4 shiftwidth=4 softtabstop=4
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4
 autocmd FileType go setlocal tabstop=4 shiftwidth=4 noexpandtab
 
-" Status line
-set statusline=%f\ %m%r%h%w\ [%{&ff}]\ [%Y]\ [%04l,%04v]\ [%p%%]\ [%L\ lines]
+" Status line with paste mode indicator
+set statusline=%f\ %m%r%h%w\ [%{&ff}]\ [%Y]\ %{&paste?'[PASTE]':''}\ [%04l,%04v]\ [%p%%]\ [%L\ lines]
 
 " Auto create undo directory
 if !isdirectory('/tmp/vim-undo')
     call mkdir('/tmp/vim-undo', 'p', 0700)
+endif
+
+" Auto commands for paste mode
+augroup PasteMode
+    autocmd!
+    " Show paste mode in status line
+    autocmd InsertEnter * if &paste | echo 'PASTE MODE ENABLED' | endif
+    autocmd InsertLeave * if &paste | echo 'PASTE MODE ENABLED (Insert mode left)' | endif
+augroup END
+
+" Function to toggle paste mode with visual feedback
+function! TogglePaste()
+    if &paste
+        set nopaste
+        echo 'Paste mode: OFF'
+    else
+        set paste
+        echo 'Paste mode: ON'
+    endif
+endfunction
+
+" Map function to key
+nnoremap <leader>tp :call TogglePaste()<CR>
+
+" Auto-detect paste mode when pasting large amounts of text
+if &term =~ "xterm.*" || &term =~ "screen.*"
+    let &t_SI = "\e[6 q"
+    let &t_EI = "\e[2 q"
+    " Enable bracketed paste mode
+    let &t_BE = "\e[?2004h"
+    let &t_BD = "\e[?2004l"
+    exec "set t_PS=\e[200~"
+    exec "set t_PE=\e[201~"
 endif
 EOF
 
@@ -780,6 +839,19 @@ EOF
 source /etc/vim/vimrc.local
 
 " Additional personal settings can go here
+
+" Quick reference for paste mode:
+" F2                - Toggle paste mode
+" <leader>p         - Toggle paste mode with status
+" <leader>tp        - Toggle paste mode with visual feedback
+" <leader>y         - Yank to system clipboard
+" <leader>P         - Paste from system clipboard before cursor
+"
+" In paste mode:
+" - Auto-indentation is disabled
+" - No text formatting
+" - Mappings are disabled
+" - Perfect for pasting code from external sources
 EOF
     fi
 
