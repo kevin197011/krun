@@ -915,15 +915,102 @@ endfunction
 nnoremap <leader>tp :call TogglePaste()<CR>
 
 " Auto-detect paste mode when pasting large amounts of text
-if &term =~ "xterm.*" || &term =~ "screen.*"
+if &term =~ "xterm.*" || &term =~ "screen.*" || &term =~ "tmux.*"
     let &t_SI = "\e[6 q"
     let &t_EI = "\e[2 q"
-    " Enable bracketed paste mode
+    " Enable bracketed paste mode for auto-detection
     let &t_BE = "\e[?2004h"
     let &t_BD = "\e[?2004l"
     exec "set t_PS=\e[200~"
     exec "set t_PE=\e[201~"
+
+    " Auto-enable paste mode when bracketed paste is detected
+    inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+
+    function! XTermPasteBegin()
+        set paste
+        return ""
+    endfunction
+
+    " Auto-disable paste mode when bracketed paste ends
+    autocmd InsertLeave * if &paste | set nopaste | echo 'Auto paste mode: OFF' | endif
 endif
+
+" Additional auto-paste detection for common terminals
+if has('patch-8.0.0210') || has('nvim')
+    " Modern vim/neovim with better paste detection
+    if &term =~ "xterm" || &term =~ "screen" || &term =~ "tmux"
+        " Enable automatic paste mode detection
+        let &t_BE = "\<Esc>[?2004h"
+        let &t_BD = "\<Esc>[?2004l"
+
+        " Function to handle paste start
+        function! PasteStart()
+            set paste
+            echo 'Auto paste mode: ON'
+            return ""
+        endfunction
+
+        " Function to handle paste end
+        function! PasteEnd()
+            set nopaste
+            echo 'Auto paste mode: OFF'
+            return ""
+        endfunction
+
+        " Map the bracketed paste sequences
+        noremap <special> <expr> <Esc>[200~ PasteStart()
+        noremap <special> <expr> <Esc>[201~ PasteEnd()
+        inoremap <special> <expr> <Esc>[200~ PasteStart()
+        inoremap <special> <expr> <Esc>[201~ PasteEnd()
+    endif
+endif
+
+" Smart paste detection based on input speed and content
+augroup SmartPaste
+    autocmd!
+    " Detect rapid input (likely paste) and enable paste mode
+    autocmd InsertCharPre * call SmartPasteDetection()
+augroup END
+
+let g:paste_detection_chars = 0
+let g:paste_detection_time = 0
+
+function! SmartPasteDetection()
+    let current_time = localtime()
+    let time_diff = current_time - g:paste_detection_time
+
+    " If multiple characters are being inserted rapidly (within 1 second)
+    if time_diff <= 1
+        let g:paste_detection_chars += 1
+        " If more than 10 characters in 1 second, likely a paste operation
+        if g:paste_detection_chars > 10 && !&paste
+            set paste
+            echo 'Smart paste mode: ON (detected rapid input)'
+        endif
+    else
+        " Reset counter if time gap is too large
+        let g:paste_detection_chars = 0
+    endif
+
+    let g:paste_detection_time = current_time
+endfunction
+
+" Auto-disable paste mode after a period of inactivity
+augroup AutoDisablePaste
+    autocmd!
+    autocmd CursorHoldI * if &paste | call AutoDisablePasteMode() | endif
+    autocmd CursorHold * if &paste | call AutoDisablePasteMode() | endif
+augroup END
+
+function! AutoDisablePasteMode()
+    " Disable paste mode after 3 seconds of inactivity
+    sleep 3
+    if &paste && mode() == 'n'
+        set nopaste
+        echo 'Auto paste mode: OFF (timeout)'
+    endif
+endfunction
 EOF
 
     # create user-specific vimrc for root
@@ -935,17 +1022,29 @@ source /etc/vim/vimrc.local
 " Additional personal settings can go here
 
 " Quick reference for paste mode:
-" F2                - Toggle paste mode
+" F2                - Toggle paste mode manually
 " <leader>p         - Toggle paste mode with status
 " <leader>tp        - Toggle paste mode with visual feedback
 " <leader>y         - Yank to system clipboard
 " <leader>P         - Paste from system clipboard before cursor
+"
+" AUTO PASTE MODE (NEW):
+" - Automatically detects when you paste content
+" - Works with modern terminals (xterm, screen, tmux)
+" - Smart detection based on input speed (>10 chars/sec)
+" - Auto-disables after leaving insert mode or timeout
+" - No manual intervention needed for most paste operations
 "
 " In paste mode:
 " - Auto-indentation is disabled
 " - No text formatting
 " - Mappings are disabled
 " - Perfect for pasting code from external sources
+"
+" Detection methods:
+" 1. Bracketed paste mode (modern terminals)
+" 2. Smart input speed detection
+" 3. Manual toggle (F2, <leader>p, <leader>tp)
 EOF
     fi
 
