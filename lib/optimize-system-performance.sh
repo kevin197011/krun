@@ -17,11 +17,18 @@ readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
 readonly BLUE='\033[0;34m'
+readonly CYAN='\033[0;36m'
 readonly NC='\033[0m' # No Color
 
 # run code
 krun::optimize::system_performance::run() {
     echo -e "${BLUE}🚀 Starting system performance optimization...${NC}"
+
+    # Check if script has been run before
+    if [[ -f /etc/sysctl.d/99-performance.conf ]] || [[ -f /etc/security/limits.d/99-performance.conf ]]; then
+        echo -e "${YELLOW}⚠️  Optimization files detected - this appears to be a repeated run${NC}"
+        echo -e "${BLUE}📋 Script will safely update existing configurations${NC}"
+    fi
 
     # detect platform
     platform='debian'
@@ -46,7 +53,22 @@ krun::optimize::system_performance::run() {
     krun::optimize::system_performance::configure_tools
 
     echo -e "${GREEN}✅ System performance optimization completed!${NC}"
+    echo -e "${BLUE}🔄 This script is idempotent and safe to run multiple times${NC}"
     echo -e "${YELLOW}⚠️  Please reboot the system to apply all changes!${NC}"
+
+    # Show summary of what was configured
+    echo -e "\n${CYAN}📋 Configuration Summary:${NC}"
+    echo -e "${BLUE}  - Kernel parameters: /etc/sysctl.d/99-performance.conf${NC}"
+    echo -e "${BLUE}  - System limits: /etc/security/limits.d/99-performance.conf${NC}"
+    echo -e "${BLUE}  - Vim configuration: /etc/vim/vimrc.local${NC}"
+    echo -e "${BLUE}  - Tmux configuration: /etc/tmux.conf${NC}"
+    echo -e "${BLUE}  - Bash aliases: /etc/profile.d/ops-aliases.sh${NC}"
+    if [[ -f /etc/modules-load.d/bbr.conf ]]; then
+        echo -e "${BLUE}  - BBR congestion control: enabled${NC}"
+    fi
+    if systemctl is-enabled disable-thp.service >/dev/null 2>&1; then
+        echo -e "${BLUE}  - Transparent Huge Pages: disabled${NC}"
+    fi
 }
 
 # centos code
@@ -189,14 +211,22 @@ krun::optimize::system_performance::centos() {
 
     # disable SELinux
     if [[ -f /etc/selinux/config ]]; then
-        sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-        echo -e "${GREEN}✓ SELinux disabled (requires reboot)${NC}"
+        if grep -q "^SELINUX=disabled" /etc/selinux/config; then
+            echo -e "${GREEN}✓ SELinux already disabled in config${NC}"
+        else
+            sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+            echo -e "${GREEN}✓ SELinux disabled (requires reboot)${NC}"
+        fi
     fi
 
     # disable SELinux for current session
     if command -v setenforce >/dev/null 2>&1; then
-        setenforce 0 2>/dev/null || true
-        echo -e "${GREEN}✓ SELinux disabled for current session${NC}"
+        if getenforce 2>/dev/null | grep -q "Disabled\|Permissive"; then
+            echo -e "${GREEN}✓ SELinux already disabled for current session${NC}"
+        else
+            setenforce 0 2>/dev/null || true
+            echo -e "${GREEN}✓ SELinux disabled for current session${NC}"
+        fi
     fi
 }
 
@@ -361,14 +391,26 @@ krun::optimize::system_performance::common() {
     # enable time synchronization
     echo -e "${BLUE}🕐 Configuring time synchronization...${NC}"
     if systemctl list-unit-files | grep -q systemd-timesyncd; then
-        systemctl enable --now systemd-timesyncd
-        echo -e "${GREEN}✓ systemd-timesyncd enabled${NC}"
+        if systemctl is-active systemd-timesyncd >/dev/null 2>&1; then
+            echo -e "${GREEN}✓ systemd-timesyncd already active${NC}"
+        else
+            systemctl enable --now systemd-timesyncd
+            echo -e "${GREEN}✓ systemd-timesyncd enabled${NC}"
+        fi
     elif systemctl list-unit-files | grep -q chronyd; then
-        systemctl enable --now chronyd
-        echo -e "${GREEN}✓ chronyd enabled${NC}"
+        if systemctl is-active chronyd >/dev/null 2>&1; then
+            echo -e "${GREEN}✓ chronyd already active${NC}"
+        else
+            systemctl enable --now chronyd
+            echo -e "${GREEN}✓ chronyd enabled${NC}"
+        fi
     elif systemctl list-unit-files | grep -q ntpd; then
-        systemctl enable --now ntpd
-        echo -e "${GREEN}✓ ntpd enabled${NC}"
+        if systemctl is-active ntpd >/dev/null 2>&1; then
+            echo -e "${GREEN}✓ ntpd already active${NC}"
+        else
+            systemctl enable --now ntpd
+            echo -e "${GREEN}✓ ntpd enabled${NC}"
+        fi
     else
         echo -e "${YELLOW}⚠️  No time synchronization service found${NC}"
     fi
@@ -382,6 +424,14 @@ krun::optimize::system_performance::common() {
 # backup original configurations
 krun::optimize::system_performance::backup_configs() {
     echo -e "${BLUE}📋 Backing up original configurations...${NC}"
+
+    # Check if backup already exists (avoid multiple backups on repeated runs)
+    local existing_backup=$(find /root -maxdepth 1 -name "krun-backup-*" -type d | head -1)
+    if [[ -n "$existing_backup" ]]; then
+        echo -e "${YELLOW}⚠️  Backup already exists: $existing_backup${NC}"
+        echo -e "${BLUE}Skipping backup to avoid duplicates${NC}"
+        return
+    fi
 
     local backup_dir="/root/krun-backup-$(date +%Y%m%d-%H%M%S)"
     mkdir -p "$backup_dir"
@@ -527,10 +577,33 @@ EOF
 
     # configure systemd limits
     if [[ -f /etc/systemd/system.conf ]]; then
-        sed -i 's/#DefaultLimitNOFILE=.*/DefaultLimitNOFILE=1048576/' /etc/systemd/system.conf
-        sed -i 's/#DefaultLimitNPROC=.*/DefaultLimitNPROC=1048576/' /etc/systemd/system.conf
-        sed -i 's/#DefaultLimitMEMLOCK=.*/DefaultLimitMEMLOCK=infinity/' /etc/systemd/system.conf
-        systemctl daemon-reload
+        local need_reload=false
+
+        # Only modify if not already set
+        if ! grep -q "^DefaultLimitNOFILE=1048576" /etc/systemd/system.conf; then
+            sed -i 's/#DefaultLimitNOFILE=.*/DefaultLimitNOFILE=1048576/' /etc/systemd/system.conf
+            sed -i 's/^DefaultLimitNOFILE=.*/DefaultLimitNOFILE=1048576/' /etc/systemd/system.conf
+            need_reload=true
+        fi
+
+        if ! grep -q "^DefaultLimitNPROC=1048576" /etc/systemd/system.conf; then
+            sed -i 's/#DefaultLimitNPROC=.*/DefaultLimitNPROC=1048576/' /etc/systemd/system.conf
+            sed -i 's/^DefaultLimitNPROC=.*/DefaultLimitNPROC=1048576/' /etc/systemd/system.conf
+            need_reload=true
+        fi
+
+        if ! grep -q "^DefaultLimitMEMLOCK=infinity" /etc/systemd/system.conf; then
+            sed -i 's/#DefaultLimitMEMLOCK=.*/DefaultLimitMEMLOCK=infinity/' /etc/systemd/system.conf
+            sed -i 's/^DefaultLimitMEMLOCK=.*/DefaultLimitMEMLOCK=infinity/' /etc/systemd/system.conf
+            need_reload=true
+        fi
+
+        if [[ "$need_reload" == "true" ]]; then
+            systemctl daemon-reload
+            echo -e "${GREEN}✓ SystemD limits updated${NC}"
+        else
+            echo -e "${GREEN}✓ SystemD limits already configured${NC}"
+        fi
     fi
 
     echo -e "${GREEN}✓ System limits configured${NC}"
@@ -547,9 +620,17 @@ krun::optimize::system_performance::optimize_network() {
     fi
 
     # enable BBR congestion control if available
-    if modprobe tcp_bbr 2>/dev/null; then
-        echo "tcp_bbr" >>/etc/modules-load.d/bbr.conf
+    if lsmod | grep -q tcp_bbr; then
+        echo -e "${GREEN}✓ BBR congestion control already loaded${NC}"
+    elif modprobe tcp_bbr 2>/dev/null; then
+        # Add to modules-load.d only if not already present
+        if [[ ! -f /etc/modules-load.d/bbr.conf ]] || ! grep -q "tcp_bbr" /etc/modules-load.d/bbr.conf; then
+            mkdir -p /etc/modules-load.d
+            echo "tcp_bbr" >>/etc/modules-load.d/bbr.conf
+        fi
         echo -e "${GREEN}✓ BBR congestion control enabled${NC}"
+    else
+        echo -e "${YELLOW}⚠️  BBR congestion control not available${NC}"
     fi
 
     echo -e "${GREEN}✓ Network settings optimized${NC}"
@@ -561,12 +642,20 @@ krun::optimize::system_performance::optimize_filesystem() {
 
     # update /etc/fstab with performance options
     if [[ -f /etc/fstab ]]; then
-        # backup fstab
-        cp /etc/fstab /etc/fstab.bak.$(date +%Y%m%d)
+        # Check if performance options are already added
+        if grep -q "noatime" /etc/fstab; then
+            echo -e "${GREEN}✓ fstab already optimized with noatime${NC}"
+        else
+            # backup fstab only if not already backed up
+            if [[ ! -f /etc/fstab.bak.* ]]; then
+                cp /etc/fstab /etc/fstab.bak.$(date +%Y%m%d)
+            fi
 
-        # add noatime option to reduce disk I/O
-        sed -i 's/\(.*ext[234].*\)defaults\(.*\)/\1defaults,noatime,nodiratime\2/' /etc/fstab
-        sed -i 's/\(.*xfs.*\)defaults\(.*\)/\1defaults,noatime,nodiratime\2/' /etc/fstab
+            # add noatime option to reduce disk I/O
+            sed -i 's/\(.*ext[234].*\)defaults\(.*\)/\1defaults,noatime,nodiratime\2/' /etc/fstab
+            sed -i 's/\(.*xfs.*\)defaults\(.*\)/\1defaults,noatime,nodiratime\2/' /etc/fstab
+            echo -e "${GREEN}✓ fstab optimized with noatime options${NC}"
+        fi
     fi
 
     # configure readahead for better I/O performance
@@ -589,7 +678,8 @@ krun::optimize::system_performance::optimize_memory() {
         echo never >/sys/kernel/mm/transparent_hugepage/defrag
 
         # make it persistent
-        cat >/etc/systemd/system/disable-thp.service <<'EOF'
+        if [[ ! -f /etc/systemd/system/disable-thp.service ]]; then
+            cat >/etc/systemd/system/disable-thp.service <<'EOF'
 [Unit]
 Description=Disable Transparent Huge Pages
 DefaultDependencies=false
@@ -604,7 +694,11 @@ ExecStart=/bin/sh -c 'echo never | tee /sys/kernel/mm/transparent_hugepage/defra
 [Install]
 WantedBy=basic.target
 EOF
-        systemctl enable disable-thp.service
+        fi
+
+        if ! systemctl is-enabled disable-thp.service >/dev/null 2>&1; then
+            systemctl enable disable-thp.service
+        fi
         echo -e "${GREEN}✓ Transparent Huge Pages disabled${NC}"
     fi
 
