@@ -61,7 +61,7 @@ krun::install::nginx::success_message() {
     echo "Log file: $LOG_FILE"
     echo ""
     echo "Quick Commands:"
-    echo "  Start:   sudo systemctl start nginx"
+    echo "  Start:   sudo systemctl restart nginx"
     echo "  Stop:    sudo systemctl stop nginx"
     echo "  Reload:  sudo systemctl reload nginx"
     echo "  Status:  sudo systemctl status nginx"
@@ -617,7 +617,7 @@ EOF
             <div class="info-card">
                 <h3>🔧 Management Commands</h3>
                 <ul>
-                    <li><code>systemctl start nginx</code></li>
+                    <li><code>systemctl restart nginx</code></li>
                     <li><code>systemctl stop nginx</code></li>
                     <li><code>systemctl reload nginx</code></li>
                     <li><code>nginx -t</code> (test config)</li>
@@ -712,15 +712,16 @@ krun::install::nginx::configure_service() {
     # Linux service configuration
     systemctl enable nginx
 
-    # Test configuration before starting
+    # Test configuration before starting/restarting
     if nginx -t; then
-        systemctl start nginx
+        # Use restart instead of start to handle cases where nginx might already be running
+        systemctl restart nginx
 
         # Verify service is running
         if systemctl is-active --quiet nginx; then
-            krun::install::nginx::log "INFO" "Nginx service started successfully"
+            krun::install::nginx::log "INFO" "Nginx service restarted successfully"
         else
-            krun::install::nginx::error_exit "Failed to start Nginx service"
+            krun::install::nginx::error_exit "Failed to restart Nginx service"
         fi
     else
         krun::install::nginx::error_exit "Nginx configuration test failed"
@@ -823,6 +824,20 @@ krun::install::nginx::create_security_config() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
         config_path="/usr/local/etc/nginx"
     fi
+
+    # Remove any existing security.conf to avoid conflicts
+    if [[ -f "$config_path/conf.d/security.conf" ]]; then
+        krun::install::nginx::log "INFO" "Removing existing security.conf to avoid conflicts..."
+        mv "$config_path/conf.d/security.conf" "$config_path/conf.d/security.conf.bak.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || rm -f "$config_path/conf.d/security.conf"
+    fi
+
+    # Also check for other common conflicting config files
+    for conf_file in "$config_path/conf.d"/*.conf; do
+        if [[ -f "$conf_file" ]] && grep -q "server_tokens" "$conf_file" 2>/dev/null; then
+            krun::install::nginx::log "WARN" "Found server_tokens in $conf_file, backing up..."
+            mv "$conf_file" "$conf_file.bak.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
+        fi
+    done
 
     # Create security config file
     cat >"$config_path/conf.d/security.conf" <<'EOF'
