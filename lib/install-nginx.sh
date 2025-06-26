@@ -155,6 +155,35 @@ EOF
 krun::install::nginx::centos() {
     krun::install::nginx::log "INFO" "Installing Nginx on RHEL/CentOS/Rocky/AlmaLinux/Fedora..."
 
+    # Remove any existing nginx installations to avoid conflicts
+    krun::install::nginx::log "INFO" "Removing any existing nginx packages..."
+    if command -v dnf >/dev/null 2>&1; then
+        dnf remove -y nginx nginx-core nginx-common nginx-module-* 2>/dev/null || true
+    else
+        yum remove -y nginx nginx-core nginx-common nginx-module-* 2>/dev/null || true
+    fi
+
+    # Stop any running nginx service
+    systemctl stop nginx 2>/dev/null || true
+    systemctl disable nginx 2>/dev/null || true
+
+    # Backup and remove existing nginx configuration to avoid conflicts
+    if [[ -d /etc/nginx ]]; then
+        krun::install::nginx::log "INFO" "Backing up existing nginx configuration..."
+        mv /etc/nginx /etc/nginx.backup.$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
+    fi
+
+    # Remove any residual nginx files
+    rm -rf /var/log/nginx.backup* 2>/dev/null || true
+    rm -f /etc/logrotate.d/nginx.backup* 2>/dev/null || true
+
+    # Clean package cache
+    if command -v dnf >/dev/null 2>&1; then
+        dnf clean all
+    else
+        yum clean all
+    fi
+
     # Detect if it's Fedora or RHEL-based
     local repo_url
     if [[ -f /etc/fedora-release ]]; then
@@ -191,11 +220,27 @@ gpgkey=https://nginx.org/keys/nginx_signing.key
 module_hotfixes=true
 EOF
 
-    # Install nginx
+    # Install nginx from official repository
+    krun::install::nginx::log "INFO" "Installing nginx from nginx.org repository..."
     if command -v dnf >/dev/null 2>&1; then
-        dnf install -y nginx
+        # Try normal install first, then with --allowerasing if there are conflicts
+        if ! dnf install -y nginx 2>/dev/null; then
+            krun::install::nginx::log "WARN" "Package conflicts detected, removing conflicting packages..."
+            dnf remove -y nginx-core nginx-common 2>/dev/null || true
+            dnf install -y --allowerasing nginx
+        fi
     else
-        yum install -y nginx
+        # Try normal install first, then with conflict resolution
+        if ! yum install -y nginx 2>/dev/null; then
+            krun::install::nginx::log "WARN" "Package conflicts detected, removing conflicting packages..."
+            yum remove -y nginx-core nginx-common 2>/dev/null || true
+            yum install -y nginx --skip-broken || yum install -y nginx --nogpgcheck
+        fi
+    fi
+
+    # Verify installation
+    if ! command -v nginx >/dev/null 2>&1; then
+        krun::install::nginx::error_exit "Failed to install nginx from official repository"
     fi
 
     INSTALL_TYPE="Official Nginx (nginx.org)"
