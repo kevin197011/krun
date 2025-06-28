@@ -331,7 +331,8 @@ class Krun:
         print("MIT License")
 
     def _languages(self):
-        print("Supported script languages and extensions:")
+        print(KRUN_BANNER)
+        print("\nSupported script languages and extensions:")
         print("")
         lang_map = {
             'Shell/Bash': ['.sh', '.bash', '.zsh', '.fish'],

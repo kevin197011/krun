@@ -10,7 +10,7 @@ require 'time'
 require 'rake'
 require 'json'
 
-task default: %w[push]
+task default: %w[build push]
 
 task :push do
   Rake::Task[:shfmt].invoke
@@ -19,6 +19,10 @@ task :push do
   system "git commit -m 'Update #{Time.now}.'"
   system 'git pull'
   system 'git push origin main'
+end
+
+task :build do
+  system 'cd bin/krun-go && make build'
 end
 
 task :new do
