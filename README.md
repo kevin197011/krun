@@ -1,4 +1,12 @@
 # 🚀 Krun - Multi-Language Script Runner
+```
+______
+___  /____________  ________
+__  //_/_  ___/  / / /_  __ \
+_  ,<  _  /   / /_/ /_  / / /
+/_/|_| /_/    \__,_/ /_/ /_/
+       Multi-Language Script Runner
+```
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/kevin197011/krun)

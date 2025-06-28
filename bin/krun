@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
@@ -21,9 +21,10 @@ import re
 import json
 import subprocess
 import tempfile
+import ssl
 
-# ASCII art banner
-KRUN_BANNER = """______
+# ASCII art banner - using raw string to avoid escape sequence warnings
+KRUN_BANNER = r"""______
 ___  /____________  ________
 __  //_/_  ___/  / / /_  __ \\
 _  ,<  _  /   / /_/ /_  / / /
@@ -93,7 +94,8 @@ class Krun:
             self._help()
 
     def list(self):
-        print("🚀 Krun Multi-Language Script Collection")
+        print(KRUN_BANNER)
+        print("\n🚀 Krun Multi-Language Script Collection")
         print("=" * 50)
         scripts = self._list()
         grouped_scripts = self._group_scripts_by_language(scripts)
@@ -381,7 +383,9 @@ class Krun:
     def _get(self, url):
         req = Request(url)
         req.add_header("User-Agent", self.UA)
-        content = urlopen(req).read().decode("utf-8")
+        # Create an unverified context for HTTPS requests
+        context = ssl._create_unverified_context()
+        content = urlopen(req, context=context).read().decode("utf-8")
         return content
 
 
