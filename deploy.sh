@@ -7,6 +7,14 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# ASCII art banner
+KRUN_BANNER='______
+___  /____________  ________
+__  //_/_  ___/  / / /_  __ \
+_  ,<  _  /   / /_/ /_  / / /
+/_/|_| /_/    \__,_/ /_/ /_/
+       Multi-Language Script Runner'
+
 # Config
 deploy_path="${deploy_path:-"$HOME/.krun"}"
 bin_path="${deploy_path}/bin"
@@ -15,6 +23,11 @@ binary_base_url="https://raw.githubusercontent.com/kevin197011/krun/main/bin"
 default_shell_rc="$HOME/.bashrc"
 
 # Functions
+
+deploy::show_banner() {
+    echo "$KRUN_BANNER"
+    echo -e "\n🚀 Krun Installer\n"
+}
 
 deploy::platform() {
     local os arch
@@ -90,6 +103,7 @@ deploy::uninstall() {
 }
 
 deploy::main() {
+    deploy::show_banner
     deploy::install
     deploy::config
     deploy::status
