@@ -23,6 +23,14 @@ import (
 // User-Agent string
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
 
+// ASCII art banner
+const BANNER = `______
+___  /____________  ________
+__  //_/_  ___/  / / /_  __ \
+_  ,<  _  /   / /_/ /_  / / /
+/_/|_| /_/    \__,_/ /_/ /_/
+       Multi-Language Script Runner`
+
 // Supported interpreters map
 var INTERPRETERS = map[string][]string{
 	".sh":         {"bash"},
@@ -275,7 +283,8 @@ func (k *Krun) Status() {
 
 // Version prints version information
 func (k *Krun) Version() {
-	fmt.Println("Krun Multi-Language Script Runner v2.0 (Go)")
+	fmt.Println(BANNER)
+	fmt.Println("\nv2.0 (Go)")
 	fmt.Println("Copyright (c) 2023 kk")
 	fmt.Println("MIT License")
 }
@@ -326,9 +335,8 @@ func (k *Krun) Languages() {
 
 // Help prints the help message
 func (k *Krun) Help() {
-	fmt.Println("Krun Multi-Language Script Runner")
-	fmt.Println("")
-	fmt.Println("Usage:")
+	fmt.Println(BANNER)
+	fmt.Println("\nUsage:")
 	fmt.Println("  krun list                    - List all available scripts")
 	fmt.Println("  krun <number>                - Execute script by number")
 	fmt.Println("  krun <script_name>           - Execute script by name")

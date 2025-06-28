@@ -22,6 +22,13 @@ import json
 import subprocess
 import tempfile
 
+# ASCII art banner
+KRUN_BANNER = """______
+___  /____________  ________
+__  //_/_  ___/  / / /_  __ \\
+_  ,<  _  /   / /_/ /_  / / /
+/_/|_| /_/    \__,_/ /_/ /_/
+       Multi-Language Script Runner"""
 
 class Krun:
     # ua
@@ -316,7 +323,8 @@ class Krun:
                 print("  {}: {}".format(ext, ', '.join(available)))
 
     def _version(self):
-        print("Krun Multi-Language Script Runner v2.0")
+        print(KRUN_BANNER)
+        print("\nv2.0")
         print("Copyright (c) 2023 kk")
         print("MIT License")
 
@@ -352,9 +360,8 @@ class Krun:
             print("  {} {}: {} ({})".format(status, lang, ", ".join(exts), interpreters_str))
 
     def _help(self):
-        print("Krun Multi-Language Script Runner")
-        print("")
-        print("Usage:")
+        print(KRUN_BANNER)
+        print("\nUsage:")
         print("  krun list                    - List all available scripts")
         print("  krun <number>                - Execute script by number")
         print("  krun <script_name>           - Execute script by name")
