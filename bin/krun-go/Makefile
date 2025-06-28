@@ -9,11 +9,7 @@ SOURCE := krun.go
 OUT_DIR := '.'
 
 # OS/Arch targets
-TARGETS := \
-  darwin/amd64 \
-  darwin/arm64 \
-  linux/amd64 \
-  linux/arm64 
+TARGETS := darwin/amd64 darwin/arm64 linux/amd64 linux/arm64
 
 # Default target
 .PHONY: all
@@ -24,13 +20,14 @@ all: build
 build:
 	@echo "Building and compressing binaries with UPX..."
 	@mkdir -p $(OUT_DIR)
-	@for TARGET in $(TARGETS); do \
-		OS=$${TARGET%/*}; ARCH=$${TARGET##*/}; \
-		EXT=$$( [ "$$OS" = "windows" ] && echo ".exe" || echo "" ); \
-		OUT=$(OUT_DIR)/$(BINARY_NAME)-$$OS-$$ARCH$$EXT; \
-		echo " > $$OUT"; \
-		GOOS=$$OS GOARCH=$$ARCH go build -o $$OUT $(SOURCE); \
-		upx --best --lzma $$OUT || echo "⚠️ Skipped UPX (missing or failed) for $$OUT"; \
+	@for target in $(TARGETS); do \
+		os=$$(echo $$target | cut -d/ -f1); \
+		arch=$$(echo $$target | cut -d/ -f2); \
+		ext=$$( [ "$$os" = "windows" ] && echo ".exe" || echo "" ); \
+		out=$(OUT_DIR)/$(BINARY_NAME)-$$os-$$arch$$ext; \
+		echo " > $$out"; \
+		GOOS=$$os GOARCH=$$arch go build -o $$out $(SOURCE); \
+		upx --best --lzma $$out || echo "⚠️ Skipped UPX (missing or failed) for $$out"; \
 	done
 
 # Run locally (mac/Linux)
@@ -42,7 +39,7 @@ run:
 .PHONY: clean
 clean:
 	@echo "Cleaning build output..."
-	@rm -rf $(OUT_DIR)
+	@rm -rf $(OUT_DIR)/$(BINARY_NAME)-*
 
 # Example usage
 .PHONY: example
@@ -58,4 +55,4 @@ help:
 	@echo "  make run ARGS=\"...\"  Run on local platform"
 	@echo "  make clean           Clean binaries"
 	@echo "  make example         Run 'list' example on local"
-	@echo "  make help            Show this help"
+	@echo "  make help            Show this help message"
