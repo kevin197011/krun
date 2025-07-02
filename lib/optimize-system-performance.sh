@@ -20,6 +20,96 @@ readonly BLUE='\033[0;34m'
 readonly CYAN='\033[0;36m'
 readonly NC='\033[0m' # No Color
 
+# System configuration parameters
+readonly SYSCTL_PARAMS=(
+    # Virtual memory settings
+    "vm.swappiness=10"
+    "vm.dirty_ratio=15"
+    "vm.dirty_background_ratio=5"
+    "vm.dirty_expire_centisecs=3000"
+    "vm.dirty_writeback_centisecs=500"
+    "vm.overcommit_memory=1"
+    "vm.overcommit_ratio=50"
+    "vm.vfs_cache_pressure=50"
+    "vm.min_free_kbytes=65536"
+
+    # Network performance
+    "net.core.rmem_default=262144"
+    "net.core.rmem_max=67108864"
+    "net.core.wmem_default=262144"
+    "net.core.wmem_max=67108864"
+    "net.core.netdev_max_backlog=5000"
+    "net.core.netdev_budget=600"
+    "net.core.somaxconn=65535"
+    "net.core.optmem_max=81920"
+
+    # TCP settings
+    "net.ipv4.tcp_rmem=4096 87380 67108864"
+    "net.ipv4.tcp_wmem=4096 65536 67108864"
+    "net.ipv4.tcp_congestion_control=bbr"
+    "net.ipv4.tcp_slow_start_after_idle=0"
+    "net.ipv4.tcp_keepalive_time=600"
+    "net.ipv4.tcp_keepalive_intvl=60"
+    "net.ipv4.tcp_keepalive_probes=3"
+    "net.ipv4.tcp_fin_timeout=30"
+    "net.ipv4.tcp_tw_reuse=1"
+    "net.ipv4.tcp_max_tw_buckets=1048576"
+    "net.ipv4.tcp_max_syn_backlog=8192"
+    "net.ipv4.tcp_syncookies=1"
+    "net.ipv4.tcp_synack_retries=2"
+    "net.ipv4.tcp_syn_retries=2"
+    "net.ipv4.tcp_sack=1"
+    "net.ipv4.tcp_fack=1"
+    "net.ipv4.tcp_timestamps=1"
+    "net.ipv4.tcp_window_scaling=1"
+    "net.ipv4.tcp_adv_win_scale=1"
+    "net.ipv4.tcp_low_latency=1"
+    "net.ipv4.tcp_frto=2"
+    "net.ipv4.tcp_no_metrics_save=1"
+
+    # IP settings
+    "net.ipv4.ip_local_port_range=1024 65535"
+    "net.ipv4.ip_forward=1"          # Enable IP forwarding
+    "net.ipv4.conf.all.forwarding=1" # Enable IPv4 forwarding on all interfaces
+    "net.ipv6.conf.all.forwarding=1" # Enable IPv6 forwarding on all interfaces
+    "net.ipv4.conf.all.accept_redirects=0"
+    "net.ipv4.conf.default.accept_redirects=0"
+    "net.ipv4.conf.all.secure_redirects=0"
+    "net.ipv4.conf.default.secure_redirects=0"
+    "net.ipv4.conf.all.send_redirects=1"     # Allow sending ICMP redirects
+    "net.ipv4.conf.default.send_redirects=1" # Allow sending ICMP redirects
+    "net.ipv4.conf.all.accept_source_route=0"
+    "net.ipv4.conf.default.accept_source_route=0"
+    "net.ipv4.conf.all.log_martians=1"
+    "net.ipv4.conf.default.log_martians=1"
+    "net.ipv4.icmp_echo_ignore_broadcasts=1"
+    "net.ipv4.icmp_ignore_bogus_error_responses=1"
+
+    # File system
+    "fs.file-max=2097152"
+    "fs.nr_open=1048576"
+    "fs.inotify.max_user_watches=524288"
+    "fs.inotify.max_user_instances=256"
+
+    # Kernel settings
+    "kernel.pid_max=4194304"
+    "kernel.threads-max=2097152"
+    "kernel.shmmax=68719476736"
+    "kernel.shmall=4294967296"
+    "kernel.msgmnb=65536"
+    "kernel.msgmax=65536"
+    "kernel.panic=10"
+    "kernel.hung_task_timeout_secs=0"
+
+    # Security settings
+    "kernel.dmesg_restrict=1"
+    "kernel.kptr_restrict=2"
+    "kernel.yama.ptrace_scope=1"
+    "kernel.unprivileged_bpf_disabled=1"
+    "net.ipv4.conf.all.rp_filter=1"
+    "net.ipv4.conf.default.rp_filter=1"
+)
+
 # run code
 krun::optimize::system_performance::run() {
     echo -e "${BLUE}🚀 Starting system performance optimization...${NC}"
@@ -613,13 +703,30 @@ EOF
 krun::optimize::system_performance::optimize_network() {
     echo -e "${BLUE}🔧 Optimizing network settings...${NC}"
 
-    # configure network buffer sizes
+    # Configure network buffer sizes
     if [[ -f /proc/sys/net/core/rmem_max ]]; then
         echo 67108864 >/proc/sys/net/core/rmem_max
         echo 67108864 >/proc/sys/net/core/wmem_max
     fi
 
-    # enable BBR congestion control if available
+    # Enable IP forwarding immediately
+    echo -e "${BLUE}🌐 Enabling IP forwarding...${NC}"
+    if [[ -f /proc/sys/net/ipv4/ip_forward ]]; then
+        echo 1 >/proc/sys/net/ipv4/ip_forward
+        echo -e "${GREEN}✓ IPv4 forwarding enabled${NC}"
+    fi
+
+    if [[ -f /proc/sys/net/ipv4/conf/all/forwarding ]]; then
+        echo 1 >/proc/sys/net/ipv4/conf/all/forwarding
+        echo -e "${GREEN}✓ IPv4 forwarding enabled on all interfaces${NC}"
+    fi
+
+    if [[ -f /proc/sys/net/ipv6/conf/all/forwarding ]]; then
+        echo 1 >/proc/sys/net/ipv6/conf/all/forwarding
+        echo -e "${GREEN}✓ IPv6 forwarding enabled on all interfaces${NC}"
+    fi
+
+    # Enable BBR congestion control if available
     if lsmod | grep -q tcp_bbr; then
         echo -e "${GREEN}✓ BBR congestion control already loaded${NC}"
     elif modprobe tcp_bbr 2>/dev/null; then
@@ -631,6 +738,15 @@ krun::optimize::system_performance::optimize_network() {
         echo -e "${GREEN}✓ BBR congestion control enabled${NC}"
     else
         echo -e "${YELLOW}⚠️  BBR congestion control not available${NC}"
+    fi
+
+    # Verify IP forwarding status
+    echo -e "${BLUE}📊 IP Forwarding Status:${NC}"
+    if [[ -f /proc/sys/net/ipv4/ip_forward ]]; then
+        echo -e "IPv4 Forwarding: $(cat /proc/sys/net/ipv4/ip_forward)"
+    fi
+    if [[ -f /proc/sys/net/ipv6/conf/all/forwarding ]]; then
+        echo -e "IPv6 Forwarding: $(cat /proc/sys/net/ipv6/conf/all/forwarding)"
     fi
 
     echo -e "${GREEN}✓ Network settings optimized${NC}"
