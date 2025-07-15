@@ -10,9 +10,10 @@ require 'time'
 require 'rake'
 require 'json'
 
-task default: %w[build push]
+task default: %w[push]
 
 task :push do
+  # Rake::Task[:build].invoke
   Rake::Task[:shfmt].invoke
   Rake::Task[:generate_json].invoke
   system 'git add .'

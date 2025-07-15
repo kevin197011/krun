@@ -30,6 +30,8 @@ krun::install::asdf::centos() {
 
     # Install prerequisites
     yum install -y git curl
+    yum install -y epel-release
+    yum makecache
 
     # Install development tools for compiling languages
     yum groupinstall -y "Development Tools" || yum install -y gcc make
