@@ -94,38 +94,28 @@ krun::install::asdf::mac() {
 # common code
 krun::install::asdf::common() {
     echo "Installing asdf version manager..."
-
     local asdf_dir="$HOME/.asdf"
+    local tag="$asdf_version"
 
     # Remove existing installation if exists
-    if [[ -d "$asdf_dir" ]]; then
-        echo "Existing asdf installation found. Backing up..."
-        mv "$asdf_dir" "${asdf_dir}.backup.$(date +%Y%m%d-%H%M%S)"
-    fi
+    [[ -d "$asdf_dir" ]] && mv "$asdf_dir" "${asdf_dir}.backup.$(date +%Y%m%d-%H%M%S)"
 
-    # Clone asdf repository
-    echo "Cloning asdf repository..."
+    # Get latest tag if needed
     if [[ "$asdf_version" == "latest" ]]; then
-        git clone https://github.com/asdf-vm/asdf.git "$asdf_dir" --branch v0.14.0
-    else
-        git clone https://github.com/asdf-vm/asdf.git "$asdf_dir" --branch "$asdf_version"
+        tag=$(curl -fsSL https://api.github.com/repos/asdf-vm/asdf/releases/latest | grep tag_name | head -n1 | cut -d '"' -f 4)
+        [[ -z "$tag" ]] && tag="master"
     fi
 
-    # Verify installation
-    if [[ ! -d "$asdf_dir" ]]; then
+    echo "Cloning asdf ($tag)..."
+    git clone https://github.com/asdf-vm/asdf.git "$asdf_dir" --branch "$tag"
+    [[ ! -d "$asdf_dir" ]] && {
         echo "✗ asdf installation failed"
         return 1
-    fi
+    }
+    echo "✓ asdf installed"
 
-    echo "✓ asdf installed successfully"
-
-    # Configure shell integration
     krun::install::asdf::configure_shell
-
-    # Source asdf for current session
     source "$asdf_dir/asdf.sh"
-
-    # Verify installation
     krun::install::asdf::verify_installation
 }
 
