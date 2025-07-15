@@ -94,6 +94,11 @@ krun::install::asdf::mac() {
     fi
 }
 
+# 获取 asdf 最新版本号
+krun::install::asdf::get_latest_version() {
+    curl -fsSL https://api.github.com/repos/asdf-vm/asdf/releases/latest | grep tag_name | head -n1 | cut -d '"' -f 4
+}
+
 # common code
 krun::install::asdf::common() {
     echo "Installing asdf version manager..."
@@ -105,7 +110,7 @@ krun::install::asdf::common() {
 
     # Get latest tag if needed
     if [[ "$asdf_version" == "latest" ]]; then
-        tag=$(curl -fsSL https://api.github.com/repos/asdf-vm/asdf/releases/latest | grep tag_name | head -n1 | cut -d '"' -f 4)
+        tag=$(krun::install::asdf::get_latest_version)
         [[ -z "$tag" ]] && tag="master"
     fi
 
