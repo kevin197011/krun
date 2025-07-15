@@ -31,6 +31,7 @@ krun::install::asdf::centos() {
     # Install prerequisites
     yum install -y git curl
     yum install -y epel-release
+    yum config-manager --set-enabled crb
     yum makecache
 
     # Install development tools for compiling languages
