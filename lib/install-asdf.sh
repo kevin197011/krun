@@ -55,7 +55,7 @@ krun::install::asdf::mac() {
     krun::install::asdf::common
 }
 
-# 获取 asdf 最新版本号
+# get latest version
 krun::install::asdf::get_latest_version() {
     curl -fsSL https://api.github.com/repos/asdf-vm/asdf/releases/latest | grep tag_name | head -n1 | cut -d '"' -f 4
 }
