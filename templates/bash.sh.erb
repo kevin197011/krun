@@ -16,7 +16,7 @@ set -o pipefail
 # run code
 krun::<%= @action %>::<%= @name %>::run() {
     # default platform
-    platform='debian'
+    local platform='debian'
     # command -v apt >/dev/null && platform='debian'
     command -v yum >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
