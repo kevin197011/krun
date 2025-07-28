@@ -41,6 +41,7 @@ krun::install::node_exporter::centos() {
 
     # Download and extract node_exporter
     echo "Downloading node_exporter..."
+    yum install wget -y
     cd /tmp
     wget -q "${NODE_EXPORTER_URL}" -O node_exporter.tar.gz
     [[ $? -ne 0 ]] && echo "Download failed. Please check your network connection or the URL." && exit 1
