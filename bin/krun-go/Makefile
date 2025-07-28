@@ -24,7 +24,7 @@ build:
 		os=$$(echo $$target | cut -d/ -f1); \
 		arch=$$(echo $$target | cut -d/ -f2); \
 		ext=$$( [ "$$os" = "windows" ] && echo ".exe" || echo "" ); \
-		out=$(OUT_DIR)/$(BINARY_NAME)-$$os-$$arch$$ext; \
+		out="$(OUT_DIR)/$(BINARY_NAME)-$$os-$$arch$$ext"; \
 		echo " > $$out"; \
 		GOOS=$$os GOARCH=$$arch go build -o $$out $(SOURCE); \
 		upx --best --lzma $$out || echo "⚠️ Skipped UPX (missing or failed) for $$out"; \
