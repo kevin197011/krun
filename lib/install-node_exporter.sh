@@ -12,12 +12,11 @@ set -o pipefail
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-node_exporter.sh | bash
 
 # vars
+node_exporter_version=${node_exporter_version:-latest}
 
 # run code
 krun::install::node_exporter::run() {
-    # default platform
-    platform='debian'
-    # command -v apt >/dev/null && platform='debian'
+    local platform='debian'
     command -v yum >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
@@ -25,148 +24,133 @@ krun::install::node_exporter::run() {
 
 # centos code
 krun::install::node_exporter::centos() {
-    systemctl stop node_exporter || true
-    # Define variables
-    NODE_EXPORTER_VERSION="1.9.0" # Change the version as needed
-    NODE_EXPORTER_URL="https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz"
-    INSTALL_DIR="/opt/node_exporter"
-    SERVICE_FILE="/etc/systemd/system/node_exporter.service"
+    echo "Installing Node Exporter on CentOS/RHEL..."
+    [[ "$(id -u)" -ne 0 ]] && echo "✗ Please run as root" && return 1
 
-    # Check if the script is run as root
-    [[ "$(id -u)" -ne 0 ]] && echo "Please run this script as root!" && exit 1
-
-    # Create installation directory
-    echo "Creating installation directory: ${INSTALL_DIR}"
-    mkdir -p "${INSTALL_DIR}"
-
-    # Download and extract node_exporter
-    echo "Downloading node_exporter..."
-    yum install wget -y
-    cd /tmp
-    wget -q "${NODE_EXPORTER_URL}" -O node_exporter.tar.gz
-    [[ $? -ne 0 ]] && echo "Download failed. Please check your network connection or the URL." && exit 1
-
-    echo "Extracting node_exporter..."
-    tar -xzf node_exporter.tar.gz -C "${INSTALL_DIR}" --strip-components=1
-
-    # Clean up temporary files
-    rm -f node_exporter.tar.gz
-
-    # Create systemd service file
-    echo "Creating systemd service file..."
-    cat <<EOF | tee "${SERVICE_FILE}" >/dev/null
-[Unit]
-Description=Node Exporter
-After=network.target
-
-[Service]
-User=root
-ExecStart=${INSTALL_DIR}/node_exporter
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    # Reload systemd configuration
-    echo "Reloading systemd configuration..."
-    systemctl daemon-reload
-
-    # Start and enable node_exporter service
-    echo "Starting node_exporter service..."
-    systemctl start node_exporter
-    systemctl enable node_exporter
-
-    # Check service status
-    echo "Checking node_exporter service status..."
-    systemctl status node_exporter --no-pager
-
-    # Output completion message
-    echo "Installation complete!"
-    echo "node_exporter has been started and enabled to run on boot."
-    echo "Access metrics at http://localhost:9100/metrics."
+    systemctl stop node_exporter 2>/dev/null || true
+    yum install -y wget tar || {
+        echo "✗ Failed to install dependencies"
+        return 1
+    }
     krun::install::node_exporter::common
 }
 
 # debian code
 krun::install::node_exporter::debian() {
-    systemctl stop node_exporter || true
-    # Define variables
-    NODE_EXPORTER_VERSION="1.9.0" # Change the version as needed
-    NODE_EXPORTER_URL="https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz"
-    INSTALL_DIR="/opt/node_exporter"
-    SERVICE_FILE="/etc/systemd/system/node_exporter.service"
+    echo "Installing Node Exporter on Debian/Ubuntu..."
+    [[ "$(id -u)" -ne 0 ]] && echo "✗ Please run as root" && return 1
 
-    # Check if the script is run as root
-    [[ "$(id -u)" -ne 0 ]] && echo "Please run this script as root!" && exit 1
+    systemctl stop node_exporter 2>/dev/null || true
+    apt-get update && apt-get install -y wget tar || {
+        echo "✗ Failed to install dependencies"
+        return 1
+    }
+    krun::install::node_exporter::common
+}
 
-    # Update package lists
-    apt-get update
+# mac code
+krun::install::node_exporter::mac() {
+    echo "Installing Node Exporter on macOS..."
+    command -v node_exporter >/dev/null && echo "✓ Node Exporter already installed" && return
 
-    # Install prerequisites
-    apt-get install -y wget tar
+    if command -v brew >/dev/null; then
+        brew install node_exporter && echo "✓ Node Exporter installed via Homebrew" && return
+    fi
 
-    # Create installation directory
-    echo "Creating installation directory: ${INSTALL_DIR}"
-    mkdir -p "${INSTALL_DIR}"
+    echo "Homebrew not found, trying manual installation..."
+    krun::install::node_exporter::manual_install
+}
 
-    # Download and extract node_exporter
-    echo "Downloading node_exporter..."
-    cd /tmp
-    wget -q "${NODE_EXPORTER_URL}" -O node_exporter.tar.gz
-    [[ $? -ne 0 ]] && echo "Download failed. Please check your network connection or the URL." && exit 1
+# get latest version
+krun::install::node_exporter::get_latest_version() {
+    curl -fsSL https://api.github.com/repos/prometheus/node_exporter/releases/latest 2>/dev/null | grep tag_name | head -n1 | cut -d '"' -f 4 || echo "v1.9.0"
+}
 
-    echo "Extracting node_exporter..."
-    tar -xzf node_exporter.tar.gz -C "${INSTALL_DIR}" --strip-components=1
+# get system info
+krun::install::node_exporter::get_system_info() {
+    local arch=$(uname -m)
+    local os=$(uname -s | tr '[:upper:]' '[:lower:]')
 
-    # Clean up temporary files
-    rm -f node_exporter.tar.gz
+    [[ "$arch" == "x86_64" ]] && arch="amd64"
+    [[ "$arch" == "aarch64" || "$arch" == "arm64" ]] && arch="arm64"
+    [[ "$arch" != "amd64" && "$arch" != "arm64" ]] && arch="amd64"
+    [[ "$os" != "darwin" ]] && os="linux"
 
-    # Create systemd service file
-    echo "Creating systemd service file..."
-    cat <<EOF | tee "${SERVICE_FILE}" >/dev/null
+    echo "$os $arch"
+}
+
+# manual installation
+krun::install::node_exporter::manual_install() {
+    echo "Manual installation not supported for Node Exporter"
+    echo "Please install via package manager or Homebrew"
+    return 1
+}
+
+# common code
+krun::install::node_exporter::common() {
+    echo "Installing Node Exporter..."
+    [[ "$(id -u)" -ne 0 ]] && echo "✗ Please run as root" && return 1
+
+    local system_info=$(krun::install::node_exporter::get_system_info)
+    local os=$(echo "$system_info" | cut -d' ' -f1)
+    local arch=$(echo "$system_info" | cut -d' ' -f2)
+    local tag="$node_exporter_version"
+    [[ "$node_exporter_version" == "latest" ]] && tag=$(krun::install::node_exporter::get_latest_version)
+    tag=${tag#v}
+
+    echo "Downloading Node Exporter ${tag} for ${os}/${arch}..."
+    local temp_dir=$(mktemp -d)
+    local download_url="https://github.com/prometheus/node_exporter/releases/download/v${tag}/node_exporter-${tag}.${os}-${arch}.tar.gz"
+
+    curl -fsSL "$download_url" -o "${temp_dir}/node_exporter.tar.gz" || {
+        echo "✗ Failed to download Node Exporter"
+        rm -rf "$temp_dir"
+        return 1
+    }
+
+    mkdir -p /opt/node_exporter &&
+        tar -xzf "${temp_dir}/node_exporter.tar.gz" -C "$temp_dir" &&
+        mv "${temp_dir}/node_exporter-${tag}.${os}-${arch}/node_exporter" "/opt/node_exporter/" &&
+        chmod +x "/opt/node_exporter/node_exporter" &&
+        rm -rf "$temp_dir" &&
+        echo "✓ Node Exporter installed"
+
+    krun::install::node_exporter::create_service
+    krun::install::node_exporter::verify_installation
+}
+
+# create systemd service
+krun::install::node_exporter::create_service() {
+    cat >/etc/systemd/system/node_exporter.service <<EOF
 [Unit]
 Description=Node Exporter
 After=network.target
 
 [Service]
 User=root
-ExecStart=${INSTALL_DIR}/node_exporter
+ExecStart=/opt/node_exporter/node_exporter
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-    # Reload systemd configuration
-    echo "Reloading systemd configuration..."
-    systemctl daemon-reload
-
-    # Start and enable node_exporter service
-    echo "Starting node_exporter service..."
-    systemctl start node_exporter
-    systemctl enable node_exporter
-
-    # Check service status
-    echo "Checking node_exporter service status..."
-    systemctl status node_exporter --no-pager
-
-    # Output completion message
-    echo "Installation complete!"
-    echo "node_exporter has been started and enabled to run on boot."
-    echo "Access metrics at http://localhost:9100/metrics."
-    krun::install::node_exporter::common
+    systemctl daemon-reload &&
+        systemctl enable node_exporter &&
+        systemctl start node_exporter &&
+        echo "✓ Node Exporter service created and started"
 }
 
-# mac code
-krun::install::node_exporter::mac() {
-    # krun::install::node_exporter::common
-    echo "Mac skip install node_exporter..."
-}
+# verify installation
+krun::install::node_exporter::verify_installation() {
+    command -v /opt/node_exporter/node_exporter >/dev/null && echo "✓ Node Exporter binary found" || {
+        echo "✗ Node Exporter binary not found"
+        return 1
+    }
 
-# common code
-krun::install::node_exporter::common() {
-    systemctl status node_exporter
+    systemctl is-active node_exporter >/dev/null && echo "✓ Node Exporter service is running" || echo "⚠ Node Exporter service not running"
+
+    echo "Access metrics at http://localhost:9100/metrics"
 }
 
 # run main
