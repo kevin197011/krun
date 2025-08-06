@@ -42,21 +42,29 @@ krun::check::ip::mac() {
 
 # get local IPs
 krun::check::ip::get_local_ips() {
-    if command -v hostname >/dev/null; then
-        hostname -I 2>/dev/null | tr ' ' '\n' | grep -v '^$'
-    elif command -v ip >/dev/null; then
-        ip addr show | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1
-    elif [[ "$(uname)" == "Darwin" ]]; then
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS
         ifconfig | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}'
+    elif command -v ip >/dev/null; then
+        # Linux with ip command
+        ip addr show | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1
+    elif command -v hostname >/dev/null && hostname -I >/dev/null 2>&1; then
+        # Linux with hostname -I
+        hostname -I 2>/dev/null | tr ' ' '\n' | grep -v '^$'
     fi
 }
 
 # get primary IP
 krun::check::ip::get_primary_ip() {
-    if command -v ip >/dev/null; then
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS - get default interface and its IP
+        local default_interface=$(route get default 2>/dev/null | grep interface | awk '{print $2}')
+        if [[ -n "$default_interface" ]]; then
+            ifconfig "$default_interface" 2>/dev/null | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | head -1
+        fi
+    elif command -v ip >/dev/null; then
+        # Linux with ip command
         ip route get 8.8.8.8 2>/dev/null | grep -Po '(?<=src )[0-9.]+' | head -1
-    elif [[ "$(uname)" == "Darwin" ]]; then
-        route get default 2>/dev/null | grep interface | awk '{print $2}' | xargs ifconfig 2>/dev/null | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | head -1
     fi
 }
 
@@ -78,10 +86,12 @@ krun::check::ip::get_public_ip() {
 
 # get gateway
 krun::check::ip::get_gateway() {
-    if command -v ip >/dev/null; then
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS
+        route get default 2>/dev/null | grep gateway | awk '{print $2}'
+    elif command -v ip >/dev/null; then
+        # Linux with ip command
         ip route | grep default | awk '{print $3}' | head -1
-    elif [[ "$(uname)" == "Darwin" ]]; then
-        route -n get default 2>/dev/null | grep gateway | awk '{print $2}'
     fi
 }
 
@@ -114,36 +124,6 @@ krun::check::ip::common() {
         fi
         echo ""
     fi
-
-    # Network interfaces
-    echo "Network interfaces:"
-    if command -v ip >/dev/null; then
-        ip addr show | grep -E '^[0-9]+:|inet ' | while read line; do
-            if [[ "$line" =~ ^[0-9]+: ]]; then
-                echo "  $(echo "$line" | cut -d: -f2 | awk '{print $1}'):"
-            else
-                echo "    $(echo "$line" | awk '{print $2}')"
-            fi
-        done
-    elif [[ "$(uname)" == "Darwin" ]]; then
-        ifconfig | grep -E '^[a-z0-9]+:|inet ' | while read line; do
-            if [[ "$line" =~ ^[a-z0-9]+: ]]; then
-                echo "  $(echo "$line" | cut -d: -f1):"
-            else
-                echo "    $(echo "$line" | awk '{print $2}')"
-            fi
-        done
-    fi
-    echo ""
-
-    # DNS servers
-    echo "DNS servers:"
-    if [[ -f /etc/resolv.conf ]]; then
-        grep '^nameserver' /etc/resolv.conf | awk '{print "  " $2}'
-    else
-        echo "  DNS information not available"
-    fi
-    echo ""
 
     # Gateway
     echo "Default gateway:"
