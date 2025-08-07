@@ -1,151 +1,128 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2023 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-
-try:
-    # python 3.x
-    from urllib.parse import urlparse
-    from urllib.request import Request, urlopen
-except ImportError:
-    # python 2.x
-    from urlparse import urlparse
-    from urllib2 import Request, urlopen
-
 import sys
 import os
-import shutil
-import re
-import json
 import subprocess
 import tempfile
+import json
+import re
+import argparse
+from urllib.request import Request, urlopen
+from urllib.parse import urlparse
 import ssl
 
-# ASCII art banner - using raw string to avoid escape sequence warnings
-KRUN_BANNER = r"""______
+
+class Krun:
+    """Multi-language script runner"""
+
+    # ASCII art banner
+    BANNER = r"""______
 ___  /____________  ________
 __  //_/_  ___/  / / /_  __ \\
 _  ,<  _  /   / /_/ /_  / / /
 /_/|_| /_/    \__,_/ /_/ /_/
-       Multi-Language Script Runner"""
+       Multi-Language Script Runner
 
-class Krun:
-    # ua
-    UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+🚀 Krun Multi-Language Script Collection"""
 
-    # Supported script interpreters
+    # Supported interpreters by file extension
     INTERPRETERS = {
-        '.sh': ['bash'],
-        '.bash': ['bash'],
-        '.zsh': ['zsh'],
-        '.py': ['python3', 'python'],
-        '.python': ['python3', 'python'],
-        '.rb': ['ruby'],
-        '.ruby': ['ruby'],
-        '.pl': ['perl'],
-        '.perl': ['perl'],
-        '.js': ['node'],
-        '.javascript': ['node'],
-        '.lua': ['lua'],
-        '.r': ['Rscript'],
-        '.R': ['Rscript'],
-        '.php': ['php'],
-        '.swift': ['swift'],
-        '.groovy': ['groovy'],
-        '.scala': ['scala'],
-        '.ps1': ['powershell', 'pwsh'],
-        '.fish': ['fish'],
+        '.sh': 'bash',
+        '.bash': 'bash',
+        '.zsh': 'zsh',
+        '.py': 'python3',
+        '.python': 'python3',
+        '.rb': 'ruby',
+        '.ruby': 'ruby',
+        '.pl': 'perl',
+        '.perl': 'perl',
+        '.js': 'node',
+        '.javascript': 'node',
+        '.lua': 'lua',
+        '.r': 'Rscript',
+        '.R': 'Rscript',
+        '.php': 'php',
+        '.swift': 'swift',
+        '.groovy': 'groovy',
+        '.scala': 'scala',
+        '.ps1': 'powershell',
+        '.fish': 'fish',
     }
 
-    def run(self, args):
-        if len(args) < 2:
-            self._help()
-            return
+    # Language icons for display
+    LANG_ICONS = {
+        'shell': '🐚',
+        'python': '🐍',
+        'ruby': '💎',
+        'perl': '🐪',
+        'javascript': '🟨',
+        'other': '📄'
+    }
 
-        command = args[1]
+    def __init__(self):
+        """Initialize Krun instance"""
+        self.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+        self.base_url = "https://raw.githubusercontent.com/kevin197011/krun/main"
+        self.ssl_context = ssl._create_unverified_context()
 
-        if command == "list":
-            self.list()
-        elif command == "help":
-            self._help()
-        elif command == "status":
-            self._status()
-        elif command == "version":
-            self._version()
-        elif command == "languages":
-            self._languages()
-        elif re.match(r"\d+", command):
-            opt = int(command)
-            debug_mode = len(args) >= 3 and args[2] == "--debug"
-            if debug_mode:
-                self._debug(opt)
-            else:
-                self._run(opt)
-        elif self._is_script_name(command):
-            debug_mode = len(args) >= 3 and args[2] == "--debug"
-            if debug_mode:
-                self._debug(command)
-            else:
-                self._run(command)
-        else:
-            print("Error: Unknown command '{}'".format(command))
-            self._help()
+    def command_exists(self, command):
+        """Check if command exists in system"""
+        try:
+            subprocess.run([command, '--version'],
+                          stdout=subprocess.DEVNULL,
+                          stderr=subprocess.DEVNULL)
+            return True
+        except (OSError, subprocess.CalledProcessError):
+            return False
 
-    def list(self):
-        print(KRUN_BANNER)
-        print("\n🚀 Krun Multi-Language Script Collection")
-        print("=" * 50)
-        scripts = self._list()
-        grouped_scripts = self._group_scripts_by_language(scripts)
-        num = 1
-        total_scripts = len(scripts)
+    def get_extension(self, filename):
+        """Get file extension"""
+        return os.path.splitext(filename)[1].lower()
 
-        # Language icons mapping
-        lang_icons = {
-            'shell': '🐚',
-            'python': '🐍',
-            'ruby': '💎',
-            'perl': '🐪',
-            'javascript': '🟨',
-            'other': '📄'
-        }
+    def get_interpreter(self, filename, content=None):
+        """Get interpreter for file"""
+        ext = self.get_extension(filename)
 
-        # Display summary
-        print(f"\n📊 Total Scripts: {total_scripts}")
+        # Try extension-based detection
+        if ext in self.INTERPRETERS:
+            interpreter = self.INTERPRETERS[ext]
+            if self.command_exists(interpreter):
+                return interpreter
 
-        active_groups = {k: v for k, v in grouped_scripts.items() if v}
-        print(f"📁 Categories: {len(active_groups)}")
-        print()
+        # Try shebang detection
+        if content and content.startswith('#!'):
+            shebang = content.split('\n')[0][2:].strip()
+            for cmd in ['python3', 'python', 'ruby', 'perl', 'node', 'bash', 'zsh']:
+                if cmd in shebang and self.command_exists(cmd):
+                    return cmd
 
-        for lang, script_list in grouped_scripts.items():
-            if script_list:
-                icon = lang_icons.get(lang, '📄')
-                print(f"{icon} {lang.upper()} Scripts ({len(script_list)} files)")
-                print("─" * 40)
-                for script in script_list:
-                    print(f"    [{num:2}] {script}")
-                    num += 1
-                print()
+        # Default fallback
+        return 'bash' if ext in ['.sh', '.bash', ''] else None
 
-        print("💡 Usage: krun <number> or krun <script_name>")
-        print("🔍 Debug: krun <number> --debug")
-        print("=" * 50)
+    def download_script(self, script_name):
+        """Download script content from GitHub"""
+        url = f"{self.base_url}/lib/{script_name}"
+        req = Request(url)
+        req.add_header("User-Agent", self.user_agent)
+        return urlopen(req, context=self.ssl_context).read().decode("utf-8")
 
-    def _group_scripts_by_language(self, scripts):
-        """Group scripts by their language/extension"""
-        groups = {
-            'shell': [],
-            'python': [],
-            'ruby': [],
-            'perl': [],
-            'javascript': [],
-            'other': []
-        }
+    def get_script_list(self):
+        """Get list of available scripts"""
+        url = f"{self.base_url}/resources/krun.json"
+        req = Request(url)
+        req.add_header("User-Agent", self.user_agent)
+        return json.loads(urlopen(req, context=self.ssl_context).read().decode("utf-8"))
+
+    def group_scripts(self, scripts):
+        """Group scripts by language"""
+        groups = {'shell': [], 'python': [], 'ruby': [], 'perl': [], 'javascript': [], 'other': []}
 
         for script in scripts:
-            ext = self._get_file_extension(script)
+            ext = self.get_extension(script)
             if ext in ['.sh', '.bash', '.zsh']:
                 groups['shell'].append(script)
             elif ext in ['.py', '.python']:
@@ -161,185 +138,99 @@ class Krun:
 
         return groups
 
-    def _is_script_name(self, name):
-        """Check if the name looks like a script file"""
-        return re.match(r".*\.(sh|py|rb|pl|js|lua|r|php|swift|groovy|scala|ps1|fish|bash|zsh|python|ruby|perl|javascript)$", name)
-
-    def _get_file_extension(self, filename):
-        """Get the file extension"""
-        if '.' in filename:
-            return '.' + filename.split('.')[-1].lower()
-        return ''
-
-    def _detect_interpreter_from_shebang(self, content):
-        """Detect interpreter from shebang line"""
-        lines = content.split('\n')
-        if lines and lines[0].startswith('#!'):
-            shebang = lines[0][2:].strip()
-            if 'python' in shebang:
-                return 'python3' if 'python3' in shebang else 'python'
-            elif 'ruby' in shebang:
-                return 'ruby'
-            elif 'perl' in shebang:
-                return 'perl'
-            elif 'node' in shebang:
-                return 'node'
-            elif 'bash' in shebang:
-                return 'bash'
-            elif 'zsh' in shebang:
-                return 'zsh'
-            elif 'fish' in shebang:
-                return 'fish'
-            elif 'lua' in shebang:
-                return 'lua'
-            elif 'php' in shebang:
-                return 'php'
-        return None
-
-    def _get_interpreter(self, filename, content=None):
-        """Get the appropriate interpreter for a file"""
-        # First try to detect from file extension
-        ext = self._get_file_extension(filename)
-
-        if ext in self.INTERPRETERS:
-            interpreters = self.INTERPRETERS[ext]
-            for interpreter in interpreters:
-                if self._command_exists(interpreter):
-                    return interpreter
-
-        # If content is provided, try to detect from shebang
-        if content:
-            shebang_interpreter = self._detect_interpreter_from_shebang(content)
-            if shebang_interpreter and self._command_exists(shebang_interpreter):
-                return shebang_interpreter
-
-        # Default fallback
-        if ext == '' or ext in ['.sh', '.bash']:
-            return 'bash'
-
-        return None
-
-    def _command_exists(self, command):
-        """Check if a command exists in the system"""
+    def execute_script(self, script_name):
+        """Execute a script"""
         try:
-            with open(os.devnull, 'w') as devnull:
-                subprocess.call([command, '--version'],
-                              stdout=devnull, stderr=devnull)
-            return True
-        except (OSError, subprocess.CalledProcessError):
-            try:
-                with open(os.devnull, 'w') as devnull:
-                    subprocess.call(['which', command],
-                                  stdout=devnull, stderr=devnull)
-                return True
-            except (OSError, subprocess.CalledProcessError):
-                return False
+            content = self.download_script(script_name)
+            interpreter = self.get_interpreter(script_name, content)
 
-    def _url(self, opt):
-        if isinstance(opt, int):
-            sh = self._list()[opt - 1]
-        else:
-            sh = opt
-        url = "https://raw.githubusercontent.com/kevin197011/krun/main/lib/{0}".format(sh)
-        return url
+            if not interpreter:
+                print(f"Error: Cannot determine interpreter for {script_name}")
+                return
 
-    def _run(self, opt):
-        url = self._url(opt)
-        parsed_url = urlparse(url)
-        filename = os.path.basename(parsed_url.path)
+            # Create temporary file
+            with tempfile.NamedTemporaryFile(mode='w', suffix=self.get_extension(script_name), delete=False) as tmp_file:
+                tmp_file.write(content)
+                tmp_path = tmp_file.name
 
-        # Download script content
-        content = self._get(url)
-
-        # Determine interpreter
-        interpreter = self._get_interpreter(filename, content)
-
-        if not interpreter:
-            print("Error: Cannot determine interpreter for {}".format(filename))
-            return
-
-        # Create temporary file
-        with tempfile.NamedTemporaryFile(mode='w', suffix=self._get_file_extension(filename), delete=False) as tmp_file:
-            tmp_file.write(content)
-            tmp_file_path = tmp_file.name
-
-        try:
-            # Make file executable
-            os.chmod(tmp_file_path, 0o755)
-
-            # Execute with appropriate interpreter
-            print("Executing {} with {}...".format(filename, interpreter))
-
-            if interpreter in ['bash', 'zsh', 'fish'] and content.startswith('#!'):
-                # For shell scripts with shebang, execute directly
-                subprocess.call([interpreter, tmp_file_path])
-            else:
-                # For other interpreters
-                subprocess.call([interpreter, tmp_file_path])
+            # Make executable and run
+            os.chmod(tmp_path, 0o755)
+            print(f"Executing {script_name} with {interpreter}...")
+            subprocess.run([interpreter, tmp_path])
 
         except KeyboardInterrupt:
             print("\nScript execution interrupted by user")
         except Exception as e:
-            print("Error executing script: {}".format(str(e)))
+            print(f"Error executing script: {e}")
         finally:
-            # Clean up temporary file
+            # Cleanup
             try:
-                os.remove(tmp_file_path)
-            except OSError:
+                os.remove(tmp_path)
+            except:
                 pass
 
-    def _list(self):
-        url = "https://raw.githubusercontent.com/kevin197011/krun/main/resources/krun.json"
-        return json.loads(self._get(url))
+    def debug_script(self, script_name):
+        """Show debug information for script"""
+        try:
+            content = self.download_script(script_name)
+            interpreter = self.get_interpreter(script_name, content)
 
-    def _debug(self, opt):
-        url = self._url(opt)
-        parsed_url = urlparse(url)
-        filename = os.path.basename(parsed_url.path)
-        content = self._get(url)
+            print("=== Script Debug Information ===")
+            print(f"Filename: {script_name}")
+            print(f"Extension: {self.get_extension(script_name)}")
+            print(f"Interpreter: {interpreter}")
+            print("\n=== Script Content ===")
+            print(content)
 
-        print("=== Script Debug Information ===")
-        print("Filename: {}".format(filename))
-        print("URL: {}".format(url))
-        print("File extension: {}".format(self._get_file_extension(filename)))
+        except Exception as e:
+            print(f"Error: {e}")
 
-        interpreter = self._get_interpreter(filename, content)
-        print("Detected interpreter: {}".format(interpreter or 'Unknown'))
+    def show_list(self):
+        """Show list of available scripts"""
+        print(self.BANNER)
+        print("=" * 50)
 
-        shebang_interpreter = self._detect_interpreter_from_shebang(content)
-        if shebang_interpreter:
-            print("Shebang interpreter: {}".format(shebang_interpreter))
+        scripts = self.get_script_list()
+        groups = self.group_scripts(scripts)
 
-        print("\n=== Script Content ===")
-        print(content)
+        print(f"\n📊 Total Scripts: {len(scripts)}")
+        active_groups = {k: v for k, v in groups.items() if v}
+        print(f"📁 Categories: {len(active_groups)}")
+        print()
 
-    def _status(self):
+        num = 1
+        for lang, script_list in groups.items():
+            if script_list:
+                icon = self.LANG_ICONS.get(lang, '📄')
+                print(f"{icon} {lang.upper()} Scripts ({len(script_list)} files)")
+                print("─" * 40)
+                for script in script_list:
+                    print(f"    [{num:2}] {script}")
+                    num += 1
+                print()
+
+        print("💡 Usage: krun <number> or krun <script_name>")
+        print("🔍 Debug: krun <number> --debug")
+
+    def show_status(self):
+        """Show system status"""
         print("Krun ready!")
-        print("Supported interpreters:")
-        for ext, interpreters in self.INTERPRETERS.items():
-            available = []
-            for interpreter in interpreters:
-                if self._command_exists(interpreter):
-                    available.append(interpreter)
-            if available:
-                print("  {}: {}".format(ext, ', '.join(available)))
+        print("Available interpreters:")
+        for ext, interpreter in self.INTERPRETERS.items():
+            if self.command_exists(interpreter):
+                print(f"  {ext}: {interpreter}")
 
-    def _version(self):
-        print(KRUN_BANNER)
-        print("\nv2.0")
-        print("Copyright (c) 2023 kk")
-        print("MIT License")
+    def show_languages(self):
+        """Show supported languages"""
+        print(self.BANNER)
+        print("\nSupported languages:")
 
-    def _languages(self):
-        print(KRUN_BANNER)
-        print("\nSupported script languages and extensions:")
-        print("")
         lang_map = {
-            'Shell/Bash': ['.sh', '.bash', '.zsh', '.fish'],
+            'Shell/Bash': ['.sh', '.bash', '.zsh'],
             'Python': ['.py', '.python'],
             'Ruby': ['.rb', '.ruby'],
             'Perl': ['.pl', '.perl'],
-            'JavaScript (Node.js)': ['.js', '.javascript'],
+            'JavaScript': ['.js', '.javascript'],
             'Lua': ['.lua'],
             'R': ['.r', '.R'],
             'PHP': ['.php'],
@@ -350,46 +241,114 @@ class Krun:
         }
 
         for lang, exts in lang_map.items():
-            available_interpreters = []
-            for ext in exts:
-                if ext in self.INTERPRETERS:
-                    for interpreter in self.INTERPRETERS[ext]:
-                        if self._command_exists(interpreter):
-                            available_interpreters.append(interpreter)
-                            break
+            available = any(self.command_exists(self.INTERPRETERS.get(ext, '')) for ext in exts)
+            status = "✓" if available else "✗"
+            print(f"  {status} {lang}")
 
-            status = "✓" if available_interpreters else "✗"
-            interpreters_str = ", ".join(available_interpreters) if available_interpreters else "Not available"
-            print("  {} {}: {} ({})".format(status, lang, ", ".join(exts), interpreters_str))
-
-    def _help(self):
-        print(KRUN_BANNER)
+    def show_help(self):
+        """Show help message"""
+        print(self.BANNER)
         print("\nUsage:")
-        print("  krun list                    - List all available scripts")
+        print("  krun list                    - List all scripts")
         print("  krun <number>                - Execute script by number")
         print("  krun <script_name>           - Execute script by name")
-        print("  krun <number|script> --debug - Show script content and debug info")
-        print("  krun status                  - Show system status and available interpreters")
+        print("  krun <number|script> --debug - Show debug info")
+        print("  krun status                  - Show system status")
         print("  krun languages               - Show supported languages")
-        print("  krun version                 - Show version information")
-        print("  krun help                    - Show this help message")
-        print("")
-        print("Examples:")
+        print("  krun version                 - Show version")
+        print("  krun help                    - Show this help")
+        print("\nExamples:")
         print("  krun 1                       - Execute first script")
         print("  krun hello-world.sh          - Execute hello-world.sh")
-        print("  krun install-python3.py      - Execute Python script")
-        print("  krun config-system.rb        - Execute Ruby script")
-        print("  krun 5 --debug               - Show debug info for script #5")
+        print("  krun 5 --debug               - Debug script #5")
 
-    def _get(self, url):
-        req = Request(url)
-        req.add_header("User-Agent", self.UA)
-        # Create an unverified context for HTTPS requests
-        context = ssl._create_unverified_context()
-        content = urlopen(req, context=context).read().decode("utf-8")
-        return content
+    def show_version(self):
+        """Show version information"""
+        print(self.BANNER)
+        print("\nv2.0")
+        print("Copyright (c) 2023 kk")
+        print("MIT License")
+
+    def run_by_number(self, number, debug=False):
+        """Run script by number"""
+        scripts = self.get_script_list()
+        try:
+            script_name = scripts[int(number) - 1]
+            if debug:
+                self.debug_script(script_name)
+            else:
+                self.execute_script(script_name)
+        except IndexError:
+            print(f"Error: Script #{number} not found")
+
+    def run_by_name(self, script_name, debug=False):
+        """Run script by name"""
+        if debug:
+            self.debug_script(script_name)
+        else:
+            self.execute_script(script_name)
+
+    def is_script_name(self, name):
+        """Check if name looks like a script file"""
+        return re.match(r".*\.(sh|py|rb|pl|js|lua|r|php|swift|groovy|scala|ps1|fish|bash|zsh|python|ruby|perl|javascript)$", name)
+
+    def run(self, args):
+        """Main entry point"""
+        parser = argparse.ArgumentParser(
+            description="Multi-language script runner",
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            epilog="""
+Examples:
+  krun list                    List all available scripts
+  krun 1                      Execute first script
+  krun hello-world.sh         Execute hello-world.sh
+  krun 5 --debug              Show debug info for script #5
+  krun status                 Show system status
+  krun languages              Show supported languages
+  krun version                Show version information
+            """
+        )
+
+        parser.add_argument('command', nargs='?', help='Command or script to run')
+        parser.add_argument('--debug', action='store_true', help='Show debug information')
+        parser.add_argument('--version', action='version', version='krun v2.0')
+
+        # Parse arguments
+        parsed_args = parser.parse_args(args)
+
+        # Handle commands
+        if not parsed_args.command:
+            self.show_help()
+            return
+
+        command = parsed_args.command
+
+        if command == "list":
+            self.show_list()
+        elif command == "help":
+            self.show_help()
+        elif command == "status":
+            self.show_status()
+        elif command == "version":
+            self.show_version()
+        elif command == "languages":
+            self.show_languages()
+        elif command.isdigit():
+            # Execute by number
+            self.run_by_number(command, parsed_args.debug)
+        elif self.is_script_name(command):
+            # Execute by script name
+            self.run_by_name(command, parsed_args.debug)
+        else:
+            print(f"Error: Unknown command '{command}'")
+            self.show_help()
+
+
+def main():
+    """Main function"""
+    krun = Krun()
+    krun.run(sys.argv[1:])
 
 
 if __name__ == "__main__":
-    c = Krun()
-    c.run(sys.argv)
+    main()
