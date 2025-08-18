@@ -23,45 +23,15 @@ binary_base_url="https://raw.githubusercontent.com/kevin197011/krun/main/bin"
 default_shell_rc="$HOME/.bashrc"
 
 # Functions
-
 deploy::show_banner() {
     echo "$KRUN_BANNER"
     echo -e "\n🚀 Krun Installer\n"
 }
 
-deploy::platform() {
-    local os arch
-    case "$(uname -s)" in
-    Linux*) os="linux" ;;
-    Darwin*) os="darwin" ;;
-    *)
-        echo "❌ Unsupported OS: $(uname -s)" >&2
-        exit 1
-        ;;
-    esac
-
-    case "$(uname -m)" in
-    x86_64) arch="amd64" ;;
-    arm64 | aarch64) arch="arm64" ;;
-    *)
-        echo "❌ Unsupported architecture: $(uname -m)" >&2
-        exit 1
-        ;;
-    esac
-
-    echo "${os}-${arch}"
-}
-
 deploy::install() {
     mkdir -p "$bin_path" "$config_path"
 
-    local platform binary_url
-    binary_url="${binary_base_url}/krun"
-
-    if ! command -v python >/dev/null 2>&1; then
-        platform="$(deploy::platform)"
-        binary_url="${binary_base_url}/krun-${platform}"
-    fi
+    local binary_url="${binary_base_url}/krun"
 
     echo "🔽 Downloading krun from ${binary_url}..."
     curl -fsSL -o "${bin_path}/krun" "$binary_url"

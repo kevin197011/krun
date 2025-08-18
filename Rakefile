@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) 2023 kk
+# Copyright (c) 2025 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -13,32 +13,26 @@ require 'json'
 task default: %w[push]
 
 task :push do
-  # Rake::Task[:build].invoke
   Rake::Task[:shfmt].invoke
   Rake::Task[:generate_json].invoke
   system 'git add .'
-  system "git commit -m 'Update #{Time.now}.'"
+  system "git commit -m 'Update #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}.'"
   system 'git pull'
   system 'git push origin main'
 end
 
-task :build do
-  system 'cd bin/krun-go && make build'
-end
-
 task :new do
-  @year = Time.now.year
   print 'action: '
-  @action = $stdin.gets.strip
+  action = $stdin.gets.strip
   print 'name: '
-  @name = $stdin.gets.strip
-  script_name = "#{File.dirname(__FILE__)}/lib/#{@action}-#{@name}.sh"
+  name = $stdin.gets.strip
+
+  script_name = "#{__dir__}/lib/#{action}-#{name}.sh"
   File.rename(script_name, "#{script_name}.bak") if File.exist?(script_name)
-  File.open(script_name, 'w') do |f|
-    tpl = File.read("#{File.dirname(__FILE__)}/templates/bash.sh.erb")
-    f.write(ERB.new(tpl, trim_mode: '-').result(binding))
-    puts "Create #{@action}-#{@name}.sh!"
-  end
+
+  template = File.read("#{__dir__}/templates/bash.sh.erb")
+  File.write(script_name, ERB.new(template, trim_mode: '-').result(binding))
+  puts "Created #{action}-#{name}.sh!"
 end
 
 task :shfmt do
@@ -46,8 +40,17 @@ task :shfmt do
 end
 
 task :generate_json do
-  fs = Dir.glob("#{__dir__}/lib/*.sh").map { |f| File.basename(f) }
-  File.open("#{__dir__}/resources/krun.json", 'w') do |f|
-    f.write(fs.to_json)
-  end
+  scripts = Dir.glob("#{__dir__}/lib/*.sh").map { |f| File.basename(f) }.sort
+  File.write("#{__dir__}/resources/krun.json", JSON.pretty_generate(scripts))
+end
+
+task :clean do
+  Dir.glob("#{__dir__}/lib/*.bak").each { |f| File.delete(f) }
+  puts 'Cleaned backup files'
+end
+
+task :stats do
+  scripts = Dir.glob("#{__dir__}/lib/*.sh")
+  puts "Shell scripts: #{scripts.length}"
+  puts "Total lines: #{scripts.sum { |f| File.readlines(f).length }}"
 end
