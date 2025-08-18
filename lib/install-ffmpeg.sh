@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2023 kk
+# Copyright (c) 2025 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -13,257 +13,65 @@ set -o pipefail
 
 # vars
 
-# Detect system version and distribution
-get_system_info() {
-    local system_info=""
-
-    if [[ -f /etc/redhat-release ]]; then
-        local release_content=$(cat /etc/redhat-release)
-        if echo "$release_content" | grep -q "Rocky Linux release 9"; then
-            system_info="rocky9"
-        elif echo "$release_content" | grep -q "CentOS Linux release 8"; then
-            system_info="centos8"
-        elif echo "$release_content" | grep -q "CentOS Linux release 7"; then
-            system_info="centos7"
-        elif echo "$release_content" | grep -q "Red Hat Enterprise Linux release 9"; then
-            system_info="rhel9"
-        elif echo "$release_content" | grep -q "Red Hat Enterprise Linux release 8"; then
-            system_info="rhel8"
-        elif echo "$release_content" | grep -q "Red Hat Enterprise Linux release 7"; then
-            system_info="rhel7"
-        else
-            # Generic RHEL/CentOS detection
-            local version=$(rpm -E %rhel 2>/dev/null || echo "7")
-            system_info="el${version}"
-        fi
-    elif [[ -f /etc/debian_version ]]; then
-        if [[ -f /etc/lsb-release ]]; then
-            source /etc/lsb-release
-            if [[ "$DISTRIB_ID" == "Ubuntu" ]]; then
-                system_info="ubuntu${DISTRIB_RELEASE%%.*}"
-            else
-                system_info="debian"
-            fi
-        else
-            system_info="debian"
-        fi
-    elif command -v brew >/dev/null 2>&1; then
-        system_info="mac"
-    else
-        system_info="unknown"
-    fi
-
-    echo "$system_info"
-}
-
-# Download and install static FFmpeg build
-install_static_ffmpeg() {
-    echo "Downloading static FFmpeg build..."
-
-    local temp_dir=$(mktemp -d)
-    cd "$temp_dir"
-
-    # Download latest static build
-    local ffmpeg_url="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz"
-    echo "Downloading from: $ffmpeg_url"
-
-    if ! curl -L -o ffmpeg.tar.xz "$ffmpeg_url"; then
-        echo "✗ Failed to download static FFmpeg build"
-        rm -rf "$temp_dir"
-        return 1
-    fi
-
-    # Extract and install
-    echo "Extracting FFmpeg..."
-    tar -xf ffmpeg.tar.xz
-
-    # Find the extracted directory
-    local ffmpeg_dir=$(find . -maxdepth 1 -type d -name "ffmpeg-*-amd64-static" | head -1)
-    if [[ -z "$ffmpeg_dir" ]]; then
-        echo "✗ Failed to find extracted FFmpeg directory"
-        rm -rf "$temp_dir"
-        return 1
-    fi
-
-    cd "$ffmpeg_dir"
-
-    # Install binaries
-    echo "Installing FFmpeg binaries to /usr/local/bin..."
-    sudo cp ffmpeg ffprobe /usr/local/bin/ 2>/dev/null || cp ffmpeg ffprobe /usr/local/bin/
-
-    # Clean up
-    cd /
-    rm -rf "$temp_dir"
-
-    echo "✓ Static FFmpeg installed successfully"
-    return 0
-}
-
 # run code
 krun::install::ffmpeg::run() {
-    local system_info=$(get_system_info)
-    echo "Detected system: $system_info"
-
-    case "$system_info" in
-    rocky9 | rhel9 | el9)
-        krun::install::ffmpeg::el9
-        ;;
-    centos8 | rhel8 | el8)
-        krun::install::ffmpeg::el8
-        ;;
-    centos7 | rhel7 | el7)
-        krun::install::ffmpeg::el7
-        ;;
-    ubuntu* | debian)
-        krun::install::ffmpeg::debian
-        ;;
-    mac)
-        krun::install::ffmpeg::mac
-        ;;
-    *)
-        echo "Unsupported system: $system_info"
-        echo "Trying generic installation..."
-        krun::install::ffmpeg::generic
-        ;;
-    esac
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
-# EL9 (Rocky Linux 9, RHEL 9) specific installation
-krun::install::ffmpeg::el9() {
-    echo "Installing FFmpeg on EL9 (Rocky Linux 9/RHEL 9)..."
+# centos code
+krun::install::ffmpeg::centos() {
+    echo "Installing FFmpeg on CentOS/RHEL..."
 
-    # Update system
-    echo "Updating system packages..."
-    sudo dnf -y update
+    # Detect system version
+    local system_version=$(rpm -E %rhel 2>/dev/null || echo "7")
+    echo "Detected system version: EL $system_version"
 
-    # Install EPEL and enable CRB
-    echo "Installing EPEL and enabling CRB repository..."
-    sudo dnf -y install epel-release dnf-plugins-core
-    sudo dnf config-manager --set-enabled crb
+    # Install EPEL repository
+    if command -v dnf >/dev/null 2>&1; then
+        dnf install -y epel-release dnf-plugins-core
+        dnf config-manager --set-enabled crb 2>/dev/null || true
+    else
+        yum install -y epel-release
+    fi
 
     # Install RPM Fusion repositories
-    echo "Installing RPM Fusion repositories..."
-    sudo dnf -y install \
-        https://download1.rpmfusion.org/free/el/rpmfusion-free-release-9.noarch.rpm \
-        https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-9.noarch.rpm
-
-    # Install critical dependencies first
-    echo "Installing critical dependencies..."
-    sudo dnf -y install ladspa rubberband-libs || true
-
-    # Try package manager installation
-    echo "Attempting package manager installation..."
-    if sudo dnf -y install ffmpeg ffmpeg-devel --nobest; then
-        echo "✓ FFmpeg installed successfully via package manager"
+    if command -v dnf >/dev/null 2>&1; then
+        dnf install -y \
+            https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${system_version}.noarch.rpm \
+            https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${system_version}.noarch.rpm
     else
-        echo "Package manager installation failed, trying static build..."
-        install_static_ffmpeg
+        yum install -y \
+            https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${system_version}.noarch.rpm \
+            https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${system_version}.noarch.rpm
+    fi
+
+    # Install critical dependencies
+    if command -v dnf >/dev/null 2>&1; then
+        dnf install -y ladspa rubberband-libs || true
+        dnf install -y ffmpeg ffmpeg-devel --nobest || krun::install::ffmpeg::static_install
+    else
+        yum install -y ladspa rubberband-libs || true
+        yum install -y ffmpeg ffmpeg-devel --nobest || krun::install::ffmpeg::static_install
     fi
 
     krun::install::ffmpeg::common
 }
 
-# EL8 (CentOS 8, RHEL 8) specific installation
-krun::install::ffmpeg::el8() {
-    echo "Installing FFmpeg on EL8 (CentOS 8/RHEL 8)..."
-
-    # Update system
-    echo "Updating system packages..."
-    sudo dnf -y update
-
-    # Install EPEL and enable PowerTools
-    echo "Installing EPEL and enabling PowerTools repository..."
-    sudo dnf -y install epel-release dnf-plugins-core
-    sudo dnf config-manager --set-enabled powertools || sudo dnf config-manager --set-enabled PowerTools
-
-    # Install RPM Fusion repositories
-    echo "Installing RPM Fusion repositories..."
-    sudo dnf -y install \
-        https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm \
-        https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-8.noarch.rpm
-
-    # Install dependencies
-    echo "Installing dependencies..."
-    sudo dnf -y install ladspa rubberband-libs || true
-
-    # Try package manager installation
-    echo "Attempting package manager installation..."
-    if sudo dnf -y install ffmpeg ffmpeg-devel --nobest; then
-        echo "✓ FFmpeg installed successfully via package manager"
-    else
-        echo "Package manager installation failed, trying static build..."
-        install_static_ffmpeg
-    fi
-
-    krun::install::ffmpeg::common
-}
-
-# EL7 (CentOS 7, RHEL 7) specific installation
-krun::install::ffmpeg::el7() {
-    echo "Installing FFmpeg on EL7 (CentOS 7/RHEL 7)..."
-
-    # Update system
-    echo "Updating system packages..."
-    sudo yum -y update
-
-    # Install EPEL
-    echo "Installing EPEL repository..."
-    sudo yum -y install epel-release
-
-    # Install RPM Fusion repositories
-    echo "Installing RPM Fusion repositories..."
-    sudo yum -y install \
-        https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm \
-        https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
-
-    # Install dependencies
-    echo "Installing dependencies..."
-    sudo yum -y install ladspa rubberband-libs || true
-
-    # Try package manager installation
-    echo "Attempting package manager installation..."
-    if sudo yum -y install ffmpeg ffmpeg-devel --nobest; then
-        echo "✓ FFmpeg installed successfully via package manager"
-    else
-        echo "Package manager installation failed, trying static build..."
-        install_static_ffmpeg
-    fi
-
-    krun::install::ffmpeg::common
-}
-
-# Debian/Ubuntu installation
+# debian code
 krun::install::ffmpeg::debian() {
     echo "Installing FFmpeg on Debian/Ubuntu..."
 
-    # Update package lists
-    echo "Updating package lists..."
-    sudo apt-get update
-
-    # Install FFmpeg
-    echo "Installing FFmpeg..."
-    if sudo apt-get install -y ffmpeg; then
-        echo "✓ FFmpeg installed successfully"
-    else
-        echo "Standard installation failed, trying alternative repositories..."
-
-        # Try to add additional repositories
-        sudo apt-get install -y software-properties-common || true
-        sudo add-apt-repository universe || true
-        sudo apt-get update
-
-        if sudo apt-get install -y ffmpeg; then
-            echo "✓ FFmpeg installed successfully from universe repository"
-        else
-            echo "Package manager installation failed, trying static build..."
-            install_static_ffmpeg
-        fi
-    fi
+    apt-get update
+    apt-get install -y ffmpeg || krun::install::ffmpeg::static_install
 
     krun::install::ffmpeg::common
 }
 
-# macOS installation
+# mac code
 krun::install::ffmpeg::mac() {
     echo "Installing FFmpeg on macOS..."
 
@@ -273,122 +81,78 @@ krun::install::ffmpeg::mac() {
         return 1
     fi
 
-    # Update Homebrew
-    echo "Updating Homebrew..."
     brew update
-
-    # Install FFmpeg via Homebrew
-    echo "Installing FFmpeg via Homebrew..."
-    if brew install ffmpeg; then
-        echo "✓ FFmpeg installed successfully via Homebrew"
-    else
-        echo "Homebrew installation failed, trying static build..."
-        install_static_ffmpeg
-    fi
+    brew install ffmpeg || krun::install::ffmpeg::static_install
 
     krun::install::ffmpeg::common
 }
 
-# Generic installation for unknown systems
-krun::install::ffmpeg::generic() {
-    echo "Attempting generic FFmpeg installation..."
+# static installation
+krun::install::ffmpeg::static_install() {
+    echo "Installing FFmpeg from static build..."
 
-    # Try common package managers
-    if command -v dnf >/dev/null 2>&1; then
-        echo "Trying DNF package manager..."
-        if sudo dnf -y install ffmpeg; then
-            echo "✓ FFmpeg installed successfully via DNF"
-            krun::install::ffmpeg::common
-            return 0
-        fi
+    local temp_dir=$(mktemp -d)
+    cd "$temp_dir"
+
+    # Download latest static build
+    local ffmpeg_url="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz"
+    echo "Downloading from: $ffmpeg_url"
+
+    if ! curl -L -o ffmpeg.tar.xz "$ffmpeg_url"; then
+        echo "Failed to download static FFmpeg build"
+        rm -rf "$temp_dir"
+        return 1
     fi
 
-    if command -v yum >/dev/null 2>&1; then
-        echo "Trying YUM package manager..."
-        if sudo yum -y install ffmpeg; then
-            echo "✓ FFmpeg installed successfully via YUM"
-            krun::install::ffmpeg::common
-            return 0
-        fi
+    # Extract and install
+    tar -xf ffmpeg.tar.xz
+
+    # Find the extracted directory
+    local ffmpeg_dir=$(find . -maxdepth 1 -type d -name "ffmpeg-*-amd64-static" | head -1)
+    if [[ -z "$ffmpeg_dir" ]]; then
+        echo "Failed to find extracted FFmpeg directory"
+        rm -rf "$temp_dir"
+        return 1
     fi
 
-    if command -v apt-get >/dev/null 2>&1; then
-        echo "Trying APT package manager..."
-        if sudo apt-get update && sudo apt-get install -y ffmpeg; then
-            echo "✓ FFmpeg installed successfully via APT"
-            krun::install::ffmpeg::common
-            return 0
-        fi
-    fi
+    cd "$ffmpeg_dir"
 
-    # Fallback to static build
-    echo "All package managers failed, trying static build..."
-    install_static_ffmpeg
-    krun::install::ffmpeg::common
+    # Install binaries
+    cp ffmpeg ffprobe /usr/local/bin/ 2>/dev/null || sudo cp ffmpeg ffprobe /usr/local/bin/
+
+    # Clean up
+    cd /
+    rm -rf "$temp_dir"
+
+    echo "Static FFmpeg installed successfully"
 }
 
 # common code
 krun::install::ffmpeg::common() {
     echo "Verifying FFmpeg installation..."
 
-    # Check if FFmpeg is installed
     if ! command -v ffmpeg >/dev/null 2>&1; then
-        echo "✗ FFmpeg installation failed or not found in PATH"
-        echo "Please check the installation logs above for errors."
-        echo ""
-        echo "Troubleshooting tips:"
-        echo "1. Make sure you have sufficient permissions (run as root/sudo)"
-        echo "2. Check if your system has the required repositories enabled"
-        echo "3. Try updating your package manager: yum update or apt-get update"
-        echo "4. For dependency issues, try: yum install -y --nobest ffmpeg"
+        echo "FFmpeg installation failed"
         return 1
     fi
 
-    echo "✓ FFmpeg installed successfully"
-    echo "Version information:"
+    echo "FFmpeg installed successfully"
     ffmpeg -version | head -1
 
     # Check for additional tools
-    local tools_available=0
-    local total_tools=3
-
     if command -v ffprobe >/dev/null 2>&1; then
-        echo "✓ ffprobe is available"
-        ((tools_available++))
-    else
-        echo "⚠ ffprobe not found (may be included in ffmpeg package)"
+        echo "ffprobe is available"
     fi
 
     if command -v ffplay >/dev/null 2>&1; then
-        echo "✓ ffplay is available"
-        ((tools_available++))
-    else
-        echo "⚠ ffplay not found (may be included in ffmpeg package)"
-    fi
-
-    if command -v ffmpeg >/dev/null 2>&1; then
-        echo "✓ ffmpeg is available"
-        ((tools_available++))
+        echo "ffplay is available"
     fi
 
     echo ""
     echo "=== FFmpeg Installation Summary ==="
     echo "Version: $(ffmpeg -version | head -1)"
     echo "Executable: $(which ffmpeg)"
-    echo "Tools available: $tools_available/$total_tools"
     echo ""
-
-    # Show supported formats and codecs
-    echo "Supported formats:"
-    ffmpeg -formats 2>/dev/null | grep -E "^[DE]" | head -5 | sed 's/^/  /'
-    echo "  ... (showing first 5, run 'ffmpeg -formats' for full list)"
-    echo ""
-
-    echo "Supported codecs:"
-    ffmpeg -codecs 2>/dev/null | grep -E "^[DE]" | head -5 | sed 's/^/  /'
-    echo "  ... (showing first 5, run 'ffmpeg -codecs' for full list)"
-    echo ""
-
     echo "Common FFmpeg commands:"
     echo "  ffmpeg -i input.mp4 output.avi           - Convert video format"
     echo "  ffmpeg -i input.mp4 -vn output.mp3       - Extract audio"
