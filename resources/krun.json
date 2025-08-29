@@ -3,6 +3,7 @@
   "check-ip.sh",
   "config-acme.sh",
   "config-centos7_repo.sh",
+  "config-disk-data.sh",
   "config-elasticsearch.sh",
   "config-fstab.sh",
   "config-git.sh",
@@ -57,7 +58,6 @@
   "install-tinyproxy.sh",
   "install-vagrant-virtualbox.sh",
   "install-zsh.sh",
-  "mount-disk-data.sh",
   "optimize-system-performance.sh",
   "update-vagrant_box.sh"
 ]
