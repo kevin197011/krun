@@ -11,6 +11,7 @@
   "config-rocky-repo.sh",
   "config-ruby-http.sh",
   "config-ssh.sh",
+  "config-system-baseline.sh",
   "config-system.sh",
   "config-vagrant-ssh.sh",
   "config-vim.sh",
