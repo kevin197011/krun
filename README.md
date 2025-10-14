@@ -1,4 +1,4 @@
-# Krun - Enterprise Multi-Language Script Management System
+# Krun - 运维自动化脚本工具集
 
 ```
 ______
@@ -12,254 +12,121 @@ _  ,<  _  /   / /_/ /_  / / /
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/kevin197011/krun)
 
-## Table of Contents
+## 项目简介
 
-1. [Introduction](#introduction)
-2. [System Architecture](#system-architecture)
-3. [Core Features](#core-features)
-4. [Installation Guide](#installation-guide)
-5. [Usage Documentation](#usage-documentation)
-6. [Script Library](#script-library)
-7. [System Requirements](#system-requirements)
-8. [Security Guidelines](#security-guidelines)
-9. [Development Guide](#development-guide)
-10. [Version History](#version-history)
-11. [License](#license)
+Krun 是一个面向运维工程师的自动化脚本工具集，提供了系统初始化、安全加固、服务部署、性能优化等常用运维脚本。支持 CentOS/RHEL、Debian/Ubuntu、macOS 等多个平台，可通过 curl 命令直接执行，简化运维工作流程。
 
-## Introduction
+## 主要功能
 
-Krun is an enterprise-grade multi-language script management and execution system, designed to streamline DevOps workflows and system administration tasks. It provides a unified interface for managing and executing scripts across multiple programming languages while ensuring security, reliability, and ease of use.
+### 系统配置
+- **系统基线配置**: 安全加固、内核参数优化、SSH配置
+- **软件源配置**: CentOS 7/Rocky Linux 软件源配置
+- **基础软件安装**: 常用运维工具包安装
+- **系统性能优化**: 内核参数、网络、存储性能调优
 
-## System Architecture
+### 服务部署
+- **容器服务**: Docker 安装配置
+- **开发环境**: Python、Node.js、Go、Ruby 环境安装
+- **数据库**: MySQL、PostgreSQL、Redis、MongoDB 部署
+- **Web服务**: Nginx、Apache 配置
 
-### Directory Structure
-```
-krun/
-├── bin/                 # Executable files
-│   ├── krun            # Main Python implementation
-│   └── krun-go/        # Go implementation
-├── lib/                 # Script library
-├── config/             # Configuration files
-├── resources/          # Resource files
-├── templates/          # Template files
-├── utils/              # Utility scripts
-└── examples/           # Example files
-```
+### 运维工具
+- **监控工具**: Node Exporter、系统监控脚本
+- **日志管理**: 日志轮转、清理脚本
+- **备份工具**: 数据备份、配置备份脚本
+- **网络工具**: 网络诊断、性能测试工具
 
-### Implementation Versions
-- **Python (Primary)**: Full-featured implementation
-- **Go**: High-performance compiled version
-- **Shell**: Dependency-free implementation
-- **Ruby**: Object-oriented implementation
-- **Perl**: Traditional script implementation
+## 快速开始
 
-## Core Features
-
-### Language Support Matrix
-| Language    | Extensions                | Interpreter Requirements |
-|-------------|---------------------------|-------------------------|
-| Shell/Bash  | .sh, .bash, .zsh, .fish  | bash 4.0+              |
-| Python      | .py, .python             | python 3.6+/2.7+       |
-| Ruby        | .rb, .ruby               | ruby 2.0+              |
-| Perl        | .pl, .perl               | perl 5.10+             |
-| JavaScript  | .js                      | node 10.0+             |
-| Lua         | .lua                     | lua 5.1+               |
-| R           | .r, .R                   | R 3.0+                 |
-| PHP         | .php                     | php 7.0+               |
-
-### System Optimization Capabilities
-
-#### Kernel Parameter Optimization
-- Virtual memory management
-- Network stack tuning
-- File system optimization
-- Security parameter configuration
-
-#### Resource Management
-- File descriptor limits
-- Process limits
-- Memory management
-- Service control
-
-#### Network Performance
-- TCP/IP stack optimization
-- BBR congestion control
-- Buffer size optimization
-- IP forwarding (IPv4/IPv6)
-
-#### Storage Performance
-- I/O scheduler optimization
-- Mount options tuning
-- Read-ahead configuration
-- Disk performance tuning
-
-## Installation Guide
-
-### Prerequisites
-- Operating System: Linux (Ubuntu 18.04+/CentOS 7+) or macOS 10.15+
-- Python 3.6+ (for primary implementation)
-- Git (for installation)
-- Bash 4.0+ (for shell scripts)
-
-### Standard Installation
+### 直接执行脚本
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
+# 系统基线安全配置
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-system-baseline.sh | bash
+
+# 安装基础软件包
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-base-packages.sh | bash
+
+# 系统性能优化
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/optimize-system-performance.sh | bash
+
+# Docker 安装
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-docker.sh | bash
 ```
 
-### Custom Installation
+### 本地使用
 ```bash
-export deploy_path="/custom/path"
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
-```
-
-### Manual Installation
-```bash
+# 克隆仓库
 git clone https://github.com/kevin197011/krun.git
 cd krun
-export PATH="$PWD/bin:$PATH"
+
+# 执行脚本
+./lib/config-system-baseline.sh
+./lib/install-base-packages.sh
 ```
 
-## Usage Documentation
+## 脚本列表
 
-### Basic Commands
-```bash
-krun list                    # List available scripts
-krun <number>               # Execute script by number
-krun <script_name>          # Execute script by name
-krun <number> --debug       # Show script debug info
-krun status                 # Show system status
-krun version                # Show version info
-```
+### 系统配置类
+- `config-system-baseline.sh` - 系统安全基线配置
+- `config-system.sh` - 系统基础配置
+- `config-ssh.sh` - SSH 安全配置
+- `config-locales.sh` - 系统语言环境配置
+- `config-vim.sh` - Vim 编辑器配置
+- `optimize-system-performance.sh` - 系统性能优化
 
-### Advanced Usage
+### 软件安装类
+- `install-base-packages.sh` - 基础软件包安装
+- `install-docker.sh` - Docker 容器平台安装
+- `install-python3.sh` - Python 3 环境安装
+- `install-golang.sh` - Go 语言环境安装
+- `install-nodejs.sh` - Node.js 环境安装
+- `install-ruby.sh` - Ruby 环境安装
 
-#### Environment Variables
-```bash
-KRUN_BASE_URL="https://custom-repo.com"    # Custom repository URL
-KRUN_USER_AGENT="CustomAgent/1.0"          # Custom user agent
-KRUN_DEBUG=1                               # Enable debug mode
-```
+### 数据库类
+- `install-mysql.sh` - MySQL 数据库安装
+- `install-postgresql.sh` - PostgreSQL 数据库安装
+- `install-redis.sh` - Redis 缓存安装
+- `install-mongodb.sh` - MongoDB 数据库安装
 
-#### CI/CD Integration
-```yaml
-# GitHub Actions Example
-steps:
-  - uses: actions/checkout@v4
-  - name: Install Krun
-    run: curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
-  - name: Execute Scripts
-    run: |
-      krun install-dependencies.sh
-      krun setup-environment.py
-```
+### 运维工具类
+- `install-node_exporter.sh` - Prometheus 监控安装
+- `delete-video.sh` - 视频文件清理脚本
+- `config-centos7_repo.sh` - CentOS 7 软件源配置
+- `config-rocky-repo.sh` - Rocky Linux 软件源配置
 
-## Script Library
+## 支持平台
 
-### System Administration (45+ scripts)
-- System configuration and optimization
-- Service installation and setup
-- Network configuration
-- Security hardening
+- **CentOS/RHEL**: 7, 8, 9
+- **Rocky Linux**: 8, 9
+- **AlmaLinux**: 8, 9
+- **Debian**: 10, 11, 12
+- **Ubuntu**: 18.04, 20.04, 22.04, 24.04
+- **macOS**: 10.15+ (部分脚本)
 
-### Development Tools (8+ scripts)
-- Language runtime installation
-- Development environment setup
-- Version control configuration
-- Container management
+## 注意事项
 
-### Database Management (4+ scripts)
-- Database installation
-- Backup and recovery
-- Performance tuning
-- Monitoring setup
+1. **权限要求**: 大部分脚本需要 root 权限执行
+2. **备份重要**: 脚本会自动备份原始配置文件
+3. **网络要求**: 需要稳定的网络连接下载软件包
+4. **测试环境**: 建议先在测试环境验证脚本功能
+5. **安全审查**: 执行前请审查脚本内容，确保符合安全要求
 
-## System Requirements
+## 贡献指南
 
-### Minimum Requirements
-- CPU: 1 core
-- Memory: 512MB RAM
-- Storage: 1GB free space
-- Network: Internet connection
+欢迎提交 Issue 和 Pull Request 来改进项目：
 
-### Recommended Requirements
-- CPU: 2+ cores
-- Memory: 2GB+ RAM
-- Storage: 5GB+ free space
-- Network: Stable Internet connection
+1. Fork 本仓库
+2. 创建功能分支 (`git checkout -b feature/new-script`)
+3. 提交更改 (`git commit -am 'Add new script'`)
+4. 推送到分支 (`git push origin feature/new-script`)
+5. 创建 Pull Request
 
-## Security Guidelines
+## 许可证
 
-### Script Execution Security
-- Isolated execution environment
-- Automatic cleanup of temporary files
-- Permission validation
-- Error handling and rollback
-
-### Network Security
-- HTTPS for remote script fetching
-- SSL certificate verification
-- Custom user agent support
-- Rate limiting protection
-
-### Best Practices
-1. Review scripts before execution
-2. Use trusted script sources only
-3. Maintain regular backups
-4. Monitor system logs
-5. Keep Krun updated
-
-## Development Guide
-
-### Contributing Guidelines
-1. Fork the repository
-2. Create a feature branch
-3. Follow coding standards
-4. Add tests if applicable
-5. Submit pull request
-
-### Script Development Standards
-```bash
-#!/usr/bin/env bash
-# Copyright (c) 2024 kk
-#
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
-
-set -o errexit
-set -o nounset
-set -o pipefail
-
-# Script documentation
-# Usage: script_name [options]
-# Options:
-#   -h, --help    Show help message
-#   -v, --version Show version information
-
-# Implementation...
-```
-
-## Version History
-
-### v2.0 (Current)
-- Multi-language support
-- Enhanced UI/UX
-- Intelligent interpreter detection
-- System optimization features
-- Performance improvements
-
-### v1.0
-- Initial release
-- Basic script execution
-- Shell script support
-- Debug mode
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+本项目采用 MIT 许可证，详情请查看 [LICENSE](LICENSE) 文件。
 
 ---
 
-**Documentation Version:** 2.0.0
-**Last Updated:** 2024-02-29
-**Author:** [kevin197011](https://github.com/kevin197011)
-**Repository:** https://github.com/kevin197011/krun
+**项目地址**: https://github.com/kevin197011/krun  
+**作者**: [kevin197011](https://github.com/kevin197011)  
+**更新时间**: 2024-12-14
