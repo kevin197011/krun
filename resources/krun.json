@@ -28,6 +28,7 @@
   "install-aliyun-cli.sh",
   "install-asdf.sh",
   "install-awscli.sh",
+  "install-base-packages.sh",
   "install-devbox.sh",
   "install-docker.sh",
   "install-elixir.sh",
