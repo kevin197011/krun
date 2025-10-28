@@ -9,7 +9,7 @@ set -o nounset
 set -o pipefail
 
 # curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-centos7_repo.sh | bash
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-centos7-repo.sh | bash
 
 # vars
 
@@ -26,6 +26,13 @@ krun::config::centos7_repo::run() {
 # centos code
 krun::config::centos7_repo::centos() {
     krun::config::centos7_repo::common
+
+    os_version=$(cat /etc/os-release 2>/dev/null | grep -E '^PRETTY_NAME=')
+
+    if ! echo "$os_version" | grep -Eq "CentOS Linux 7|Red Hat Enterprise Linux 7|Rocky Linux 7"; then
+        echo "Not CentOS/RHEL/Rocky 7, skip..."
+        return 0
+    fi
 
     # delete old
     rm -rf /etc/yum.repos.d/*
