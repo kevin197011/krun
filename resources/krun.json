@@ -14,7 +14,6 @@
   "config-system-baseline.sh",
   "config-system.sh",
   "config-vagrant-ssh.sh",
-  "config-vim.sh",
   "config-vm.sh",
   "db-sync.sh",
   "delete-video.sh",
@@ -59,6 +58,7 @@
   "install-spacevim.sh",
   "install-tinyproxy.sh",
   "install-vagrant-virtualbox.sh",
+  "install-vim.sh",
   "install-zsh.sh",
   "optimize-system-performance.sh",
   "update-vagrant_box.sh"
