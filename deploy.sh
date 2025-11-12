@@ -7,6 +7,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
+
 # ASCII art banner
 KRUN_BANNER='______
 ___  /____________  ________
