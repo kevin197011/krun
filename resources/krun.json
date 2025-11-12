@@ -8,6 +8,7 @@
   "config-fstab.sh",
   "config-git.sh",
   "config-locales.sh",
+  "config-rakefile.sh",
   "config-rocky-repo.sh",
   "config-ruby-http.sh",
   "config-ssh.sh",
