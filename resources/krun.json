@@ -61,5 +61,6 @@
   "install-vim.sh",
   "install-zsh.sh",
   "optimize-system-performance.sh",
+  "reset-git-history.sh",
   "update-vagrant_box.sh"
 ]
