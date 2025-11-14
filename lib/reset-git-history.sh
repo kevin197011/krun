@@ -61,6 +61,14 @@ krun::reset::git-history::common() {
     echo "   New commit message: $commit_message"
     echo ""
 
+    # commit local changes if any
+    if [[ -n "$(git status --porcelain)" ]]; then
+        echo "Committing local changes..."
+        git add .
+        git commit -m "init." || true
+        echo "✓ Local changes committed"
+    fi
+
     # checkout to target branch
     echo "Checking out to $target_branch..."
     git checkout "$target_branch"
