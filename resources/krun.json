@@ -3,6 +3,7 @@
   "check-ip.sh",
   "config-acme.sh",
   "config-centos7-repo.sh",
+  "config-cursor.sh",
   "config-disk-data.sh",
   "config-elasticsearch.sh",
   "config-fstab.sh",
