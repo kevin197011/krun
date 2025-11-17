@@ -18,6 +18,7 @@ node_exporter_version=${node_exporter_version:-latest}
 krun::install::node_exporter::run() {
     local platform='debian'
     command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
 }

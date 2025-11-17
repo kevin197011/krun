@@ -18,6 +18,7 @@ rbenv_version=${rbenv_version:-latest}
 krun::install::rbenv::run() {
     local platform='debian'
     command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
 }

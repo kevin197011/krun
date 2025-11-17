@@ -16,9 +16,9 @@ set -o pipefail
 
 # run code
 krun::config::system_baseline::run() {
-    # default debian platform
-    platform='debian'
+    local platform='debian'
     command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
 }

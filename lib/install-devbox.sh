@@ -15,10 +15,9 @@ set -o pipefail
 
 # run code
 krun::install::devbox::run() {
-    # default platform
-    platform='debian'
-    # command -v apt >/dev/null && platform='debian'
+    local platform='debian'
     command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
 }

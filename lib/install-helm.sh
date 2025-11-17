@@ -18,6 +18,7 @@ helm_version=${helm_version:-latest}
 krun::install::helm::run() {
     local platform='debian'
     command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
 }

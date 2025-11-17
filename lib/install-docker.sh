@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-# Copyright (c) 2024 kk
+# Copyright (c) 2025 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -24,7 +23,7 @@ krun::install::docker::run() {
     echo -e "${BLUE}🐳 Installing Docker and Docker Compose...${NC}"
 
     # detect platform with better logic
-    platform='debian'
+    local platform='debian'
     if command -v dnf >/dev/null 2>&1; then
         platform='centos'
     elif command -v yum >/dev/null 2>&1; then

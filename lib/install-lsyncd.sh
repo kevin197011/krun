@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2024 kk
+# Copyright (c) 2025 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -15,10 +15,9 @@ set -o pipefail
 
 # run code
 krun::install::lsyncd::run() {
-    # default platform
-    platform='debian'
-    # command -v apt >/dev/null && platform='debian'
+    local platform='debian'
     command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
 }
@@ -40,7 +39,7 @@ settings {
 sync {
     default.rsyncssh,
     source = "/data/dir1/",
-    host = "10.1.1.1", 
+    host = "10.1.1.1",
     targetdir = "/data/dir1/",
     delete = true,
     rsync = {
@@ -55,7 +54,7 @@ sync {
 sync {
     default.rsyncssh,
     source = "/data/dir2/",
-    host = "10.1.1.2", 
+    host = "10.1.1.2",
     targetdir = "/data/dir2/",
     delete = true,
     rsync = {
@@ -70,7 +69,7 @@ sync {
 sync {
     default.rsyncssh,
     source = "/data/dir3/",
-    host = "10.1.1.3", 
+    host = "10.1.1.3",
     targetdir = "/data/dir3/",
     delete = true,
     rsync = {
@@ -100,7 +99,7 @@ settings {
 sync {
     default.rsyncssh,
     source = "/data/dir1/",
-    host = "10.1.1.1", 
+    host = "10.1.1.1",
     targetdir = "/data/dir1/",
     delete = true,
     rsync = {
@@ -115,7 +114,7 @@ sync {
 sync {
     default.rsyncssh,
     source = "/data/dir2/",
-    host = "10.1.1.2", 
+    host = "10.1.1.2",
     targetdir = "/data/dir2/",
     delete = true,
     rsync = {
@@ -130,7 +129,7 @@ sync {
 sync {
     default.rsyncssh,
     source = "/data/dir3/",
-    host = "10.1.1.3", 
+    host = "10.1.1.3",
     targetdir = "/data/dir3/",
     delete = true,
     rsync = {

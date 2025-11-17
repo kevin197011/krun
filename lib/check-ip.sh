@@ -18,6 +18,7 @@ show_public_ip=${show_public_ip:-true}
 krun::check::ip::run() {
     local platform='debian'
     command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
 }

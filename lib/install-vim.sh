@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-# Copyright (c) 2024 kk
+# Copyright (c) 2025 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -16,9 +15,9 @@ set -o pipefail
 
 # run code
 krun::install::vim::run() {
-    # default debian platform
-    platform='debian'
+    local platform='debian'
     command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
     eval "${FUNCNAME/::run/::${platform}}"
 }
@@ -217,33 +216,33 @@ augroup FileTypeSettings
     " Python
     autocmd FileType python setlocal tabstop=4 shiftwidth=4 expandtab
     autocmd FileType python setlocal textwidth=79
-    
+
     " JavaScript/TypeScript
     autocmd FileType javascript,typescript setlocal tabstop=2 shiftwidth=2 expandtab
-    
+
     " HTML/CSS
     autocmd FileType html,css,scss setlocal tabstop=2 shiftwidth=2 expandtab
-    
+
     " YAML
     autocmd FileType yaml setlocal tabstop=2 shiftwidth=2 expandtab
-    
+
     " JSON
     autocmd FileType json setlocal tabstop=2 shiftwidth=2 expandtab
-    
+
     " Shell scripts
     autocmd FileType sh,bash setlocal tabstop=4 shiftwidth=4 expandtab
-    
+
     " Makefile (must use tabs)
     autocmd FileType make setlocal noexpandtab
-    
+
     " Go
     autocmd FileType go setlocal tabstop=4 shiftwidth=4 noexpandtab
-    
+
     " Ruby
     autocmd FileType ruby setlocal tabstop=2 shiftwidth=2 expandtab
     autocmd FileType ruby setlocal textwidth=80
     autocmd FileType ruby setlocal commentstring=#\ %s
-    
+
     " Markdown
     autocmd FileType markdown setlocal wrap linebreak textwidth=80
 augroup END
@@ -253,13 +252,13 @@ augroup AutoCommands
     autocmd!
     " Remove trailing whitespace on save
     autocmd BufWritePre * :%s/\s\+$//e
-    
+
     " Return to last edit position when opening files
     autocmd BufReadPost *
         \ if line("'\"") > 0 && line("'\"") <= line("$") |
         \   exe "normal! g`\"" |
         \ endif
-    
+
     " Auto-create directories for backup, swap, and undo
     autocmd VimEnter *
         \ if !isdirectory($HOME."/.vim/backup") |
@@ -367,25 +366,25 @@ Paste Mode:
 
 Key Mappings:
   Leader key: ,         - Custom command prefix
-  
+
   Window Navigation:
   Ctrl+h/j/k/l         - Move between windows
-  
+
   File Operations:
   ,w                   - Save file
   ,q                   - Quit
   ,x                   - Save and quit
-  
+
   Buffer Navigation:
   ,n                   - Next buffer
   ,p                   - Previous buffer
   ,d                   - Delete buffer
-  
+
   Utility:
   ,l                   - Toggle line numbers
   ,pp                  - Toggle paste mode
   Esc Esc              - Clear search highlighting
-  
+
   Ruby Specific (in .rb files):
   ,r                   - Run current Ruby file
   ,i                   - Open IRB (Interactive Ruby)
@@ -416,10 +415,10 @@ Configuration Files:
   System: /etc/vim/vimrc or /etc/vimrc
   User: ~/.vimrc
   Local: ~/.vimrc.local (for additional customizations)
-  
+
 Directories:
   ~/.vim/backup        - Backup files
-  ~/.vim/swap          - Swap files  
+  ~/.vim/swap          - Swap files
   ~/.vim/undo          - Undo files
 EOF
 

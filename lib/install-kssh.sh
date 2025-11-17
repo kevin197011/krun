@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-
-# Copyright (c) 2023 kk
+# Copyright (c) 2025 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-
-# install kssh to mac
 
 set -o errexit
 set -o nounset
@@ -15,6 +12,7 @@ set -o pipefail
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-kssh.sh | bash
 
 # vars
+# install kssh to mac
 
 # run code
 krun::install::kssh::run() {
