@@ -64,7 +64,12 @@ krun::install::node_exporter::mac() {
 
 # get latest version
 krun::install::node_exporter::get_latest_version() {
-    curl -fsSL https://ghproxy.link/https://api.github.com/repos/prometheus/node_exporter/releases/latest 2>/dev/null | grep tag_name | head -n1 | cut -d '"' -f 4 || echo "v1.9.0"
+    local version=$(curl -fsSL --connect-timeout 5 --max-time 10 https://api.github.com/repos/prometheus/node_exporter/releases/latest 2>/dev/null | grep tag_name | head -n1 | cut -d '"' -f 4)
+    if [[ -z "$version" ]]; then
+        echo "Direct access failed, trying proxy..." >&2
+        version=$(curl -fsSL --connect-timeout 5 --max-time 10 https://ghproxy.link/https://api.github.com/repos/prometheus/node_exporter/releases/latest 2>/dev/null | grep tag_name | head -n1 | cut -d '"' -f 4)
+    fi
+    echo "${version:-v1.9.0}"
 }
 
 # get system info
@@ -101,16 +106,44 @@ krun::install::node_exporter::common() {
 
     echo "Downloading Node Exporter ${tag} for ${os}/${arch}..."
     local temp_dir=$(mktemp -d)
-    local download_url="https://ghproxy.link/https://github.com/prometheus/node_exporter/releases/download/v${tag}/node_exporter-${tag}.${os}-${arch}.tar.gz"
+    local download_url="https://github.com/prometheus/node_exporter/releases/download/v${tag}/node_exporter-${tag}.${os}-${arch}.tar.gz"
+    local downloaded_file="${temp_dir}/node_exporter.tar.gz"
+    local download_success=false
 
-    curl -fsSL "$download_url" -o "${temp_dir}/node_exporter.tar.gz" || {
-        echo "✗ Failed to download Node Exporter"
-        rm -rf "$temp_dir"
-        return 1
-    }
+    # Try direct access first
+    if curl -fsSL --connect-timeout 10 --max-time 60 "$download_url" -o "$downloaded_file" 2>/dev/null; then
+        # Verify downloaded file is valid
+        if [[ -f "$downloaded_file" ]] && [[ -s "$downloaded_file" ]] && gzip -t "$downloaded_file" 2>/dev/null; then
+            download_success=true
+        fi
+    fi
+
+    # If direct access failed, try proxy
+    if [[ "$download_success" == "false" ]]; then
+        echo "Direct access failed, trying proxy..." >&2
+        rm -f "$downloaded_file"
+        download_url="https://ghproxy.link/$download_url"
+        if ! curl -fsSL --connect-timeout 10 --max-time 60 "$download_url" -o "$downloaded_file" 2>/dev/null; then
+            echo "✗ Failed to download Node Exporter"
+            rm -rf "$temp_dir"
+            return 1
+        fi
+        # Verify proxy download is valid
+        if [[ ! -f "$downloaded_file" ]] || [[ ! -s "$downloaded_file" ]] || ! gzip -t "$downloaded_file" 2>/dev/null; then
+            echo "✗ Downloaded file from proxy is not valid"
+            if [[ -f "$downloaded_file" ]]; then
+                echo "File size: $(stat -c%s "$downloaded_file" 2>/dev/null || stat -f%z "$downloaded_file" 2>/dev/null) bytes"
+                echo "First 200 bytes:"
+                head -c 200 "$downloaded_file" 2>/dev/null | cat
+                echo ""
+            fi
+            rm -rf "$temp_dir"
+            return 1
+        fi
+    fi
 
     mkdir -p /opt/node_exporter &&
-        tar -xzf "${temp_dir}/node_exporter.tar.gz" -C "$temp_dir" &&
+        tar -xzf "$downloaded_file" -C "$temp_dir" &&
         mv "${temp_dir}/node_exporter-${tag}.${os}-${arch}/node_exporter" "/opt/node_exporter/" &&
         chmod +x "/opt/node_exporter/node_exporter" &&
         rm -rf "$temp_dir" &&
