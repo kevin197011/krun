@@ -145,9 +145,39 @@ krun::install::node_exporter::common() {
     mkdir -p /opt/node_exporter &&
         tar -xzf "$downloaded_file" -C "$temp_dir" &&
         mv "${temp_dir}/node_exporter-${tag}.${os}-${arch}/node_exporter" "/opt/node_exporter/" &&
-        chmod +x "/opt/node_exporter/node_exporter" &&
+        chmod 755 /opt/node_exporter &&
+        chmod 755 "/opt/node_exporter/node_exporter" &&
+        chown root:root "/opt/node_exporter/node_exporter" &&
         rm -rf "$temp_dir" &&
         echo "✓ Node Exporter installed"
+
+    # Verify file permissions
+    if [[ ! -x "/opt/node_exporter/node_exporter" ]]; then
+        echo "⚠ Binary is not executable, fixing permissions..."
+        chmod +x "/opt/node_exporter/node_exporter"
+    fi
+
+    # Handle SELinux if enabled
+    if command -v getenforce >/dev/null 2>&1 && [[ "$(getenforce)" != "Disabled" ]]; then
+        echo "SELinux is enabled, setting context..."
+        if command -v restorecon >/dev/null 2>&1; then
+            restorecon -R /opt/node_exporter || true
+        fi
+        if command -v chcon >/dev/null 2>&1; then
+            chcon -t bin_t /opt/node_exporter/node_exporter 2>/dev/null || true
+        fi
+    fi
+
+    # Test if binary can be executed
+    if ! /opt/node_exporter/node_exporter --version >/dev/null 2>&1; then
+        echo "⚠ Warning: Cannot execute binary, checking file system..."
+        if mountpoint -q /opt 2>/dev/null; then
+            mount | grep "/opt" | grep -q "noexec" && echo "✗ /opt is mounted with noexec flag" || true
+        fi
+        ls -la /opt/node_exporter/node_exporter
+    else
+        echo "✓ Binary is executable and working"
+    fi
 
     krun::install::node_exporter::create_service
     krun::install::node_exporter::verify_installation
@@ -155,6 +185,27 @@ krun::install::node_exporter::common() {
 
 # create systemd service
 krun::install::node_exporter::create_service() {
+    # Verify binary exists and is executable before creating service
+    if [[ ! -f "/opt/node_exporter/node_exporter" ]]; then
+        echo "✗ Binary not found at /opt/node_exporter/node_exporter"
+        return 1
+    fi
+
+    if [[ ! -x "/opt/node_exporter/node_exporter" ]]; then
+        echo "⚠ Binary is not executable, fixing permissions..."
+        chmod +x "/opt/node_exporter/node_exporter"
+        chown root:root "/opt/node_exporter/node_exporter"
+    fi
+
+    # Test binary execution
+    if ! /opt/node_exporter/node_exporter --version >/dev/null 2>&1; then
+        echo "✗ Cannot execute binary, checking permissions..."
+        ls -la /opt/node_exporter/node_exporter
+        echo ""
+        echo "File permissions: $(stat -c '%a %U:%G' /opt/node_exporter/node_exporter 2>/dev/null || stat -f '%A %Su:%Sg' /opt/node_exporter/node_exporter 2>/dev/null)"
+        return 1
+    fi
+
     cat >/etc/systemd/system/node_exporter.service <<EOF
 [Unit]
 Description=Node Exporter
@@ -187,6 +238,9 @@ EOF
         echo ""
         echo "Recent logs:"
         journalctl -u node_exporter -n 20 --no-pager || true
+        echo ""
+        echo "Checking binary permissions again:"
+        ls -la /opt/node_exporter/node_exporter
         return 1
     }
 
