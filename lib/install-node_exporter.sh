@@ -164,15 +164,33 @@ After=network.target
 User=root
 ExecStart=/opt/node_exporter/node_exporter
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-    systemctl daemon-reload &&
-        systemctl enable node_exporter &&
-        systemctl start node_exporter &&
-        echo "✓ Node Exporter service created and started"
+    systemctl daemon-reload || {
+        echo "✗ Failed to reload systemd daemon"
+        return 1
+    }
+
+    systemctl enable node_exporter || {
+        echo "✗ Failed to enable node_exporter service"
+        return 1
+    }
+
+    systemctl start node_exporter || {
+        echo "⚠ Failed to start node_exporter service"
+        echo "Service status:"
+        systemctl status node_exporter --no-pager -l || true
+        echo ""
+        echo "Recent logs:"
+        journalctl -u node_exporter -n 20 --no-pager || true
+        return 1
+    }
+
+    echo "✓ Node Exporter service created and started"
 }
 
 # verify installation
@@ -182,8 +200,22 @@ krun::install::node_exporter::verify_installation() {
         return 1
     }
 
-    systemctl is-active node_exporter >/dev/null && echo "✓ Node Exporter service is running" || echo "⚠ Node Exporter service not running"
+    if systemctl is-active node_exporter >/dev/null 2>&1; then
+        echo "✓ Node Exporter service is running"
+    else
+        echo "⚠ Node Exporter service not running"
+        echo ""
+        echo "Service status:"
+        systemctl status node_exporter --no-pager -l || true
+        echo ""
+        echo "Recent logs:"
+        journalctl -u node_exporter -n 20 --no-pager || true
+        echo ""
+        echo "Trying to start service..."
+        systemctl start node_exporter && echo "✓ Service started successfully" || echo "✗ Failed to start service"
+    fi
 
+    echo ""
     echo "Access metrics at http://localhost:9100/metrics"
 }
 
