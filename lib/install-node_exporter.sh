@@ -64,7 +64,7 @@ krun::install::node_exporter::mac() {
 
 # get latest version
 krun::install::node_exporter::get_latest_version() {
-    curl -fsSL https://api.github.com/repos/prometheus/node_exporter/releases/latest 2>/dev/null | grep tag_name | head -n1 | cut -d '"' -f 4 || echo "v1.9.0"
+    curl -fsSL https://ghproxy.link/https://api.github.com/repos/prometheus/node_exporter/releases/latest 2>/dev/null | grep tag_name | head -n1 | cut -d '"' -f 4 || echo "v1.9.0"
 }
 
 # get system info
@@ -101,7 +101,7 @@ krun::install::node_exporter::common() {
 
     echo "Downloading Node Exporter ${tag} for ${os}/${arch}..."
     local temp_dir=$(mktemp -d)
-    local download_url="https://github.com/prometheus/node_exporter/releases/download/v${tag}/node_exporter-${tag}.${os}-${arch}.tar.gz"
+    local download_url="https://ghproxy.link/https://github.com/prometheus/node_exporter/releases/download/v${tag}/node_exporter-${tag}.${os}-${arch}.tar.gz"
 
     curl -fsSL "$download_url" -o "${temp_dir}/node_exporter.tar.gz" || {
         echo "✗ Failed to download Node Exporter"
