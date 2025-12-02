@@ -21,6 +21,7 @@
   "delete-video.sh",
   "deploy-node_exporter.sh",
   "deploy-sshkey.sh",
+  "disable-firewall-selinux.sh",
   "get-host_info.sh",
   "get-ipaddr.sh",
   "hello-world.sh",
