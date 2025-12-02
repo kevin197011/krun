@@ -407,26 +407,6 @@ EOF
 EOF
 }
 
-# configure firewall
-krun::install::nginx::configure_firewall() {
-    [[ "$OSTYPE" == "darwin"* ]] && return
-
-    if command -v ufw >/dev/null 2>&1; then
-        ufw --force enable
-        ufw allow 80/tcp
-        ufw allow 443/tcp
-    elif command -v firewall-cmd >/dev/null 2>&1; then
-        firewall-cmd --permanent --add-service=http
-        firewall-cmd --permanent --add-service=https
-        firewall-cmd --reload
-    elif command -v iptables >/dev/null 2>&1; then
-        iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-        iptables -A INPUT -p tcp --dport 443 -j ACCEPT
-        [[ -f /etc/debian_version ]] && iptables-save >/etc/iptables/rules.v4 2>/dev/null || true
-        [[ -f /etc/redhat-release ]] && service iptables save 2>/dev/null || true
-    fi
-}
-
 # configure service
 krun::install::nginx::configure_service() {
     [[ "$OSTYPE" == "darwin"* ]] && {
@@ -512,7 +492,6 @@ krun::install::nginx::common() {
     krun::install::nginx::create_config
     krun::install::nginx::create_default_site
     krun::install::nginx::create_security_config
-    krun::install::nginx::configure_firewall
     krun::install::nginx::configure_service
     krun::install::nginx::create_helper_scripts
 
