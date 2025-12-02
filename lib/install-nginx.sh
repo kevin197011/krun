@@ -429,6 +429,23 @@ EOF
     # Remove any existing PID file that might have wrong permissions
     rm -f /run/nginx.pid /var/run/nginx.pid 2>/dev/null || true
 
+    # Check and fix systemd service file PIDFile setting
+    local service_file="/usr/lib/systemd/system/nginx.service"
+    [[ ! -f "$service_file" ]] && service_file="/etc/systemd/system/nginx.service"
+
+    if [[ -f "$service_file" ]]; then
+        # Backup service file
+        cp "$service_file" "${service_file}.bak.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
+
+        # Update PIDFile in service file if it exists and is different
+        if grep -q "^PIDFile=" "$service_file"; then
+            sed -i 's|^PIDFile=.*|PIDFile=/run/nginx.pid|g' "$service_file"
+        elif ! grep -q "PIDFile=" "$service_file"; then
+            # Add PIDFile if it doesn't exist (insert after [Service] section)
+            sed -i '/\[Service\]/a PIDFile=/run/nginx.pid' "$service_file"
+        fi
+    fi
+
     systemctl daemon-reload 2>/dev/null || true
     systemctl enable nginx || true
 
@@ -449,8 +466,12 @@ EOF
     if systemctl is-active --quiet nginx 2>/dev/null; then
         echo "✓ Nginx service started"
     else
-        echo "⚠ Nginx service may not be running, check with: systemctl status nginx"
-        echo "Check PID file permissions: ls -la /run/nginx.pid"
+        echo "⚠ Nginx service may not be running"
+        echo "Troubleshooting:"
+        echo "  Check status: systemctl status nginx"
+        echo "  Check PID file: ls -la /run/nginx.pid"
+        echo "  Check service PIDFile: grep PIDFile $service_file 2>/dev/null || echo 'Service file not found'"
+        echo "  Check nginx config PID: grep '^pid' /etc/nginx/nginx.conf"
     fi
 }
 
