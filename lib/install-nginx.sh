@@ -129,7 +129,7 @@ krun::install::nginx::create_config() {
 user nginx;
 worker_processes auto;
 error_log /var/log/nginx/error.log warn;
-pid /var/run/nginx.pid;
+pid /run/nginx.pid;
 
 include /usr/share/nginx/modules/*.conf;
 
@@ -177,7 +177,7 @@ EOF
     if [[ "$OSTYPE" == "darwin"* ]]; then
         sed -i '' 's|user nginx;|#user nginx;|g' "$config_path/nginx.conf"
         sed -i '' 's|/var/log/nginx/|/usr/local/var/log/nginx/|g' "$config_path/nginx.conf"
-        sed -i '' 's|/var/run/nginx.pid|/usr/local/var/run/nginx.pid|g' "$config_path/nginx.conf"
+        sed -i '' 's|/run/nginx.pid|/usr/local/var/run/nginx.pid|g' "$config_path/nginx.conf"
         sed -i '' 's|/usr/share/nginx/modules/|/usr/local/share/nginx/modules/|g' "$config_path/nginx.conf"
         sed -i '' 's|/etc/nginx/|/usr/local/etc/nginx/|g' "$config_path/nginx.conf"
         sed -i '' 's|multi_accept on;|use kqueue;\n    multi_accept on;|g' "$config_path/nginx.conf"
@@ -206,6 +206,7 @@ krun::install::nginx::create_directories() {
     mkdir -p "$www_path/html"
 
     if [[ "$OSTYPE" != "darwin"* ]]; then
+        mkdir -p /run/nginx
         chown -R nginx:nginx "$www_path" 2>/dev/null || chown -R www-data:www-data "$www_path" 2>/dev/null || true
         chmod -R 755 "$www_path"
         chmod 700 "$config_path/ssl"
@@ -413,6 +414,11 @@ krun::install::nginx::configure_service() {
         echo "To start nginx on macOS: sudo nginx or brew services start nginx"
         return
     }
+
+    # Ensure PID directory exists with correct permissions
+    mkdir -p /run/nginx
+    chown nginx:nginx /run/nginx 2>/dev/null || chown www-data:www-data /run/nginx 2>/dev/null || true
+    chmod 755 /run/nginx
 
     systemctl enable nginx
 
