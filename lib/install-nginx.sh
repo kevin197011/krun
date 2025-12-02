@@ -415,23 +415,43 @@ krun::install::nginx::configure_service() {
         return
     }
 
-    # Ensure PID directory exists with correct permissions
+    # Create systemd tmpfiles config to ensure /run/nginx exists on boot
+    cat >/etc/tmpfiles.d/nginx.conf <<'EOF'
+d /run/nginx 0755 nginx nginx -
+EOF
+    systemd-tmpfiles --create /etc/tmpfiles.d/nginx.conf 2>/dev/null || true
+
+    # Ensure PID directory exists with correct permissions (for immediate use)
     mkdir -p /run/nginx
     chown nginx:nginx /run/nginx 2>/dev/null || chown www-data:www-data /run/nginx 2>/dev/null || true
     chmod 755 /run/nginx
 
-    systemctl enable nginx
+    # Remove any existing PID file that might have wrong permissions
+    rm -f /run/nginx.pid /var/run/nginx.pid 2>/dev/null || true
+
+    systemctl daemon-reload 2>/dev/null || true
+    systemctl enable nginx || true
 
     nginx -t || {
         echo "✗ Nginx configuration test failed"
         return 1
     }
 
-    systemctl restart nginx
-    systemctl is-active --quiet nginx || {
-        echo "✗ Failed to restart Nginx service"
-        return 1
-    }
+    # Try to start/restart nginx with timeout
+    if systemctl is-active --quiet nginx 2>/dev/null; then
+        timeout 10 systemctl reload nginx 2>/dev/null || timeout 10 systemctl restart nginx 2>/dev/null || true
+    else
+        timeout 10 systemctl start nginx 2>/dev/null || true
+    fi
+
+    # Wait a moment and check status
+    sleep 2
+    if systemctl is-active --quiet nginx 2>/dev/null; then
+        echo "✓ Nginx service started"
+    else
+        echo "⚠ Nginx service may not be running, check with: systemctl status nginx"
+        echo "Check PID file permissions: ls -la /run/nginx.pid"
+    fi
 }
 
 # create security config
@@ -503,9 +523,9 @@ krun::install::nginx::common() {
 
     nginx -t && echo "✓ Nginx configuration test passed" || echo "⚠ Nginx configuration test failed"
 
-    if [[ "$OSTYPE" != "darwin"* ]] && systemctl is-active --quiet nginx; then
+    if [[ "$OSTYPE" != "darwin"* ]] && systemctl is-active --quiet nginx 2>/dev/null; then
         sleep 2
-        curl -f -s http://localhost >/dev/null && echo "✓ HTTP response test passed" || echo "⚠ HTTP response test failed"
+        curl -f -s --connect-timeout 5 --max-time 10 http://localhost >/dev/null 2>&1 && echo "✓ HTTP response test passed" || echo "⚠ HTTP response test failed"
     fi
 
     echo ""
