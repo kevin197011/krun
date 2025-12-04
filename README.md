@@ -11,15 +11,15 @@ _  ,<  _  /   / /_/ /_  / / /
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/kevin197011/krun)
-[![Scripts](https://img.shields.io/badge/scripts-65+-green.svg)](https://github.com/kevin197011/krun/tree/main/lib)
+[![Scripts](https://img.shields.io/badge/scripts-66+-green.svg)](https://github.com/kevin197011/krun/tree/main/lib)
 
 ## 项目简介
 
-Krun 是一个面向运维工程师的自动化脚本工具集，提供了 **65+ 个**系统初始化、安全加固、服务部署、性能优化等常用运维脚本。支持 CentOS/RHEL、Debian/Ubuntu、macOS 等多个平台，可通过 curl 命令直接执行，简化运维工作流程。
+Krun 是一个面向运维工程师的自动化脚本工具集，提供了 **66+ 个**系统初始化、安全加固、服务部署、性能优化等常用运维脚本。支持 CentOS/RHEL、Debian/Ubuntu、macOS 等多个平台，可通过 curl 命令直接执行，简化运维工作流程。
 
 ### 核心特性
 
-- 🚀 **一键安装**: 支持 65+ 个常用软件和工具的自动化安装
+- 🚀 **一键安装**: 支持 66+ 个常用软件和工具的自动化安装
 - 🔧 **系统配置**: 完善的系统初始化和安全加固脚本
 - 🌐 **多平台支持**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS
 - 📦 **模块化设计**: 每个脚本独立运行，可单独使用或组合使用
@@ -97,9 +97,9 @@ cd krun
 ./bin/krun install-git
 ```
 
-## 脚本列表（65+ 个）
+## 脚本列表（66+ 个）
 
-### 📋 系统配置类（15个）
+### 📋 系统配置类（17个）
 - `config-system-baseline.sh` - 系统安全基线配置
 - `config-system.sh` - 系统基础配置
 - `config-ssh.sh` - SSH 安全配置
@@ -112,8 +112,10 @@ cd krun
 - `config-acme.sh` - ACME 证书配置
 - `config-elasticsearch.sh` - Elasticsearch 配置
 - `config-rakefile.sh` - Rakefile 自动生成
+- `config-cursor.sh` - Cursor 配置部署
 - `config-centos7-repo.sh` - CentOS 7 软件源配置
 - `config-rocky-repo.sh` - Rocky Linux 软件源配置（修复 IPv6）
+- `disable-firewall-selinux.sh` - 关闭防火墙和 SELinux
 - `optimize-system-performance.sh` - 系统性能优化
 
 ### 🚀 开发环境安装类（20个）
@@ -197,6 +199,7 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | b
 source ~/.bashrc
 
 # 2. 系统基础配置
+krun disable-firewall-selinux  # 关闭防火墙和 SELinux
 krun config-system-baseline    # 安全基线配置
 krun config-ssh                 # SSH 安全加固
 krun optimize-system-performance  # 性能优化
@@ -386,8 +389,8 @@ rm -rf ~/.krun
 
 **项目地址**: https://github.com/kevin197011/krun
 **作者**: [kevin197011](https://github.com/kevin197011)
-**更新时间**: 2025-01-14
-**脚本数量**: 65+
+**更新时间**: 2025-12-04
+**脚本数量**: 66+
 **支持平台**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS
 
 **Star ⭐ 支持项目发展！**
