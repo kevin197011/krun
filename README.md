@@ -25,6 +25,7 @@ Krun 是一个面向运维工程师的自动化脚本工具集，提供了 **66+
 - 📦 **模块化设计**: 每个脚本独立运行，可单独使用或组合使用
 - 🔒 **安全可靠**: MIT 许可证，所有脚本开源可审查
 - 🎯 **远程执行**: 支持 curl 直接执行，无需克隆仓库
+- ⚡ **自动依赖**: 安装脚本自动检测并安装所需依赖（Python3、curl 等）
 
 ## 主要功能
 
@@ -51,8 +52,8 @@ Krun 是一个面向运维工程师的自动化脚本工具集，提供了 **66+
 ### 方式一：安装 Krun 工具（推荐）
 
 ```bash
-# 一键安装
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
+# 一键安装（自动检测平台并安装依赖）
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | bash
 
 # 重新加载 shell 配置
 source ~/.bashrc  # 或 source ~/.zshrc
@@ -65,6 +66,12 @@ krun install-docker
 krun config-system
 krun install-ffmpeg
 ```
+
+**安装说明**：
+- 支持 macOS 和 Linux（CentOS/RHEL、Debian/Ubuntu）
+- 自动检测平台并安装所需依赖（Python3、curl）
+- 自动配置 PATH 环境变量
+- 安装目录：`~/.krun/bin/krun`
 
 ### 方式二：直接执行脚本
 
@@ -89,11 +96,16 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/optimize-
 git clone https://github.com/kevin197011/krun.git
 cd krun
 
-# 执行脚本
+# 方式 3.1: 使用安装脚本安装 krun 工具
+./install.sh
+source ~/.bashrc  # 或 source ~/.zshrc
+krun list
+
+# 方式 3.2: 直接执行脚本
 ./lib/install-docker.sh
 ./lib/config-system.sh
 
-# 或使用 krun 工具
+# 方式 3.3: 使用本地 krun 工具
 ./bin/krun install-git
 ```
 
@@ -195,7 +207,7 @@ cd krun
 
 ```bash
 # 1. 安装 krun 工具
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | bash
 source ~/.bashrc
 
 # 2. 系统基础配置
@@ -343,8 +355,9 @@ krun::category::scriptname::run "$@"
 
 ### Q: 如何更新 krun 工具？
 ```bash
-# 重新运行安装脚本即可
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
+# 重新运行安装脚本即可（会自动下载最新版本）
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | bash
+source ~/.bashrc  # 或 source ~/.zshrc
 ```
 
 ### Q: 如何查看所有可用脚本？
@@ -372,6 +385,14 @@ rm -rf ~/.krun
 
 # 删除 PATH 配置
 # 编辑 ~/.bashrc 或 ~/.zshrc，删除 krun 相关的 PATH 配置
+```
+
+### Q: 安装脚本会自动安装依赖吗？
+```bash
+# 是的，install.sh 会自动检测并安装所需依赖：
+# - macOS: 使用 Homebrew 安装 Python3 和 curl（如未安装 Homebrew 会自动安装）
+# - Linux: 使用系统包管理器（apt/yum/dnf）安装 Python3 和 curl
+# 如果系统已有这些依赖，则跳过安装步骤
 ```
 
 ## 许可证
