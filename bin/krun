@@ -12,12 +12,11 @@ import json
 import re
 import argparse
 from urllib.request import Request, urlopen
-from urllib.parse import urlparse
 import ssl
 
 
 class Krun:
-    """Multi-language script runner"""
+    """Shell script runner"""
 
     # ASCII art banner
     BANNER = r"""______
@@ -25,43 +24,9 @@ ___  /____________  ________
 __  //_/_  ___/  / / /_  __ \\
 _  ,<  _  /   / /_/ /_  / / /
 /_/|_| /_/    \__,_/ /_/ /_/
-       Multi-Language Script Runner
+       Shell Script Runner
 
-🚀 Krun Multi-Language Script Collection"""
-
-    # Supported interpreters by file extension
-    INTERPRETERS = {
-        '.sh': 'bash',
-        '.bash': 'bash',
-        '.zsh': 'zsh',
-        '.py': 'python3',
-        '.python': 'python3',
-        '.rb': 'ruby',
-        '.ruby': 'ruby',
-        '.pl': 'perl',
-        '.perl': 'perl',
-        '.js': 'node',
-        '.javascript': 'node',
-        '.lua': 'lua',
-        '.r': 'Rscript',
-        '.R': 'Rscript',
-        '.php': 'php',
-        '.swift': 'swift',
-        '.groovy': 'groovy',
-        '.scala': 'scala',
-        '.ps1': 'powershell',
-        '.fish': 'fish',
-    }
-
-    # Language icons for display
-    LANG_ICONS = {
-        'shell': '🐚',
-        'python': '🐍',
-        'ruby': '💎',
-        'perl': '🐪',
-        'javascript': '🟨',
-        'other': '📄'
-    }
+🚀 Krun Shell Script Collection"""
 
     def __init__(self):
         """Initialize Krun instance"""
@@ -84,24 +49,21 @@ _  ,<  _  /   / /_/ /_  / / /
         return os.path.splitext(filename)[1].lower()
 
     def get_interpreter(self, filename, content=None):
-        """Get interpreter for file"""
+        """Get interpreter for shell script"""
         ext = self.get_extension(filename)
-
-        # Try extension-based detection
-        if ext in self.INTERPRETERS:
-            interpreter = self.INTERPRETERS[ext]
-            if self.command_exists(interpreter):
-                return interpreter
-
-        # Try shebang detection
+        
+        # Shell scripts use bash
+        if ext in ['.sh', '.bash', '.zsh'] or ext == '':
+            return 'bash' if self.command_exists('bash') else None
+        
+        # Try shebang detection for bash/zsh
         if content and content.startswith('#!'):
             shebang = content.split('\n')[0][2:].strip()
-            for cmd in ['python3', 'python', 'ruby', 'perl', 'node', 'bash', 'zsh']:
+            for cmd in ['bash', 'zsh', 'sh']:
                 if cmd in shebang and self.command_exists(cmd):
                     return cmd
-
-        # Default fallback
-        return 'bash' if ext in ['.sh', '.bash', ''] else None
+        
+        return None
 
     def download_script(self, script_name):
         """Download script content from GitHub"""
@@ -118,25 +80,10 @@ _  ,<  _  /   / /_/ /_  / / /
         return json.loads(urlopen(req, context=self.ssl_context).read().decode("utf-8"))
 
     def group_scripts(self, scripts):
-        """Group scripts by language"""
-        groups = {'shell': [], 'python': [], 'ruby': [], 'perl': [], 'javascript': [], 'other': []}
-
-        for script in scripts:
-            ext = self.get_extension(script)
-            if ext in ['.sh', '.bash', '.zsh']:
-                groups['shell'].append(script)
-            elif ext in ['.py', '.python']:
-                groups['python'].append(script)
-            elif ext in ['.rb', '.ruby']:
-                groups['ruby'].append(script)
-            elif ext in ['.pl', '.perl']:
-                groups['perl'].append(script)
-            elif ext in ['.js', '.javascript']:
-                groups['javascript'].append(script)
-            else:
-                groups['other'].append(script)
-
-        return groups
+        """Return all scripts as shell scripts"""
+        # Only filter shell scripts
+        shell_scripts = [s for s in scripts if self.get_extension(s) in ['.sh', '.bash', '.zsh'] or self.get_extension(s) == '']
+        return shell_scripts
 
     def execute_script(self, script_name):
         """Execute a script"""
@@ -191,23 +138,18 @@ _  ,<  _  /   / /_/ /_  / / /
         print("=" * 50)
 
         scripts = self.get_script_list()
-        groups = self.group_scripts(scripts)
+        shell_scripts = self.group_scripts(scripts)
 
-        print(f"\n📊 Total Scripts: {len(scripts)}")
-        active_groups = {k: v for k, v in groups.items() if v}
-        print(f"📁 Categories: {len(active_groups)}")
+        print(f"\n📊 Total Scripts: {len(shell_scripts)}")
         print()
 
         num = 1
-        for lang, script_list in groups.items():
-            if script_list:
-                icon = self.LANG_ICONS.get(lang, '📄')
-                print(f"{icon} {lang.upper()} Scripts ({len(script_list)} files)")
-                print("─" * 40)
-                for script in script_list:
-                    print(f"    [{num:2}] {script}")
-                    num += 1
-                print()
+        print("🐚 Shell Scripts")
+        print("─" * 40)
+        for script in shell_scripts:
+            print(f"    [{num:2}] {script}")
+            num += 1
+        print()
 
         print("💡 Usage: krun <number> or krun <script_name>")
         print("🔍 Debug: krun <number> --debug")
@@ -215,46 +157,28 @@ _  ,<  _  /   / /_/ /_  / / /
     def show_status(self):
         """Show system status"""
         print("Krun ready!")
-        print("Available interpreters:")
-        for ext, interpreter in self.INTERPRETERS.items():
-            if self.command_exists(interpreter):
-                print(f"  {ext}: {interpreter}")
+        if self.command_exists('bash'):
+            print("✓ bash is available")
+        else:
+            print("✗ bash is not available")
 
     def show_languages(self):
         """Show supported languages"""
         print(self.BANNER)
-        print("\nSupported languages:")
-
-        lang_map = {
-            'Shell/Bash': ['.sh', '.bash', '.zsh'],
-            'Python': ['.py', '.python'],
-            'Ruby': ['.rb', '.ruby'],
-            'Perl': ['.pl', '.perl'],
-            'JavaScript': ['.js', '.javascript'],
-            'Lua': ['.lua'],
-            'R': ['.r', '.R'],
-            'PHP': ['.php'],
-            'Swift': ['.swift'],
-            'Groovy': ['.groovy'],
-            'Scala': ['.scala'],
-            'PowerShell': ['.ps1']
-        }
-
-        for lang, exts in lang_map.items():
-            available = any(self.command_exists(self.INTERPRETERS.get(ext, '')) for ext in exts)
-            status = "✓" if available else "✗"
-            print(f"  {status} {lang}")
+        print("\nSupported format:")
+        print("  ✓ Shell scripts (.sh, .bash, .zsh)")
+        print("\nInterpreter: bash")
 
     def show_help(self):
         """Show help message"""
         print(self.BANNER)
         print("\nUsage:")
-        print("  krun list                    - List all scripts")
+        print("  krun list                    - List all shell scripts")
         print("  krun <number>                - Execute script by number")
         print("  krun <script_name>           - Execute script by name")
         print("  krun <number|script> --debug - Show debug info")
         print("  krun status                  - Show system status")
-        print("  krun languages               - Show supported languages")
+        print("  krun languages               - Show supported format")
         print("  krun version                 - Show version")
         print("  krun help                    - Show this help")
         print("\nExamples:")
@@ -289,22 +213,22 @@ _  ,<  _  /   / /_/ /_  / / /
             self.execute_script(script_name)
 
     def is_script_name(self, name):
-        """Check if name looks like a script file"""
-        return re.match(r".*\.(sh|py|rb|pl|js|lua|r|php|swift|groovy|scala|ps1|fish|bash|zsh|python|ruby|perl|javascript)$", name)
+        """Check if name looks like a shell script file"""
+        return re.match(r".*\.(sh|bash|zsh)$", name, re.IGNORECASE)
 
     def run(self, args):
         """Main entry point"""
         parser = argparse.ArgumentParser(
-            description="Multi-language script runner",
+            description="Shell script runner",
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog="""
 Examples:
-  krun list                   List all available scripts
+  krun list                   List all available shell scripts
   krun 1                      Execute first script
   krun hello-world.sh         Execute hello-world.sh
   krun 5 --debug              Show debug info for script #5
   krun status                 Show system status
-  krun languages              Show supported languages
+  krun languages              Show supported format
   krun version                Show version information
             """
         )

@@ -6,7 +6,7 @@ ___  /____________  ________
 __  //_/_  ___/  / / /_  __ \
 _  ,<  _  /   / /_/ /_  / / /
 /_/|_| /_/    \__,_/ /_/ /_/
-       Multi-Language Script Runner
+       Shell Script Runner
 ```
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -15,7 +15,7 @@ _  ,<  _  /   / /_/ /_  / / /
 
 ## 项目简介
 
-Krun 是一个面向运维工程师的自动化脚本工具集，提供了 **66+ 个**系统初始化、安全加固、服务部署、性能优化等常用运维脚本。支持 CentOS/RHEL、Debian/Ubuntu、macOS 等多个平台，可通过 curl 命令直接执行，简化运维工作流程。
+Krun 是一个面向运维工程师的 Shell 脚本工具集，提供了 **66+ 个**系统初始化、安全加固、服务部署、性能优化等常用运维脚本。支持 CentOS/RHEL、Debian/Ubuntu、macOS 等多个平台，可通过 curl 命令直接执行，简化运维工作流程。
 
 ### 核心特性
 
@@ -26,6 +26,7 @@ Krun 是一个面向运维工程师的自动化脚本工具集，提供了 **66+
 - 🔒 **安全可靠**: MIT 许可证，所有脚本开源可审查
 - 🎯 **远程执行**: 支持 curl 直接执行，无需克隆仓库
 - ⚡ **自动依赖**: 安装脚本自动检测并安装所需依赖（Python3、curl 等）
+- 🐚 **Shell 脚本**: 所有脚本使用 Bash，简单可靠
 
 ## 主要功能
 
@@ -58,13 +59,13 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | 
 # 重新加载 shell 配置
 source ~/.bashrc  # 或 source ~/.zshrc
 
-# 查看可用脚本
-krun status
+# 查看可用脚本列表
+krun list
 
 # 执行脚本（自动下载并执行）
-krun install-docker
-krun config-system
-krun install-ffmpeg
+krun install-docker.sh
+krun config-system.sh
+krun install-ffmpeg.sh
 ```
 
 **安装说明**：
@@ -72,6 +73,7 @@ krun install-ffmpeg
 - 自动检测平台并安装所需依赖（Python3、curl）
 - 自动配置 PATH 环境变量
 - 安装目录：`~/.krun/bin/krun`
+- krun 工具用于管理 shell 脚本，所有脚本通过 bash 执行
 
 ### 方式二：直接执行脚本
 
@@ -106,7 +108,7 @@ krun list
 ./lib/config-system.sh
 
 # 方式 3.3: 使用本地 krun 工具
-./bin/krun install-git
+./bin/krun install-git.sh
 ```
 
 ## 脚本列表（66+ 个）
@@ -145,7 +147,7 @@ krun list
 - `install-oh_my_zsh.sh` - Oh My Zsh 终端配置
 - `install-zsh.sh` - Zsh Shell
 - `install-spacevim.sh` - SpaceVim 配置
-- `install-fonts-nerd.sh` - Nerd Fonts 字体
+- `install-fonts-nerd-JetBrainsMono.sh` - JetBrains Mono Nerd Font 字体
 - `install-fonts-powerline.sh` - Powerline 字体
 - `install-awscli.sh` - AWS CLI 工具
 - `install-gcloud.sh` - Google Cloud CLI
@@ -211,20 +213,20 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | 
 source ~/.bashrc
 
 # 2. 系统基础配置
-krun disable-firewall-selinux  # 关闭防火墙和 SELinux
-krun config-system-baseline    # 安全基线配置
-krun config-ssh                 # SSH 安全加固
-krun optimize-system-performance  # 性能优化
+krun disable-firewall-selinux.sh
+krun config-system-baseline.sh
+krun config-ssh.sh
+krun optimize-system-performance.sh
 
 # 3. 安装常用软件
-krun install-docker            # Docker 容器平台
-krun install-git               # Git 版本控制
-krun install-vim               # Vim 编辑器
+krun install-docker.sh
+krun install-git.sh
+krun install-vim.sh
 
 # 4. 配置开发环境
-krun install-python3           # Python 环境
-krun install-golang            # Go 环境
-krun install-oh_my_zsh         # 美化终端
+krun install-python3.sh
+krun install-golang.sh
+krun install-oh_my_zsh.sh
 ```
 
 ### Rocky Linux 9 修复 IPv6 源问题
@@ -237,10 +239,10 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-ro
 ### Kubernetes 环境搭建
 
 ```bash
-krun install-docker            # 安装 Docker
-krun install-kind              # 安装 Kind
-krun install-helm              # 安装 Helm
-krun install-k9s               # 安装 K9s 管理工具
+krun install-docker.sh
+krun install-kind.sh
+krun install-helm.sh
+krun install-k9s.sh
 ```
 
 ### 自动挂载数据盘
@@ -261,82 +263,21 @@ data_disk="/dev/sdb" mount_point="/data" bash lib/config-disk-data.sh
 
 ## 开发者指南
 
-### 使用 Rakefile 管理项目
+### 脚本标准格式
 
-```bash
-# 自动生成 Rakefile
-bash lib/config-rakefile.sh
+所有脚本使用 Bash，遵循统一格式（参考 `lib/hello-world.sh`）：
 
-# 使用 rake 任务
-rake push      # 格式化代码、提交并推送
-rake new       # 创建新脚本
-rake stats     # 查看项目统计
-rake clean     # 清理备份文件
-```
+- 使用 `set -o errexit`, `set -o nounset`, `set -o pipefail`
+- 函数命名：`krun::category::scriptname::function`
+- 平台检测：自动识别 debian/centos/mac
+- 统一入口：通过 `run()` 函数调用
 
 ### 创建新脚本
 
 ```bash
-# 使用 rake 创建
-rake new
-# 输入: action = install
-# 输入: name = myapp
-
-# 手动创建（参考模板）
-cp templates/bash.sh.erb lib/install-myapp.sh
-```
-
-### 脚本标准格式
-
-所有脚本应遵循以下格式：
-
-```bash
-#!/usr/bin/env bash
-# Copyright (c) 2025 kk
-#
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
-
-set -o errexit
-set -o nounset
-set -o pipefail
-
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/your-script.sh | bash
-
-# vars
-
-# run code
-krun::category::scriptname::run() {
-    platform='debian'
-    command -v yum >/dev/null && platform='centos'
-    command -v dnf >/dev/null && platform='centos'
-    command -v brew >/dev/null && platform='mac'
-    eval "${FUNCNAME/::run/::${platform}}"
-}
-
-# centos code
-krun::category::scriptname::centos() {
-    krun::category::scriptname::common
-}
-
-# debian code
-krun::category::scriptname::debian() {
-    krun::category::scriptname::common
-}
-
-# mac code
-krun::category::scriptname::mac() {
-    krun::category::scriptname::common
-}
-
-# common code
-krun::category::scriptname::common() {
-    echo "Your implementation here..."
-}
-
-# run main
-krun::category::scriptname::run "$@"
+# 参考模板创建
+cp lib/hello-world.sh lib/install-myapp.sh
+# 修改函数名和实现逻辑
 ```
 
 ## 贡献指南
@@ -362,14 +303,11 @@ source ~/.bashrc  # 或 source ~/.zshrc
 
 ### Q: 如何查看所有可用脚本？
 ```bash
-# 方式1: 使用 krun 工具
-krun status
+# 使用 krun 工具查看脚本列表
+krun list
 
-# 方式2: 查看 lib 目录
+# 或直接查看 lib 目录
 ls -l lib/*.sh
-
-# 方式3: 查看 resources/krun.json
-cat resources/krun.json
 ```
 
 ### Q: 脚本执行失败怎么办？
