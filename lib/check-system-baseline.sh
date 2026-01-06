@@ -215,4 +215,3 @@ krun::check::system_baseline::common() {
 
 # run main
 krun::check::system_baseline::run "$@"
-

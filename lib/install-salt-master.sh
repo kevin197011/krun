@@ -84,33 +84,33 @@ krun::install::salt_master::common() {
     if [[ -f "$master_config" ]]; then
         # Enable auto accept minion keys
         if ! grep -q "^auto_accept:" "$master_config"; then
-            echo "" >> "$master_config"
-            echo "# Auto accept minion keys" >> "$master_config"
-            echo "auto_accept: True" >> "$master_config"
+            echo "" >>"$master_config"
+            echo "# Auto accept minion keys" >>"$master_config"
+            echo "auto_accept: True" >>"$master_config"
             echo "✓ Enabled auto accept minion keys"
         fi
 
         # Configure Salt API
         if ! grep -q "^rest_cherrypy:" "$master_config"; then
-            echo "" >> "$master_config"
-            echo "# Salt API configuration" >> "$master_config"
-            echo "rest_cherrypy:" >> "$master_config"
-            echo "  host: 0.0.0.0" >> "$master_config"
-            echo "  port: 8000" >> "$master_config"
-            echo "  disable_ssl: True" >> "$master_config"
+            echo "" >>"$master_config"
+            echo "# Salt API configuration" >>"$master_config"
+            echo "rest_cherrypy:" >>"$master_config"
+            echo "  host: 0.0.0.0" >>"$master_config"
+            echo "  port: 8000" >>"$master_config"
+            echo "  disable_ssl: True" >>"$master_config"
             echo "✓ Configured Salt API on port 8000"
         fi
 
         # Configure external authentication (PAM)
         if ! grep -q "^external_auth:" "$master_config"; then
-            echo "" >> "$master_config"
-            echo "# External authentication for Salt API" >> "$master_config"
-            echo "external_auth:" >> "$master_config"
-            echo "  pam:" >> "$master_config"
-            echo "    salt:" >> "$master_config"
-            echo "      - .*" >> "$master_config"
-            echo "      - '@runner'" >> "$master_config"
-            echo "      - '@wheel'" >> "$master_config"
+            echo "" >>"$master_config"
+            echo "# External authentication for Salt API" >>"$master_config"
+            echo "external_auth:" >>"$master_config"
+            echo "  pam:" >>"$master_config"
+            echo "    salt:" >>"$master_config"
+            echo "      - .*" >>"$master_config"
+            echo "      - '@runner'" >>"$master_config"
+            echo "      - '@wheel'" >>"$master_config"
             echo "✓ Configured Salt API authentication (PAM)"
         fi
     fi

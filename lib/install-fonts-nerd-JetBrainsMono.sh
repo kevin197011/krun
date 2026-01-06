@@ -41,7 +41,7 @@ krun::install::fonts_nerd::mac() {
         echo "Error: Homebrew is required. Install it from https://brew.sh" >&2
         exit 1
     fi
-    
+
     brew tap homebrew/cask-fonts 2>/dev/null || true
     brew install --cask font-jetbrains-mono-nerd-font
 }
@@ -57,17 +57,17 @@ krun::install::fonts_nerd::install_linux() {
         echo "Error: curl or wget is required" >&2
         exit 1
     fi
-    
+
     local temp_dir
     temp_dir=$(mktemp -d)
     trap "rm -rf $temp_dir" EXIT
-    
+
     download_file="$temp_dir/JetBrainsMono.tar.xz"
     echo "Downloading ${FONT_NAME} Nerd Font..."
     $download_cmd "$download_file" "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
-    
+
     mkdir -p "$FONT_DIR_LINUX"
-    
+
     # Extract tar.xz file (tar with xz compression)
     if tar --version | grep -q "GNU tar"; then
         tar -xJf "$download_file" -C "$temp_dir"
@@ -83,7 +83,7 @@ krun::install::fonts_nerd::install_linux() {
             }
         fi
     fi
-    
+
     # Copy font files (may be in a subdirectory)
     local font_found
     font_found=$(find "$temp_dir" \( -name "*.ttf" -o -name "*.otf" \) -print -quit 2>/dev/null)
@@ -91,13 +91,13 @@ krun::install::fonts_nerd::install_linux() {
         echo "Error: No font files found in archive" >&2
         exit 1
     fi
-    
+
     find "$temp_dir" \( -name "*.ttf" -o -name "*.otf" \) -exec cp {} "$FONT_DIR_LINUX/" \;
-    
+
     if command -v fc-cache >/dev/null 2>&1; then
         fc-cache -fv "$FONT_DIR_LINUX"
     fi
-    
+
     echo "${FONT_NAME} Nerd Font installed to $FONT_DIR_LINUX"
 }
 

@@ -98,7 +98,7 @@ krun::install::common() {
 
     # Create directory and install
     mkdir -p "$KRUN_BIN_DIR"
-    $download_cmd "$KRUN_URL" > "$KRUN_BIN_DIR/krun"
+    $download_cmd "$KRUN_URL" >"$KRUN_BIN_DIR/krun"
     chmod +x "$KRUN_BIN_DIR/krun"
 
     # Add to PATH
@@ -112,8 +112,8 @@ krun::install::common() {
     fi
 
     if ! grep -q "$KRUN_BIN_DIR" "$shell_rc" 2>/dev/null; then
-        echo "" >> "$shell_rc"
-        echo "export PATH=\"\$PATH:$KRUN_BIN_DIR\"" >> "$shell_rc"
+        echo "" >>"$shell_rc"
+        echo "export PATH=\"\$PATH:$KRUN_BIN_DIR\"" >>"$shell_rc"
     fi
 
     export PATH="$PATH:$KRUN_BIN_DIR"
