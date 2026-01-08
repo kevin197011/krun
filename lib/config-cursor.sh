@@ -57,6 +57,7 @@ krun::config::cursor::common() {
     mv .cursor/deploy.sh .
     mv .cursor/openspec .
     mv .cursor/AGENTS.md .
+    mv .cursor/r.md .
     chmod +x ./deploy.sh
     rm -rf .cursor/.git
     grep -q '\.cursor' .gitignore 2>/dev/null || printf '\n.cursor\n' >>.gitignore
