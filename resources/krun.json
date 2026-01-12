@@ -1,5 +1,6 @@
 [
   "apply-asdf.sh",
+  "check-ip-quality.sh",
   "check-system-baseline.sh",
   "config-acme.sh",
   "config-centos7-repo.sh",
