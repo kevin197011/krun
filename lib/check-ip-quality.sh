@@ -68,7 +68,7 @@ krun::check::ip_quality::ping_test() {
 
     if ! command -v ping >/dev/null 2>&1; then
         echo "N/A"
-        return
+        return 0
     fi
 
     local ping_cmd
@@ -76,16 +76,16 @@ krun::check::ip_quality::ping_test() {
 
     # Linux ping format
     if [[ "$(uname)" == "Linux" ]]; then
-        ping_cmd="ping -c $count -W $timeout $ip 2>/dev/null"
+        ping_cmd="ping -c $count -W $timeout $ip 2>/dev/null || true"
     else
         # macOS ping format (timeout in milliseconds)
-        ping_cmd="ping -c $count -W $((timeout * 1000)) $ip 2>/dev/null"
+        ping_cmd="ping -c $count -W $((timeout * 1000)) $ip 2>/dev/null || true"
     fi
 
-    result=$(eval "$ping_cmd" | grep -E "min/avg/max|round-trip" | tail -1)
+    result=$(eval "$ping_cmd" | grep -E "min/avg/max|round-trip" | tail -1 || true)
     if [[ -n "$result" ]]; then
         # Extract average latency
-        echo "$result" | awk -F'/' '{print $5}' || echo "timeout"
+        echo "$result" | awk -F'/' '{print $5}' 2>/dev/null || echo "timeout"
     else
         echo "timeout"
     fi
@@ -97,12 +97,12 @@ krun::check::ip_quality::connectivity_test() {
     local port="${2:-53}"
 
     if command -v nc >/dev/null 2>&1; then
-        timeout 2 nc -z "$ip" "$port" >/dev/null 2>&1 && echo "✓" || echo "✗"
+        (timeout 2 nc -z "$ip" "$port" >/dev/null 2>&1 && echo "✓") || echo "✗"
     elif command -v telnet >/dev/null 2>&1; then
-        timeout 2 bash -c "echo >/dev/tcp/$ip/$port" 2>/dev/null && echo "✓" || echo "✗"
+        (timeout 2 bash -c "echo >/dev/tcp/$ip/$port" 2>/dev/null && echo "✓") || echo "✗"
     else
         # Fallback: ping only
-        ping -c 1 -W 2 "$ip" >/dev/null 2>&1 && echo "✓" || echo "✗"
+        (ping -c 1 -W 2 "$ip" >/dev/null 2>&1 && echo "✓") || echo "✗"
     fi
 }
 
@@ -112,18 +112,20 @@ krun::check::ip_quality::test_node() {
     local ip="$2"
     local desc="$3"
 
-    printf "%-8s %-18s %-12s " "$region" "$ip" "$desc"
+    printf "%-8s %-18s %-12s " "$region" "$ip" "$desc" || true
 
     # Connectivity test
-    local conn=$(krun::check::ip_quality::connectivity_test "$ip")
-    printf "%-4s " "$conn"
+    local conn
+    conn=$(krun::check::ip_quality::connectivity_test "$ip" || echo "✗")
+    printf "%-4s " "$conn" || true
 
     # Ping test (average latency)
-    local latency=$(krun::check::ip_quality::ping_test "$ip" 4 3)
+    local latency
+    latency=$(krun::check::ip_quality::ping_test "$ip" 4 3 || echo "timeout")
     if [[ "$latency" == "timeout" ]] || [[ -z "$latency" ]]; then
-        printf "%-12s\n" "timeout"
+        printf "%-12s\n" "timeout" || true
     else
-        printf "%-12s\n" "${latency}ms"
+        printf "%-12s\n" "${latency}ms" || true
     fi
 }
 
@@ -143,17 +145,19 @@ krun::check::ip_quality::common() {
     printf "%-8s %-18s %-12s %-4s %-12s\n" "地区" "IP地址" "描述" "连通" "平均延迟"
     echo "----------------------------------------"
 
-    # Test each node
+    # Test each node (disable errexit for the loop)
+    set +o errexit
     local total=0
     local success=0
     for node in "${TEST_NODES[@]}"; do
-        IFS=':' read -r region ip desc <<<"$node"
-        krun::check::ip_quality::test_node "$region" "$ip" "$desc"
-        ((total++))
+        IFS=':' read -r region ip desc <<<"$node" || continue
+        krun::check::ip_quality::test_node "$region" "$ip" "$desc" || true
+        ((total++)) || true
         if [[ $(krun::check::ip_quality::connectivity_test "$ip") == "✓" ]]; then
-            ((success++))
+            ((success++)) || true
         fi
     done
+    set -o errexit
 
     echo "----------------------------------------"
     echo ""
