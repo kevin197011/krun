@@ -35,11 +35,8 @@ scripts:
       exit 0
     fi
     
-    cat > /etc/profile.d/krun.sh << 'EOF'
-    # krun PATH configuration
-    export PATH="$PATH:/usr/local/bin"
-    EOF
-    
+    echo '# krun PATH configuration' > /etc/profile.d/krun.sh
+    echo 'export PATH="$PATH:/usr/local/bin"' >> /etc/profile.d/krun.sh
     chmod 644 /etc/profile.d/krun.sh
 
   preremove: |

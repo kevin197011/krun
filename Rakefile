@@ -61,6 +61,24 @@ task :stats do
          .each { |file, mtime| puts "  #{File.basename(file).ljust(30)} #{mtime.strftime('%Y-%m-%d %H:%M')}" }
 end
 
+task :tag do
+  version = prompt('version (e.g., 2.0.0)')
+  tag = "v#{version}"
+
+  # Check if tag already exists
+  if system("git rev-parse #{tag} >/dev/null 2>&1")
+    puts "✗ Tag #{tag} already exists"
+    exit 1
+  end
+
+  # Create and push tag
+  system "git tag -a #{tag} -m 'Release #{tag}'"
+  system "git push origin #{tag}"
+
+  puts "✓ Created and pushed tag #{tag}"
+  puts "  GitHub Actions will automatically build and release packages"
+end
+
 def prompt(name)
   print "#{name}: "
   $stdin.gets.strip
