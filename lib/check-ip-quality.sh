@@ -192,32 +192,35 @@ krun::check::ip_quality::connectivity_test() {
     fi
 }
 
-# test single node
+# test single node (output to temp file for concurrent execution)
 krun::check::ip_quality::test_node() {
     local region="$1"
     local ip="$2"
     local desc="$3"
+    local output_file="$4"
 
-    printf "%-8s %-18s %-12s " "$region" "$ip" "$desc" || true
+    {
+        printf "%-8s %-18s %-12s " "$region" "$ip" "$desc" || true
 
-    # Connectivity test
-    local conn
-    conn=$(krun::check::ip_quality::connectivity_test "$ip" || echo "✗")
-    printf "%-4s " "$conn" || true
+        # Connectivity test
+        local conn
+        conn=$(krun::check::ip_quality::connectivity_test "$ip" || echo "✗")
+        printf "%-4s " "$conn" || true
 
-    # Ping test (average latency)
-    local latency
-    latency=$(krun::check::ip_quality::ping_test "$ip" 4 3 || echo "timeout")
-    if [[ "$latency" == "timeout" ]] || [[ -z "$latency" ]]; then
-        printf "%-12s\n" "timeout" || true
-    else
-        printf "%-12s\n" "${latency}ms" || true
-    fi
+        # Ping test (average latency)
+        local latency
+        latency=$(krun::check::ip_quality::ping_test "$ip" 4 3 || echo "timeout")
+        if [[ "$latency" == "timeout" ]] || [[ -z "$latency" ]]; then
+            printf "%-12s\n" "timeout" || true
+        else
+            printf "%-12s\n" "${latency}ms" || true
+        fi
+    } >"$output_file" 2>/dev/null
 }
 
 # common code
 krun::check::ip_quality::common() {
-    echo "全国各地公共 IP 网络质量检测"
+    echo "全国各地公共 IP 网络质量检测 (并发执行)"
     echo "=========================================="
     echo ""
 
@@ -227,28 +230,76 @@ krun::check::ip_quality::common() {
         exit 1
     fi
 
+    # Create temp directory for results
+    local temp_dir
+    temp_dir=$(mktemp -d /tmp/krun_ip_quality_XXXXXX) || {
+        echo "错误: 无法创建临时目录"
+        exit 1
+    }
+    trap "rm -rf $temp_dir" EXIT INT TERM
+
     # Print header
     printf "%-8s %-18s %-12s %-4s %-12s\n" "地区" "IP地址" "描述" "连通" "平均延迟"
     echo "----------------------------------------"
 
-    # Test each node (disable errexit for the loop)
+    # Concurrent execution settings
+    local max_jobs="${MAX_JOBS:-20}"
+    local pids=()
+
+    # Test each node concurrently
     set +o errexit
     local total=0
-    local success=0
+    local index=0
     for node in "${TEST_NODES[@]}"; do
         IFS=':' read -r region ip desc <<<"$node" || continue
-        krun::check::ip_quality::test_node "$region" "$ip" "$desc" || true
         ((total++)) || true
-        if [[ $(krun::check::ip_quality::connectivity_test "$ip") == "✓" ]]; then
-            ((success++)) || true
-        fi
+        ((index++)) || true
+
+        # Wait if we've reached max concurrent jobs
+        while [[ ${#pids[@]} -ge $max_jobs ]]; do
+            for i in "${!pids[@]}"; do
+                if ! kill -0 "${pids[$i]}" 2>/dev/null; then
+                    unset "pids[$i]"
+                fi
+            done
+            # Rebuild array to remove empty elements
+            pids=("${pids[@]}")
+            sleep 0.1
+        done
+
+        # Start background job
+        local output_file="$temp_dir/node_${index}.txt"
+        krun::check::ip_quality::test_node "$region" "$ip" "$desc" "$output_file" &
+        pids+=($!)
     done
+
+    # Wait for all background jobs to complete
+    wait
     set -o errexit
+
+    # Collect and display results (sorted by index)
+    local success=0
+    local i=1
+    while [[ $i -le $total ]]; do
+        local result_file="$temp_dir/node_${i}.txt"
+        if [[ -f "$result_file" ]]; then
+            cat "$result_file"
+            # Check if connectivity is successful
+            if grep -q "✓" "$result_file" 2>/dev/null; then
+                ((success++)) || true
+            fi
+        fi
+        ((i++)) || true
+    done
 
     echo "----------------------------------------"
     echo ""
     echo "检测完成: 总计 $total 个节点, 成功 $success 个, 失败 $((total - success)) 个"
     echo "成功率: $((success * 100 / total))%"
+
+    # Cleanup
+    rm -rf "$temp_dir"
+    trap - EXIT INT TERM
 }
 
 # run main
