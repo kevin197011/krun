@@ -19,7 +19,6 @@
   "config-timezone.sh",
   "config-vagrant-ssh.sh",
   "config-vm.sh",
-  "db-sync.sh",
   "delete-video.sh",
   "deploy-node_exporter.sh",
   "deploy-sshkey.sh",
