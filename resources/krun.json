@@ -16,6 +16,7 @@
   "config-ssh.sh",
   "config-system-baseline.sh",
   "config-system.sh",
+  "config-timezone.sh",
   "config-vagrant-ssh.sh",
   "config-vm.sh",
   "db-sync.sh",
