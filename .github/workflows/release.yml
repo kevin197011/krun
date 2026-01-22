@@ -53,6 +53,9 @@ jobs:
       - name: Create dist directory
         run: mkdir -p dist
 
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
       - name: Build DEB package (amd64)
         run: |
           nfpm package \
