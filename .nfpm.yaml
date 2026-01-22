@@ -1,0 +1,61 @@
+# nfpm configuration for krun
+# https://nfpm.goreleaser.com/
+
+name: krun
+arch: "amd64"
+platform: linux
+version: "2.0.0"
+section: utils
+priority: standard
+maintainer: kk <kevin197011@outlook.com>
+description: |
+  Krun - Shell Script Runner
+  A collection of 66+ shell scripts for system administration, 
+  security hardening, service deployment, and performance optimization.
+vendor: kk
+homepage: https://github.com/kevin197011/krun
+license: MIT
+
+contents:
+  # Install krun binary to /usr/local/bin
+  - src: bin/krun
+    dst: /usr/local/bin/krun
+    type: file
+    file_info:
+      mode: 0755
+      owner: root
+      group: root
+
+# Scripts for package installation
+scripts:
+  postinstall: |
+    #!/bin/bash
+    # Add krun to PATH if not already present
+    if [ -f /etc/profile.d/krun.sh ]; then
+      exit 0
+    fi
+    
+    cat > /etc/profile.d/krun.sh << 'EOF'
+    # krun PATH configuration
+    export PATH="$PATH:/usr/local/bin"
+    EOF
+    
+    chmod 644 /etc/profile.d/krun.sh
+
+  preremove: |
+    #!/bin/bash
+    # Clean up profile script
+    rm -f /etc/profile.d/krun.sh
+
+# Dependencies
+depends:
+  - python3
+
+# Overrides for different package formats
+overrides:
+  deb:
+    depends:
+      - python3
+  rpm:
+    depends:
+      - python3

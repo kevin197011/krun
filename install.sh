@@ -12,9 +12,9 @@ set -o pipefail
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | bash
 
 # vars
-KRUN_HOME="${KRUN_HOME:-$HOME/.krun}"
-KRUN_BIN_DIR="$KRUN_HOME/bin"
-KRUN_URL="https://raw.githubusercontent.com/kevin197011/krun/refs/heads/main/bin/krun"
+KRUN_VERSION="${KRUN_VERSION:-2.0.0}"
+KRUN_REPO="https://github.com/kevin197011/krun"
+KRUN_RELEASES_URL="${KRUN_REPO}/releases/download/v${KRUN_VERSION}"
 
 # run code
 krun::install::run() {
@@ -27,20 +27,38 @@ krun::install::run() {
 
 # centos code
 krun::install::centos() {
+    [[ "$OSTYPE" != "darwin"* ]] && [[ $EUID -ne 0 ]] && echo "✗ Please run as root" && exit 1
+
     krun::install::install_deps_centos
-    krun::install::common
+
+    # Try to install from RPM package
+    if krun::install::install_from_package "rpm"; then
+        return 0
+    fi
+
+    # Fallback to direct binary installation
+    krun::install::install_binary
 }
 
 # debian code
 krun::install::debian() {
+    [[ "$OSTYPE" != "darwin"* ]] && [[ $EUID -ne 0 ]] && echo "✗ Please run as root" && exit 1
+
     krun::install::install_deps_debian
-    krun::install::common
+
+    # Try to install from DEB package
+    if krun::install::install_from_package "deb"; then
+        return 0
+    fi
+
+    # Fallback to direct binary installation
+    krun::install::install_binary
 }
 
 # mac code
 krun::install::mac() {
     krun::install::install_deps_mac
-    krun::install::common
+    krun::install::install_binary
 }
 
 # install deps for centos
@@ -83,16 +101,73 @@ krun::install::install_deps_mac() {
     ! command -v curl >/dev/null 2>&1 && brew install curl
 }
 
-# common code
-krun::install::common() {
-    # Set download command
+# install from package (deb/rpm)
+krun::install::install_from_package() {
+    local pkg_type="$1"
     local download_cmd
+    local pkg_file
+    local arch
+
+    # Detect architecture
+    arch=$(uname -m)
+    [[ "$arch" == "x86_64" ]] && arch="amd64"
+    [[ "$arch" == "aarch64" ]] && arch="arm64"
+
+    # Set download command
+    if command -v curl >/dev/null 2>&1; then
+        download_cmd="curl -fsSL -o"
+    elif command -v wget >/dev/null 2>&1; then
+        download_cmd="wget -qO"
+    else
+        return 1
+    fi
+
+    # Construct package filename
+    if [[ "$pkg_type" == "deb" ]]; then
+        pkg_file="krun_${KRUN_VERSION}_${arch}.deb"
+    else
+        pkg_file="krun_${KRUN_VERSION}_${arch}.rpm"
+    fi
+
+    local pkg_url="${KRUN_RELEASES_URL}/${pkg_file}"
+    local temp_pkg="/tmp/${pkg_file}"
+
+    echo "Downloading ${pkg_file}..."
+    if $download_cmd "$temp_pkg" "$pkg_url" 2>/dev/null; then
+        echo "Installing package..."
+        if [[ "$pkg_type" == "deb" ]]; then
+            if dpkg -i "$temp_pkg" 2>/dev/null || apt-get install -y "$temp_pkg" 2>/dev/null; then
+                rm -f "$temp_pkg"
+                echo "krun installed successfully from package"
+                return 0
+            fi
+        else
+            if rpm -i "$temp_pkg" 2>/dev/null || yum install -y "$temp_pkg" 2>/dev/null || dnf install -y "$temp_pkg" 2>/dev/null; then
+                rm -f "$temp_pkg"
+                echo "krun installed successfully from package"
+                return 0
+            fi
+        fi
+        rm -f "$temp_pkg"
+    fi
+
+    return 1
+}
+
+# install binary directly (fallback)
+krun::install::install_binary() {
+    local download_cmd
+    local KRUN_HOME="${KRUN_HOME:-$HOME/.krun}"
+    local KRUN_BIN_DIR="$KRUN_HOME/bin"
+    local KRUN_URL="https://raw.githubusercontent.com/kevin197011/krun/refs/heads/main/bin/krun"
+
+    # Set download command
     if command -v curl >/dev/null 2>&1; then
         download_cmd="curl -fsSL"
     elif command -v wget >/dev/null 2>&1; then
         download_cmd="wget -qO-"
     else
-        echo "Error: Failed to install curl or wget" >&2
+        echo "Error: curl or wget is required" >&2
         exit 1
     fi
 
