@@ -1,4 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Copyright (c) 2025 kk
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
 # Add krun to PATH if not already present
 if [ -f /etc/profile.d/krun.sh ]; then
     exit 0
