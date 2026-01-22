@@ -198,6 +198,7 @@ krun::check::ip_quality::test_node() {
     local ip="$2"
     local desc="$3"
     local output_file="$4"
+    local data_file="$5"
 
     {
         printf "%-8s %-18s %-12s " "$region" "$ip" "$desc" || true
@@ -212,10 +213,220 @@ krun::check::ip_quality::test_node() {
         latency=$(krun::check::ip_quality::ping_test "$ip" 4 3 || echo "timeout")
         if [[ "$latency" == "timeout" ]] || [[ -z "$latency" ]]; then
             printf "%-12s\n" "timeout" || true
+            echo "$region|$ip|$desc|✗|timeout" >>"$data_file" || true
         else
             printf "%-12s\n" "${latency}ms" || true
+            echo "$region|$ip|$desc|$conn|$latency" >>"$data_file" || true
         fi
     } >"$output_file" 2>/dev/null
+}
+
+# evaluate results
+krun::check::ip_quality::evaluate() {
+    local data_file="$1"
+    local total="$2"
+    local success="$3"
+
+    if [[ ! -f "$data_file" ]] || [[ ! -s "$data_file" ]]; then
+        return 0
+    fi
+
+    echo "=========================================="
+    echo "网络质量评估报告"
+    echo "=========================================="
+    echo ""
+
+    # Analyze latency
+    local excellent=0 # <50ms
+    local good=0      # 50-100ms
+    local fair=0      # 100-200ms
+    local poor=0      # >200ms
+    local timeout_count=0
+    local total_latency=0
+    local latency_count=0
+
+    # Analyze by region
+    declare -A region_stats
+    declare -A region_success
+
+    while IFS='|' read -r region ip desc conn latency; do
+        # Count successful connections by region
+        if [[ "$conn" == "✓" ]]; then
+            ((region_success["$region"]++)) || true
+        fi
+        ((region_stats["$region"]++)) || true
+
+        # Analyze latency
+        if [[ "$latency" == "timeout" ]]; then
+            ((timeout_count++)) || true
+        else
+            # Extract numeric value
+            local latency_num
+            latency_num=$(echo "$latency" | grep -oE '[0-9]+\.?[0-9]*' | head -1)
+            if [[ -n "$latency_num" ]]; then
+                total_latency=$(awk "BEGIN {printf \"%.2f\", $total_latency + $latency_num}" 2>/dev/null || echo "$total_latency")
+                ((latency_count++)) || true
+
+                if awk "BEGIN {exit !($latency_num < 50)}" 2>/dev/null; then
+                    ((excellent++)) || true
+                elif awk "BEGIN {exit !($latency_num < 100)}" 2>/dev/null; then
+                    ((good++)) || true
+                elif awk "BEGIN {exit !($latency_num < 200)}" 2>/dev/null; then
+                    ((fair++)) || true
+                else
+                    ((poor++)) || true
+                fi
+            fi
+        fi
+    done <"$data_file"
+
+    # Calculate average latency
+    local avg_latency="N/A"
+    if [[ $latency_count -gt 0 ]]; then
+        avg_latency=$(awk "BEGIN {printf \"%.2f\", $total_latency / $latency_count}" 2>/dev/null || echo "N/A")
+    fi
+
+    # 1. Connectivity Assessment
+    echo "【连通性评估】"
+    local success_rate=$((success * 100 / total))
+    if [[ $success_rate -ge 95 ]]; then
+        echo "  等级: 优秀 (${success_rate}%)"
+        echo "  评价: 网络连通性极佳，几乎无丢包"
+    elif [[ $success_rate -ge 85 ]]; then
+        echo "  等级: 良好 (${success_rate}%)"
+        echo "  评价: 网络连通性良好，偶有丢包"
+    elif [[ $success_rate -ge 70 ]]; then
+        echo "  等级: 一般 (${success_rate}%)"
+        echo "  评价: 网络连通性一般，存在一定丢包"
+    else
+        echo "  等级: 较差 (${success_rate}%)"
+        echo "  评价: 网络连通性较差，丢包较多"
+    fi
+    echo ""
+
+    # 2. Latency Assessment
+    echo "【延迟评估】"
+    if [[ "$avg_latency" != "N/A" ]]; then
+        echo "  平均延迟: ${avg_latency}ms"
+        if awk "BEGIN {exit !($avg_latency < 50)}" 2>/dev/null; then
+            echo "  等级: 优秀"
+            echo "  评价: 延迟极低，网络响应迅速"
+        elif awk "BEGIN {exit !($avg_latency < 100)}" 2>/dev/null; then
+            echo "  等级: 良好"
+            echo "  评价: 延迟较低，网络响应良好"
+        elif awk "BEGIN {exit !($avg_latency < 200)}" 2>/dev/null; then
+            echo "  等级: 一般"
+            echo "  评价: 延迟中等，网络响应一般"
+        else
+            echo "  等级: 较差"
+            echo "  评价: 延迟较高，网络响应较慢"
+        fi
+    else
+        echo "  平均延迟: 无法计算"
+    fi
+    echo ""
+
+    # 3. Latency Distribution
+    echo "【延迟分布】"
+    local total_valid=$((excellent + good + fair + poor))
+    if [[ $total_valid -gt 0 ]]; then
+        echo "  优秀 (<50ms):   $excellent 个 ($((excellent * 100 / total_valid))%)"
+        echo "  良好 (50-100ms): $good 个 ($((good * 100 / total_valid))%)"
+        echo "  一般 (100-200ms): $fair 个 ($((fair * 100 / total_valid))%)"
+        echo "  较差 (>200ms):   $poor 个 ($((poor * 100 / total_valid))%)"
+        if [[ $timeout_count -gt 0 ]]; then
+            echo "  超时:           $timeout_count 个"
+        fi
+    fi
+    echo ""
+
+    # 4. Regional Coverage
+    echo "【地区覆盖评估】"
+    local region_count=${#region_stats[@]}
+    local excellent_regions=0
+    local good_regions=0
+    local fair_regions=0
+    local poor_regions=0
+
+    for region in "${!region_stats[@]}"; do
+        local region_total=${region_stats["$region"]}
+        local region_succ=${region_success["$region"]:-0}
+        local region_rate=$((region_succ * 100 / region_total))
+        if [[ $region_rate -ge 90 ]]; then
+            ((excellent_regions++)) || true
+        elif [[ $region_rate -ge 70 ]]; then
+            ((good_regions++)) || true
+        elif [[ $region_rate -ge 50 ]]; then
+            ((fair_regions++)) || true
+        else
+            ((poor_regions++)) || true
+        fi
+    done
+
+    echo "  检测地区数: $region_count 个"
+    echo "  优秀地区 (≥90%): $excellent_regions 个"
+    echo "  良好地区 (70-90%): $good_regions 个"
+    echo "  一般地区 (50-70%): $fair_regions 个"
+    echo "  较差地区 (<50%): $poor_regions 个"
+    echo ""
+
+    # 5. Overall Score
+    echo "【综合评分】"
+    local score=0
+    # Connectivity score (40 points)
+    score=$((score + success_rate * 40 / 100))
+    # Latency score (40 points)
+    if [[ "$avg_latency" != "N/A" ]]; then
+        if awk "BEGIN {exit !($avg_latency < 50)}" 2>/dev/null; then
+            score=$((score + 40))
+        elif awk "BEGIN {exit !($avg_latency < 100)}" 2>/dev/null; then
+            score=$((score + 35))
+        elif awk "BEGIN {exit !($avg_latency < 200)}" 2>/dev/null; then
+            score=$((score + 25))
+        else
+            score=$((score + 15))
+        fi
+    fi
+    # Regional coverage score (20 points)
+    if [[ $region_count -gt 0 ]]; then
+        local coverage_score=$((excellent_regions * 20 / region_count))
+        score=$((score + coverage_score))
+    fi
+
+    echo "  总分: ${score}/100"
+    if [[ $score -ge 90 ]]; then
+        echo "  等级: 优秀"
+        echo "  评价: 网络质量优秀，适合各种应用场景"
+    elif [[ $score -ge 75 ]]; then
+        echo "  等级: 良好"
+        echo "  评价: 网络质量良好，适合大多数应用场景"
+    elif [[ $score -ge 60 ]]; then
+        echo "  等级: 一般"
+        echo "  评价: 网络质量一般，建议优化网络配置"
+    else
+        echo "  等级: 较差"
+        echo "  评价: 网络质量较差，建议检查网络连接和配置"
+    fi
+    echo ""
+
+    # 6. Recommendations
+    echo "【优化建议】"
+    if [[ $success_rate -lt 85 ]]; then
+        echo "  • 检查网络连接稳定性，可能存在丢包问题"
+    fi
+    if [[ "$avg_latency" != "N/A" ]] && awk "BEGIN {exit !($avg_latency > 100)}" 2>/dev/null; then
+        echo "  • 延迟较高，建议检查网络路由和DNS配置"
+    fi
+    if [[ $timeout_count -gt $((total / 10)) ]]; then
+        echo "  • 超时节点较多，建议检查防火墙和网络策略"
+    fi
+    if [[ $poor_regions -gt $((region_count / 4)) ]]; then
+        echo "  • 部分地区连通性较差，建议检查跨地区网络质量"
+    fi
+    if [[ $score -ge 75 ]]; then
+        echo "  • 网络质量良好，保持当前配置即可"
+    fi
+    echo ""
 }
 
 # common code
@@ -237,6 +448,10 @@ krun::check::ip_quality::common() {
         exit 1
     }
     trap "rm -rf $temp_dir" EXIT INT TERM
+
+    # Data file for analysis
+    local data_file="$temp_dir/data.txt"
+    touch "$data_file"
 
     # Print header
     printf "%-8s %-18s %-12s %-4s %-12s\n" "地区" "IP地址" "描述" "连通" "平均延迟"
@@ -269,7 +484,7 @@ krun::check::ip_quality::common() {
 
         # Start background job
         local output_file="$temp_dir/node_${index}.txt"
-        krun::check::ip_quality::test_node "$region" "$ip" "$desc" "$output_file" &
+        krun::check::ip_quality::test_node "$region" "$ip" "$desc" "$output_file" "$data_file" &
         pids+=($!)
     done
 
@@ -296,6 +511,10 @@ krun::check::ip_quality::common() {
     echo ""
     echo "检测完成: 总计 $total 个节点, 成功 $success 个, 失败 $((total - success)) 个"
     echo "成功率: $((success * 100 / total))%"
+    echo ""
+
+    # Generate evaluation report
+    krun::check::ip_quality::evaluate "$data_file" "$total" "$success"
 
     # Cleanup
     rm -rf "$temp_dir"
