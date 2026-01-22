@@ -252,9 +252,9 @@ krun::check::ip_quality::evaluate() {
     while IFS='|' read -r region ip desc conn latency; do
         # Count successful connections by region
         if [[ "$conn" == "✓" ]]; then
-            ((region_success["$region"]++)) || true
+            region_success["$region"]=$((${region_success["$region"]:-0} + 1))
         fi
-        ((region_stats["$region"]++)) || true
+        region_stats["$region"]=$((${region_stats["$region"]:-0} + 1))
 
         # Analyze latency
         if [[ "$latency" == "timeout" ]]; then
@@ -349,9 +349,12 @@ krun::check::ip_quality::evaluate() {
     local poor_regions=0
 
     for region in "${!region_stats[@]}"; do
-        local region_total=${region_stats["$region"]}
+        local region_total=${region_stats["$region"]:-0}
         local region_succ=${region_success["$region"]:-0}
-        local region_rate=$((region_succ * 100 / region_total))
+        local region_rate=0
+        if [[ $region_total -gt 0 ]]; then
+            region_rate=$((region_succ * 100 / region_total))
+        fi
         if [[ $region_rate -ge 90 ]]; then
             ((excellent_regions++)) || true
         elif [[ $region_rate -ge 70 ]]; then
