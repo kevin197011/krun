@@ -2,6 +2,7 @@
   "apply-asdf.sh",
   "check-ip-quality.sh",
   "check-system-baseline.sh",
+  "check-system-troubleshoot.sh",
   "config-acme.sh",
   "config-centos7-repo.sh",
   "config-cursor.sh",
