@@ -8,16 +8,17 @@ require 'time'
 require 'rake'
 require 'json'
 require 'fileutils'
+require 'bundler/setup'
+lib_dir = File.join(__dir__, 'lib')
+$LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
+require 'kk/git/rake_tasks'
 
 task default: %w[push]
 
 task :push do
-  Rake::Task[:shfmt].invoke
+  # Rake::Task[:shfmt].invoke
   Rake::Task[:generate_json].invoke
-  system 'git add .'
-  system "git commit -m 'Update #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}'"
-  system 'git pull'
-  system 'git push origin main'
+  Rake::Task['git:auto_commit_push'].invoke
 end
 
 task :new do

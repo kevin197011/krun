@@ -177,21 +177,6 @@ krun::check::ip_quality::ping_test() {
     fi
 }
 
-# connectivity test
-krun::check::ip_quality::connectivity_test() {
-    local ip="$1"
-    local port="${2:-53}"
-
-    if command -v nc >/dev/null 2>&1; then
-        (timeout 2 nc -z "$ip" "$port" >/dev/null 2>&1 && echo "✓") || echo "✗"
-    elif command -v telnet >/dev/null 2>&1; then
-        (timeout 2 bash -c "echo >/dev/tcp/$ip/$port" 2>/dev/null && echo "✓") || echo "✗"
-    else
-        # Fallback: ping only
-        (ping -c 1 -W 2 "$ip" >/dev/null 2>&1 && echo "✓") || echo "✗"
-    fi
-}
-
 # test single node (output to temp file for concurrent execution)
 krun::check::ip_quality::test_node() {
     local region="$1"
@@ -203,22 +188,47 @@ krun::check::ip_quality::test_node() {
     {
         printf "%-8s %-18s %-12s " "$region" "$ip" "$desc" || true
 
-        # Connectivity test
-        local conn
-        conn=$(krun::check::ip_quality::connectivity_test "$ip" || echo "✗")
-        printf "%-4s " "$conn" || true
-
         # Ping test (average latency)
         local latency
         latency=$(krun::check::ip_quality::ping_test "$ip" 4 3 || echo "timeout")
         if [[ "$latency" == "timeout" ]] || [[ -z "$latency" ]]; then
+            printf "%-4s " "✗" || true
             printf "%-12s\n" "timeout" || true
             echo "$region|$ip|$desc|✗|timeout" >>"$data_file" || true
         else
+            printf "%-4s " "✓" || true
             printf "%-12s\n" "${latency}ms" || true
-            echo "$region|$ip|$desc|$conn|$latency" >>"$data_file" || true
+            echo "$region|$ip|$desc|✓|$latency" >>"$data_file" || true
         fi
     } >"$output_file" 2>/dev/null
+}
+
+# progress display (concurrent)
+krun::check::ip_quality::progress() {
+    # Disable errexit inside progress loop
+    set +o errexit
+
+    local temp_dir="$1"
+    local total="$2"
+    local spinner='-\|/'
+    local idx=0
+
+    while true; do
+        local done
+        done=$(ls "$temp_dir"/node_*.txt 2>/dev/null | wc -l | tr -d ' ' 2>/dev/null)
+        [[ -z "${done:-}" ]] && done=0
+
+        idx=$(((idx + 1) % 4))
+        printf "\r检测中... %s %s/%s" "${spinner:$idx:1}" "$done" "$total"
+
+        if [[ "$done" -ge "$total" ]]; then
+            break
+        fi
+        sleep 0.2
+    done
+
+    printf "\r检测完成...   %s/%s\n" "$total" "$total"
+    set -o errexit
 }
 
 # evaluate results
@@ -245,17 +255,7 @@ krun::check::ip_quality::evaluate() {
     local total_latency=0
     local latency_count=0
 
-    # Analyze by region
-    declare -A region_stats
-    declare -A region_success
-
     while IFS='|' read -r region ip desc conn latency; do
-        # Count successful connections by region
-        if [[ "$conn" == "✓" ]]; then
-            region_success["$region"]=$((${region_success["$region"]:-0} + 1))
-        fi
-        region_stats["$region"]=$((${region_stats["$region"]:-0} + 1))
-
         # Analyze latency
         if [[ "$latency" == "timeout" ]]; then
             ((timeout_count++)) || true
@@ -342,35 +342,35 @@ krun::check::ip_quality::evaluate() {
 
     # 4. Regional Coverage
     echo "【地区覆盖评估】"
-    local region_count=${#region_stats[@]}
+    local region_count=0
     local excellent_regions=0
     local good_regions=0
     local fair_regions=0
     local poor_regions=0
 
-    for region in "${!region_stats[@]}"; do
-        local region_total=${region_stats["$region"]:-0}
-        local region_succ=${region_success["$region"]:-0}
-        local region_rate=0
-        if [[ $region_total -gt 0 ]]; then
-            region_rate=$((region_succ * 100 / region_total))
-        fi
-        if [[ $region_rate -ge 90 ]]; then
-            ((excellent_regions++)) || true
-        elif [[ $region_rate -ge 70 ]]; then
-            ((good_regions++)) || true
-        elif [[ $region_rate -ge 50 ]]; then
-            ((fair_regions++)) || true
-        else
-            ((poor_regions++)) || true
-        fi
-    done
+    # Compute regional buckets via awk (works on macOS bash 3.2)
+    read -r region_count excellent_regions good_regions fair_regions poor_regions < <(
+        awk -F'|' '
+          { tot[$1]++; if ($4=="✓") ok[$1]++ }
+          END {
+            rc=0; ex=0; gd=0; fr=0; pr=0;
+            for (r in tot) {
+              rc++;
+              rate = (ok[r] ? ok[r] : 0) * 100 / tot[r];
+              if (rate >= 90) ex++;
+              else if (rate >= 70) gd++;
+              else if (rate >= 50) fr++;
+              else pr++;
+            }
+            print rc, ex, gd, fr, pr
+          }' "$data_file" 2>/dev/null
+    )
 
-    echo "  检测地区数: $region_count 个"
-    echo "  优秀地区 (≥90%): $excellent_regions 个"
-    echo "  良好地区 (70-90%): $good_regions 个"
-    echo "  一般地区 (50-70%): $fair_regions 个"
-    echo "  较差地区 (<50%): $poor_regions 个"
+    echo "  检测地区数: ${region_count:-0} 个"
+    echo "  优秀地区 (≥90%): ${excellent_regions:-0} 个"
+    echo "  良好地区 (70-90%): ${good_regions:-0} 个"
+    echo "  一般地区 (50-70%): ${fair_regions:-0} 个"
+    echo "  较差地区 (<50%): ${poor_regions:-0} 个"
     echo ""
 
     # 5. Overall Score
@@ -391,7 +391,7 @@ krun::check::ip_quality::evaluate() {
         fi
     fi
     # Regional coverage score (20 points)
-    if [[ $region_count -gt 0 ]]; then
+    if [[ ${region_count:-0} -gt 0 ]]; then
         local coverage_score=$((excellent_regions * 20 / region_count))
         score=$((score + coverage_score))
     fi
@@ -491,8 +491,14 @@ krun::check::ip_quality::common() {
         pids+=($!)
     done
 
+    # Progress display while waiting
+    krun::check::ip_quality::progress "$temp_dir" "$total" &
+    local progress_pid=$!
+
     # Wait for all background jobs to complete
     wait
+    kill "$progress_pid" >/dev/null 2>&1 || true
+    wait "$progress_pid" >/dev/null 2>&1 || true
     set -o errexit
 
     # Collect and display results (sorted by index)
