@@ -460,17 +460,23 @@ krun::check::ip_quality::common() {
     printf "%-8s %-18s %-12s %-4s %-12s\n" "地区" "IP地址" "描述" "连通" "平均延迟"
     echo "----------------------------------------"
 
+    # Total nodes (known upfront)
+    local total="${#TEST_NODES[@]}"
+
     # Concurrent execution settings
     local max_jobs="${MAX_JOBS:-20}"
     local pids=()
 
     # Test each node concurrently
     set +o errexit
-    local total=0
     local index=0
+
+    # Progress display while running (show immediately)
+    krun::check::ip_quality::progress "$temp_dir" "$total" &
+    local progress_pid=$!
+
     for node in "${TEST_NODES[@]}"; do
         IFS=':' read -r region ip desc <<<"$node" || continue
-        ((total++)) || true
         ((index++)) || true
 
         # Wait if we've reached max concurrent jobs
@@ -490,10 +496,6 @@ krun::check::ip_quality::common() {
         krun::check::ip_quality::test_node "$region" "$ip" "$desc" "$output_file" "$data_file" &
         pids+=($!)
     done
-
-    # Progress display while waiting
-    krun::check::ip_quality::progress "$temp_dir" "$total" &
-    local progress_pid=$!
 
     # Wait for all background jobs to complete
     wait
