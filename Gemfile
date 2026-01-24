@@ -2,4 +2,6 @@
 
 source 'https://rubygems.org'
 
+gem 'kk-git'
+gem 'rake'
 gem 'rubocop'

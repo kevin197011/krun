@@ -9,8 +9,6 @@ require 'rake'
 require 'json'
 require 'fileutils'
 require 'bundler/setup'
-lib_dir = File.join(__dir__, 'lib')
-$LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 require 'kk/git/rake_tasks'
 
 task default: %w[push]
