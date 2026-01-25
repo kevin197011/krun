@@ -60,7 +60,12 @@ krun::config::cursor::common() {
     mv .cursor/r.md .
     chmod +x ./deploy.sh
     rm -rf .cursor/.git
-    grep -q '\.cursor' .gitignore 2>/dev/null || printf '\n.cursor\n' >>.gitignore
+
+    if command -v uipro >/dev/null 2>&1; then
+        uipro init --ai cursor || true
+    fi
+
+    grep -q '\.cursor' .gitignore 2>/dev/null || printf '\n.cursor\n' >> .gitignore
 
     echo "✓ Cursor configuration completed"
 }
