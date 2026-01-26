@@ -36,6 +36,7 @@
   "install-docker.sh",
   "install-elixir.sh",
   "install-ffmpeg.sh",
+  "install-filebeat.sh",
   "install-fonts-nerd-JetBrainsMono.sh",
   "install-gcloud.sh",
   "install-geoipupdate.sh",
