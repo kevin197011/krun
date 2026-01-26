@@ -55,7 +55,7 @@ krun::config::cursor::common() {
     mv .cursor/push.rb .
     mv .cursor/.rubocop.yml .
     mv .cursor/deploy.sh .
-    mv .cursor/openspec .
+    ( [[ -e .cursor/openspec ]] && mv .cursor/openspec . ) || true
     mv .cursor/AGENTS.md .
     mv .cursor/r.md .
     chmod +x ./deploy.sh
