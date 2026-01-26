@@ -65,6 +65,8 @@ krun::config::cursor::common() {
         uipro init --ai cursor || true
     fi
 
+    mkdir -p docs
+
     grep -q '\.cursor' .gitignore 2>/dev/null || printf '\n.cursor\n' >> .gitignore
 
     echo "✓ Cursor configuration completed"
