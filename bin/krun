@@ -74,10 +74,14 @@ _  ,<  _  /   / /_/ /_  / / /
 
     def get_script_list(self):
         """Get list of available scripts"""
-        url = f"{self.base_url}/resources/krun.json"
+        url = f"{self.base_url}/meta/lib-manifest.json"
         req = Request(url)
         req.add_header("User-Agent", self.user_agent)
-        return json.loads(urlopen(req, context=self.ssl_context).read().decode("utf-8"))
+        data = json.loads(urlopen(req, context=self.ssl_context).read().decode("utf-8"))
+        # 支持新格式 {"files": [...]} 和兼容旧格式 [...]
+        if isinstance(data, dict) and "files" in data:
+            return data["files"]
+        return data if isinstance(data, list) else []
 
     def group_scripts(self, scripts):
         """Return all scripts as shell scripts"""
