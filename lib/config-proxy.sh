@@ -8,9 +8,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-proxy.sh | bash
-# 使代理在当前终端生效：source 本脚本 或 eval "$(krun config-proxy.sh)"
+# source (proxy applies in current shell):
+# source lib/config-proxy.sh
+# source <(curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-proxy.sh)
 
 # vars
 PROXY_HOST="${PROXY_HOST:-10.170.1.19}"
@@ -50,7 +50,7 @@ krun::config::proxy::common() {
         export HTTPS_PROXY="$PROXY_URL"
         export no_proxy="${no_proxy:-127.0.0.1,localhost}"
         export NO_PROXY="${NO_PROXY:-$no_proxy}"
-        echo "✓ 代理已生效（当前终端）: http/https = $PROXY_URL"
+        echo "✓ Proxy applied in current shell: http/https = $PROXY_URL"
         return
     fi
     echo "export http_proxy=\"$PROXY_URL\""
@@ -59,7 +59,7 @@ krun::config::proxy::common() {
     echo "export HTTPS_PROXY=\"$PROXY_URL\""
     echo "export no_proxy=\"${no_proxy:-127.0.0.1,localhost}\""
     echo "export NO_PROXY=\"\${no_proxy}\""
-    echo "echo '✓ 代理已生效（当前终端）: http/https = $PROXY_URL'"
+    echo "echo '✓ Proxy applied in current shell: http/https = $PROXY_URL'"
 }
 
 # run main
