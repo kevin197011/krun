@@ -37,6 +37,7 @@
     "install-blackbox_exporter.sh",
     "install-cpanm.sh",
     "install-crane.sh",
+    "install-cursor-cli.sh",
     "install-devbox.sh",
     "install-docker.sh",
     "install-elixir.sh",
