@@ -13,9 +13,26 @@ set -o pipefail
 
 # vars
 blackbox_exporter_version=${blackbox_exporter_version:-latest}
+# blackbox_exporter_use_proxy=${blackbox_exporter_use_proxy:-false}
+blackbox_exporter_use_proxy=true
+blackbox_exporter_proxy_host=${blackbox_exporter_proxy_host:-10.170.1.19}
+blackbox_exporter_proxy_port=${blackbox_exporter_proxy_port:-8888}
+
+krun::install::blackbox_exporter::configure_proxy() {
+    [[ "$blackbox_exporter_use_proxy" != "true" ]] && return 0
+
+    local proxy_url
+    proxy_url="http://${blackbox_exporter_proxy_host}:${blackbox_exporter_proxy_port}"
+    export http_proxy="$proxy_url"
+    export https_proxy="$proxy_url"
+    export HTTP_PROXY="$proxy_url"
+    export HTTPS_PROXY="$proxy_url"
+    echo "✓ Proxy enabled for installer: ${proxy_url}"
+}
 
 # run code
 krun::install::blackbox_exporter::run() {
+    krun::install::blackbox_exporter::configure_proxy
     local platform='debian'
     command -v yum >/dev/null && platform='centos'
     command -v dnf >/dev/null && platform='centos'
