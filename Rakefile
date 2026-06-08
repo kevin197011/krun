@@ -12,6 +12,8 @@ task default: %w[push]
 
 task :push do
   Rake::Task['lib:manifest'].invoke
+  # kk-git defaults to `git pull --ff-only`, which fails on diverged branches.
+  ENV['KK_GIT_PULL_ARGS'] ||= '--no-rebase'
   Rake::Task['git:auto_commit_push'].invoke
 end
 
