@@ -42,7 +42,7 @@ krun::crane::copy::common() {
     if [[ -z "$src" || -z "$dst" ]]; then
         echo "Usage: krun crane-copy.sh <源镜像> <目标镜像>"
         echo "   or: CRANE_COPY_SRC=<src> CRANE_COPY_DST=<dst> krun crane-copy.sh"
-        echo "Example: krun crane-copy.sh ghcr.io/kevin197011/doris-webhook:main-aaef595 harbor.slileisure.com/devops/doris-webhook:main-aaef595"
+        echo "Example: krun crane-copy.sh ghcr.io/kevin197011/doris-webhook:main-aaef595 harbor.devops.com/devops/doris-webhook:main-aaef595"
         exit 1
     fi
 
