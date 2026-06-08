@@ -26,87 +26,172 @@ krun::install::k9s::run() {
 # centos code
 krun::install::k9s::centos() {
     echo "Installing k9s on CentOS/RHEL..."
-    yum install -y curl
-    krun::install::k9s::common
+    [[ "$(id -u)" -ne 0 ]] && echo "✗ Please run as root" && return 1
+
+    if command -v dnf >/dev/null 2>&1; then
+        dnf install -y curl tar
+    else
+        yum install -y curl tar
+    fi
+    krun::install::k9s::install_from_package rpm
 }
 
 # debian code
 krun::install::k9s::debian() {
     echo "Installing k9s on Debian/Ubuntu..."
+    [[ "$(id -u)" -ne 0 ]] && echo "✗ Please run as root" && return 1
+
     apt-get update
-    apt-get install -y curl
-    krun::install::k9s::common
+    apt-get install -y curl tar
+    krun::install::k9s::install_from_package deb
 }
 
 # mac code
 krun::install::k9s::mac() {
     echo "Installing k9s on macOS..."
+    if command -v k9s >/dev/null 2>&1; then
+        echo "✓ k9s already installed"
+        krun::install::k9s::verify_installation
+        return
+    fi
+
     if command -v brew >/dev/null 2>&1; then
         brew install k9s
         echo "✓ k9s installed via Homebrew"
         krun::install::k9s::verify_installation
         return
     fi
-    echo "Homebrew not found, installing manually..."
-    krun::install::k9s::common
+
+    echo "Homebrew not found, installing from official tarball..."
+    krun::install::k9s::install_from_tarball
 }
 
-# get latest version
 krun::install::k9s::get_latest_version() {
-    curl -fsSL https://api.github.com/repos/derailed/k9s/releases/latest | grep tag_name | head -n1 | cut -d '"' -f 4
+    local version
+    version=$(curl -fsSL --connect-timeout 5 --max-time 10 https://api.github.com/repos/derailed/k9s/releases/latest 2>/dev/null | grep tag_name | head -n1 | cut -d '"' -f 4)
+    if [[ -z "$version" ]]; then
+        version=$(curl -fsSL --connect-timeout 5 --max-time 10 https://ghproxy.link/https://api.github.com/repos/derailed/k9s/releases/latest 2>/dev/null | grep tag_name | head -n1 | cut -d '"' -f 4)
+    fi
+    echo "${version:-v0.51.0}"
 }
 
-# get system info
-krun::install::k9s::get_system_info() {
-    local arch=$(uname -m)
-    local os=$(uname -s | tr '[:upper:]' '[:lower:]')
-
-    # Map architecture
-    [[ "$arch" == "x86_64" ]] && arch="x86_64"
-    [[ "$arch" == "aarch64" || "$arch" == "arm64" ]] && arch="arm64"
-    [[ "$arch" != "x86_64" && "$arch" != "arm64" ]] && arch="x86_64"
-
-    # Map OS
-    [[ "$os" != "darwin" ]] && os="linux"
-
-    echo "$os $arch"
-}
-
-# common code
-krun::install::k9s::common() {
-    echo "Installing k9s Kubernetes CLI..."
-
-    # Get system info and version
-    local system_info=$(krun::install::k9s::get_system_info)
-    local os=$(echo "$system_info" | cut -d' ' -f1)
-    local arch=$(echo "$system_info" | cut -d' ' -f2)
+krun::install::k9s::resolve_tag() {
     local tag="$k9s_version"
-
     [[ "$k9s_version" == "latest" ]] && tag=$(krun::install::k9s::get_latest_version)
-    tag=${tag#v} # Remove 'v' prefix
+    tag=${tag#v}
+    echo "$tag"
+}
 
-    echo "Downloading k9s ${tag} for ${os}/${arch}..."
+krun::install::k9s::map_arch() {
+    local machine arch tarball_arch
+    machine=$(uname -m)
 
-    # Download and install
-    local temp_dir=$(mktemp -d)
-    local download_url="https://github.com/derailed/k9s/releases/download/v${tag}/k9s_${os}_${arch}.tar.gz"
+    case "$machine" in
+        x86_64) arch="amd64"; tarball_arch="amd64" ;;
+        aarch64 | arm64) arch="arm64"; tarball_arch="arm64" ;;
+        armv7l | armv6l) arch="arm"; tarball_arch="armv7" ;;
+        ppc64le) arch="ppc64le"; tarball_arch="ppc64le" ;;
+        s390x) arch="s390x"; tarball_arch="s390x" ;;
+        *) arch="amd64"; tarball_arch="amd64" ;;
+    esac
 
-    curl -fsSL "$download_url" -o "${temp_dir}/k9s.tar.gz" || {
-        echo "✗ Failed to download k9s"
+    echo "$arch $tarball_arch"
+}
+
+krun::install::k9s::map_os() {
+    local os tarball_os package_os
+    os=$(uname -s | tr '[:upper:]' '[:lower:]')
+
+    if [[ "$os" == "darwin" ]]; then
+        tarball_os="Darwin"
+        package_os=""
+    else
+        tarball_os="Linux"
+        package_os="linux"
+    fi
+
+    echo "$tarball_os $package_os"
+}
+
+krun::install::k9s::download_file() {
+    local download_url="$1"
+    local downloaded_file="$2"
+
+    if curl -fsSL --connect-timeout 10 --max-time 120 "$download_url" -o "$downloaded_file" 2>/dev/null; then
+        [[ -f "$downloaded_file" ]] && [[ -s "$downloaded_file" ]] && return 0
+    fi
+
+    echo "Direct access failed, trying proxy..." >&2
+    rm -f "$downloaded_file"
+    curl -fsSL --connect-timeout 10 --max-time 120 "https://ghproxy.link/${download_url}" -o "$downloaded_file"
+    [[ -f "$downloaded_file" ]] && [[ -s "$downloaded_file" ]]
+}
+
+krun::install::k9s::install_from_package() {
+    local package_type="$1"
+    local tag arch package_os asset_name temp_dir downloaded_file download_url
+
+    tag=$(krun::install::k9s::resolve_tag)
+    arch=$(krun::install::k9s::map_arch | cut -d' ' -f1)
+    package_os=$(krun::install::k9s::map_os | cut -d' ' -f2)
+    asset_name="k9s_${package_os}_${arch}.${package_type}"
+    temp_dir=$(mktemp -d)
+    downloaded_file="${temp_dir}/${asset_name}"
+    download_url="https://github.com/derailed/k9s/releases/download/v${tag}/${asset_name}"
+
+    echo "Downloading k9s ${tag} package ${asset_name}..."
+    if ! krun::install::k9s::download_file "$download_url" "$downloaded_file"; then
+        echo "Package download failed, falling back to tarball..." >&2
         rm -rf "$temp_dir"
-        return 1
-    }
+        krun::install::k9s::install_from_tarball
+        return
+    fi
 
-    tar -xzf "${temp_dir}/k9s.tar.gz" -C "$temp_dir" &&
-        mv "${temp_dir}/k9s" "/usr/local/bin/" &&
-        chmod +x "/usr/local/bin/k9s" &&
-        rm -rf "$temp_dir" &&
-        echo "✓ k9s installed successfully"
+    if [[ "$package_type" == "deb" ]]; then
+        dpkg -i "$downloaded_file" || apt-get install -f -y
+    else
+        rpm -Uvh "$downloaded_file"
+    fi
 
+    rm -rf "$temp_dir"
+    echo "✓ k9s installed from ${package_type} package"
     krun::install::k9s::verify_installation
 }
 
-# Verify k9s installation
+krun::install::k9s::install_from_tarball() {
+    local tag tarball_os tarball_arch asset_name temp_dir downloaded_file download_url install_dir
+
+    tag=$(krun::install::k9s::resolve_tag)
+    tarball_os=$(krun::install::k9s::map_os | cut -d' ' -f1)
+    tarball_arch=$(krun::install::k9s::map_arch | cut -d' ' -f2)
+    asset_name="k9s_${tarball_os}_${tarball_arch}.tar.gz"
+    temp_dir=$(mktemp -d)
+    downloaded_file="${temp_dir}/k9s.tar.gz"
+    download_url="https://github.com/derailed/k9s/releases/download/v${tag}/${asset_name}"
+    install_dir="/usr/local/bin"
+
+    echo "Downloading k9s ${tag} tarball ${asset_name}..."
+    if ! krun::install::k9s::download_file "$download_url" "$downloaded_file"; then
+        echo "✗ Failed to download k9s"
+        rm -rf "$temp_dir"
+        return 1
+    fi
+
+    if ! gzip -t "$downloaded_file" 2>/dev/null; then
+        echo "✗ Downloaded file is not a valid tarball"
+        rm -rf "$temp_dir"
+        return 1
+    fi
+
+    tar -xzf "$downloaded_file" -C "$temp_dir"
+    [[ ! -f "${temp_dir}/k9s" ]] && echo "✗ k9s binary not found in archive" && rm -rf "$temp_dir" && return 1
+
+    install -m 755 "${temp_dir}/k9s" "${install_dir}/k9s"
+    rm -rf "$temp_dir"
+    echo "✓ k9s installed from tarball"
+    krun::install::k9s::verify_installation
+}
+
 krun::install::k9s::verify_installation() {
     echo "Verifying k9s installation..."
 
