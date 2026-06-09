@@ -13,7 +13,8 @@ set -o pipefail
 #
 # Extract JDK 8 tarball, install java8/javac8 wrappers, leave system java/javac unchanged.
 # Writes /etc/profile.d/jdk8.sh (JAVA8_HOME, PATH) for global java8/javac8 access.
-# Downloads from jdk8_download_url when no local tarball is available.
+# Overwrite install: re-extract and refresh wrappers/profile each run.
+# Skips download only when the tarball already exists under jdk8_archive_dir (or JDK8_TAR).
 #
 # Proxy (when direct HTTPS to the mirror hangs):
 #   JDK8_PROXY=http://10.170.1.19:8888 JDK8_USE_PROXY=on sudo bash install-jdk8.sh
@@ -160,6 +161,7 @@ krun::install::jdk8::resolve_tar() {
         return 0
     }
     [[ -f "$tar_path" ]] && {
+        echo "✓ Tarball exists, skipping download: ${tar_path}" >&2
         echo "$tar_path"
         return 0
     }
@@ -208,15 +210,16 @@ krun::install::jdk8::common() {
     mkdir -p /usr/local/java
 
     if [[ -d "$jdk8_home" ]]; then
-        echo "✓ ${jdk8_home} already exists, skipping extract"
-    else
-        echo "Extracting ${tar_path} -> /usr/local/java/"
-        tar -xzf "$tar_path" -C /usr/local/java
-        [[ -x "${jdk8_home}/bin/java" ]] || {
-            echo "✗ Extract failed: ${jdk8_home}/bin/java not found"
-            return 1
-        }
+        echo "Reinstalling: removing ${jdk8_home}"
+        rm -rf "$jdk8_home"
     fi
+
+    echo "Extracting ${tar_path} -> /usr/local/java/"
+    tar -xzf "$tar_path" -C /usr/local/java
+    [[ -x "${jdk8_home}/bin/java" ]] || {
+        echo "✗ Extract failed: ${jdk8_home}/bin/java not found"
+        return 1
+    }
 
     ln -sfn "$jdk8_home" "$jdk8_link"
 
