@@ -51,6 +51,7 @@
     "install-git.sh",
     "install-golang.sh",
     "install-helm.sh",
+    "install-jdk8.sh",
     "install-k9s.sh",
     "install-kind.sh",
     "install-kssh.sh",
