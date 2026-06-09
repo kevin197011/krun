@@ -13,6 +13,11 @@ set -o pipefail
 #
 # Extract JDK 8 tarball, install java8/javac8 wrappers, leave system java/javac unchanged.
 # Downloads from jdk8_download_url when no local tarball is available.
+#
+# Proxy (when direct HTTPS to the mirror hangs):
+#   JDK8_PROXY=http://10.170.1.19:8888 JDK8_USE_PROXY=on sudo bash install-jdk8.sh
+#   JDK8_USE_PROXY=auto  — use JDK8_PROXY, env, or /etc/wgetrc (default)
+#   JDK8_USE_PROXY=off   — direct download only
 
 # vars
 jdk8_tar_name=${jdk8_tar_name:-jdk-8u481-linux-x64.tar.gz}
@@ -22,6 +27,8 @@ jdk8_link=${jdk8_link:-/usr/local/java/jdk8}
 jdk8_archive_dir=${jdk8_archive_dir:-/usr/local/java/archive}
 jdk8_wrapper_bin=${jdk8_wrapper_bin:-/usr/local/bin}
 JDK8_TAR=${JDK8_TAR:-}
+JDK8_PROXY=${JDK8_PROXY:-}
+JDK8_USE_PROXY=${JDK8_USE_PROXY:-auto}
 
 # run code
 krun::install::jdk8::run() {
@@ -48,13 +55,9 @@ krun::install::jdk8::mac() {
     return 1
 }
 
-# curl|sudo bash is non-interactive: HOME/wgetrc/env may differ from an interactive shell.
-krun::install::jdk8::load_proxy() {
+# Resolve proxy: JDK8_PROXY > env > wgetrc (when JDK8_USE_PROXY=auto).
+krun::install::jdk8::read_wgetrc_proxy() {
     local rc line val proxy="" use_proxy="on"
-
-    if [[ -n "${https_proxy:-${HTTPS_PROXY:-${http_proxy:-${HTTP_PROXY:-}}}}" ]]; then
-        return 0
-    fi
 
     export HOME="${HOME:-/root}"
     unset WGETRC
@@ -80,11 +83,37 @@ krun::install::jdk8::load_proxy() {
 
     proxy="${proxy#"${proxy%%[![:space:]]*}"}"
     proxy="${proxy%"${proxy##*[![:space:]]}"}"
-
     [[ -z "$proxy" || "$use_proxy" == "off" ]] && return 0
+    echo "$proxy"
+}
 
-    export http_proxy="$proxy" https_proxy="$proxy"
-    echo "Using proxy from wgetrc: ${proxy}" >&2
+krun::install::jdk8::resolve_proxy() {
+    local proxy source=""
+
+    proxy="${JDK8_PROXY:-}"
+    [[ -n "$proxy" ]] && source="JDK8_PROXY"
+
+    if [[ -z "$proxy" ]]; then
+        proxy="${https_proxy:-${HTTPS_PROXY:-${http_proxy:-${HTTP_PROXY:-}}}}"
+        [[ -n "$proxy" ]] && source="environment"
+    fi
+
+    if [[ -z "$proxy" && "$JDK8_USE_PROXY" != "off" ]]; then
+        proxy="$(krun::install::jdk8::read_wgetrc_proxy || true)"
+        [[ -n "$proxy" ]] && source="wgetrc"
+    fi
+
+    if [[ "$JDK8_USE_PROXY" == "on" && -z "$proxy" ]]; then
+        echo "✗ JDK8_USE_PROXY=on but no proxy set (JDK8_PROXY or /etc/wgetrc)" >&2
+        return 1
+    fi
+
+    if [[ -n "$proxy" ]]; then
+        export http_proxy="$proxy" https_proxy="$proxy" HTTP_PROXY="$proxy" HTTPS_PROXY="$proxy"
+        echo "Using proxy (${source}): ${proxy}" >&2
+    fi
+
+    echo "$proxy"
 }
 
 krun::install::jdk8::download_tar() {
@@ -95,20 +124,20 @@ krun::install::jdk8::download_tar() {
 
     mkdir -p "$jdk8_archive_dir"
     rm -f "$part"
-    krun::install::jdk8::load_proxy
+
+    proxy="$(krun::install::jdk8::resolve_proxy)" || return 1
 
     echo "Downloading: ${url}" >&2
     if command -v wget >/dev/null 2>&1; then
-        proxy="${https_proxy:-${http_proxy:-}}"
         if [[ -n "$proxy" ]]; then
             wget -e use_proxy=on -e "http_proxy=${proxy}" -e "https_proxy=${proxy}" \
-                --timeout=30 --tries=3 -O "$part" "$url"
+                --timeout=60 --tries=3 -O "$part" "$url"
         else
-            wget --timeout=30 --tries=3 -O "$part" "$url"
+            wget --timeout=60 --tries=3 -O "$part" "$url"
         fi
     elif command -v curl >/dev/null 2>&1; then
-        if [[ -n "${https_proxy:-}" ]]; then
-            curl -fL --connect-timeout 30 --max-time 900 -x "$https_proxy" "$url" -o "$part"
+        if [[ -n "$proxy" ]]; then
+            curl -fL --connect-timeout 30 --max-time 900 -x "$proxy" "$url" -o "$part"
         else
             curl -fL --connect-timeout 30 --max-time 900 "$url" -o "$part"
         fi
