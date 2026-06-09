@@ -16,6 +16,7 @@
     "config-rakefile.sh",
     "config-rocky-repo.sh",
     "config-ruby-http.sh",
+    "config-ssh-authorized-keys.sh",
     "config-ssh.sh",
     "config-system-baseline.sh",
     "config-system.sh",
