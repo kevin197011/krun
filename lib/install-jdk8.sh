@@ -48,19 +48,70 @@ krun::install::jdk8::mac() {
     return 1
 }
 
+# curl|sudo bash is non-interactive: HOME/wgetrc/env may differ from an interactive shell.
+krun::install::jdk8::load_proxy() {
+    local rc line val proxy="" use_proxy="on"
+
+    if [[ -n "${https_proxy:-${HTTPS_PROXY:-${http_proxy:-${HTTP_PROXY:-}}}}" ]]; then
+        return 0
+    fi
+
+    export HOME="${HOME:-/root}"
+    unset WGETRC
+
+    for rc in /etc/wgetrc /root/.wgetrc "${HOME}/.wgetrc"; do
+        [[ -f "$rc" ]] || continue
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            line="${line#"${line%%[![:space:]]*}"}"
+            [[ -z "$line" || "$line" == \#* ]] && continue
+            case "$line" in
+                https_proxy=*) val="${line#*=}"; proxy="${val//\"/}"; proxy="${proxy//\'/}" ;;
+                http_proxy=*)
+                    [[ -z "$proxy" ]] && {
+                        val="${line#*=}"
+                        proxy="${val//\"/}"
+                        proxy="${proxy//\'/}"
+                    }
+                    ;;
+                use_proxy=*) val="${line#*=}"; use_proxy="${val// /}" ;;
+            esac
+        done < "$rc"
+    done
+
+    proxy="${proxy#"${proxy%%[![:space:]]*}"}"
+    proxy="${proxy%"${proxy##*[![:space:]]}"}"
+
+    [[ -z "$proxy" || "$use_proxy" == "off" ]] && return 0
+
+    export http_proxy="$proxy" https_proxy="$proxy"
+    echo "Using proxy from wgetrc: ${proxy}" >&2
+}
+
 krun::install::jdk8::download_tar() {
     local dest="${jdk8_archive_dir}/${jdk8_tar_name}"
     local part="${dest}.part"
     local url="${jdk8_download_url}"
+    local proxy
 
     mkdir -p "$jdk8_archive_dir"
     rm -f "$part"
+    krun::install::jdk8::load_proxy
 
     echo "Downloading: ${url}" >&2
     if command -v wget >/dev/null 2>&1; then
-        wget -O "$part" "$url"
+        proxy="${https_proxy:-${http_proxy:-}}"
+        if [[ -n "$proxy" ]]; then
+            wget -e use_proxy=on -e "http_proxy=${proxy}" -e "https_proxy=${proxy}" \
+                --timeout=30 --tries=3 -O "$part" "$url"
+        else
+            wget --timeout=30 --tries=3 -O "$part" "$url"
+        fi
     elif command -v curl >/dev/null 2>&1; then
-        curl -fL "$url" -o "$part"
+        if [[ -n "${https_proxy:-}" ]]; then
+            curl -fL --connect-timeout 30 --max-time 900 -x "$https_proxy" "$url" -o "$part"
+        else
+            curl -fL --connect-timeout 30 --max-time 900 "$url" -o "$part"
+        fi
     else
         echo "✗ wget or curl is required" >&2
         return 1
