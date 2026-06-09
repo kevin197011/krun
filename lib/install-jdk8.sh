@@ -12,6 +12,7 @@ set -o pipefail
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-jdk8.sh | sudo bash
 #
 # Extract JDK 8 tarball, install java8/javac8 wrappers, leave system java/javac unchanged.
+# Writes /etc/profile.d/jdk8.sh (JAVA8_HOME, PATH) for global java8/javac8 access.
 # Downloads from jdk8_download_url when no local tarball is available.
 #
 # Proxy (when direct HTTPS to the mirror hangs):
@@ -166,6 +167,30 @@ krun::install::jdk8::resolve_tar() {
     krun::install::jdk8::download_tar
 }
 
+# Global env: JAVA8_HOME + java8/javac8 on PATH; does not set JAVA_HOME or replace java/javac.
+krun::install::jdk8::setup_profile() {
+    local profile_file=/etc/profile.d/jdk8.sh
+
+    cat >"$profile_file" <<EOF
+# JDK 8 wrappers (java8, javac8, ...) — system java/javac unchanged
+export JAVA8_HOME=${jdk8_link}
+case ":\$PATH:" in
+    *:"${jdk8_wrapper_bin}":*) ;;
+    *) export PATH="\$PATH:${jdk8_wrapper_bin}" ;;
+esac
+EOF
+    chmod 644 "$profile_file"
+    echo "✓ Global env: ${profile_file} (JAVA8_HOME, java8/javac8 on PATH)"
+}
+
+krun::install::jdk8::export_session_env() {
+    export JAVA8_HOME="$jdk8_link"
+    case ":${PATH}:" in
+        *:"${jdk8_wrapper_bin}":*) ;;
+        *) export PATH="${PATH}:${jdk8_wrapper_bin}" ;;
+    esac
+}
+
 # common code
 krun::install::jdk8::common() {
     [[ "$(id -u)" -eq 0 ]] || {
@@ -195,11 +220,15 @@ krun::install::jdk8::common() {
 
     ln -sfn "$jdk8_home" "$jdk8_link"
 
+    mkdir -p "$jdk8_wrapper_bin"
     local tool
     for tool in java javac jar jps jstack jmap jcmd keytool; do
         [[ -x "${jdk8_home}/bin/${tool}" ]] &&
             ln -sfn "${jdk8_home}/bin/${tool}" "${jdk8_wrapper_bin}/${tool}8"
     done
+
+    krun::install::jdk8::setup_profile
+    krun::install::jdk8::export_session_env
 
     mkdir -p "$jdk8_archive_dir"
     if [[ "$(readlink -f "$tar_path")" != "$(readlink -f "${jdk8_archive_dir}/${jdk8_tar_name}")" ]]; then
@@ -208,6 +237,10 @@ krun::install::jdk8::common() {
     fi
 
     echo "✓ JDK 8 deployment complete"
+    [[ -x "${jdk8_wrapper_bin}/java8" ]] || {
+        echo "✗ Wrapper not found: ${jdk8_wrapper_bin}/java8"
+        return 1
+    }
     java8 -version
 }
 
