@@ -12,19 +12,16 @@ set -o pipefail
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-jdk8.sh | sudo bash
 #
 # Extract JDK 8 tarball, install java8/javac8 wrappers, leave system java/javac unchanged.
-# Downloads from jdk8_download_url (and fallbacks) when no local tarball is available.
+# Downloads from jdk8_download_url when no local tarball is available.
 
 # vars
 jdk8_tar_name=${jdk8_tar_name:-jdk-8u481-linux-x64.tar.gz}
-jdk8_mirror_base=${jdk8_mirror_base:-https://enos.itcollege.ee/~jpoial/allalaadimised/jdk8}
-jdk8_download_url=${jdk8_download_url:-${jdk8_mirror_base}/${jdk8_tar_name}}
-jdk8_min_bytes=${jdk8_min_bytes:-50000000}
+jdk8_download_url=${jdk8_download_url:-https://enos.itcollege.ee/~jpoial/allalaadimised/jdk8/${jdk8_tar_name}}
 jdk8_home=${jdk8_home:-/usr/local/java/jdk1.8.0_481}
 jdk8_link=${jdk8_link:-/usr/local/java/jdk8}
 jdk8_archive_dir=${jdk8_archive_dir:-/usr/local/java/archive}
 jdk8_wrapper_bin=${jdk8_wrapper_bin:-/usr/local/bin}
 JDK8_TAR=${JDK8_TAR:-}
-JDK8_DOWNLOAD_URLS=${JDK8_DOWNLOAD_URLS:-}
 
 # run code
 krun::install::jdk8::run() {
@@ -51,97 +48,27 @@ krun::install::jdk8::mac() {
     return 1
 }
 
-krun::install::jdk8::file_size() {
-    stat -c%s "$1" 2>/dev/null || stat -f%z "$1"
-}
-
-krun::install::jdk8::valid_tarball() {
-    local file="$1"
-    local size
-
-    [[ -f "$file" ]] || return 1
-    size="$(krun::install::jdk8::file_size "$file")"
-    [[ "$size" -gt "$jdk8_min_bytes" ]]
-}
-
-krun::install::jdk8::fetch_url() {
-    local url="$1"
-    local outfile="$2"
-
-    rm -f "$outfile"
-    echo "Trying: ${url}" >&2
-
-    if command -v curl >/dev/null 2>&1; then
-        if curl -fsSL --connect-timeout 15 --max-time 900 "$url" -o "$outfile" 2>/dev/null &&
-            krun::install::jdk8::valid_tarball "$outfile"; then
-            return 0
-        fi
-        rm -f "$outfile"
-    fi
-
-    if command -v wget >/dev/null 2>&1; then
-        if wget -q --timeout=15 --tries=1 -O "$outfile" "$url" 2>/dev/null &&
-            krun::install::jdk8::valid_tarball "$outfile"; then
-            return 0
-        fi
-        rm -f "$outfile"
-    fi
-
-    return 1
-}
-
-krun::install::jdk8::download_urls() {
-    local -a urls=()
-    local url seen deduped=()
-
-    if [[ -n "$JDK8_DOWNLOAD_URLS" ]]; then
-        IFS=',' read -r -a urls <<< "$JDK8_DOWNLOAD_URLS"
-    fi
-
-    urls+=(
-        "$jdk8_download_url"
-        "${jdk8_mirror_base}/${jdk8_tar_name}"
-        "http://enos.itcollege.ee/~jpoial/allalaadimised/jdk8/${jdk8_tar_name}"
-        "https://ghproxy.link/https://enos.itcollege.ee/~jpoial/allalaadimised/jdk8/${jdk8_tar_name}"
-    )
-
-    for url in "${urls[@]}"; do
-        url="${url#"${url%%[![:space:]]*}"}"
-        url="${url%"${url##*[![:space:]]}"}"
-        [[ -z "$url" ]] && continue
-        for seen in "${deduped[@]:-}"; do
-            [[ "$seen" == "$url" ]] && continue 2
-        done
-        deduped+=("$url")
-        echo "$url"
-    done
-}
-
 krun::install::jdk8::download_tar() {
     local dest="${jdk8_archive_dir}/${jdk8_tar_name}"
-    local url
-
-    command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1 || {
-        echo "✗ curl or wget is required; install one first" >&2
-        return 1
-    }
+    local part="${dest}.part"
+    local url="${jdk8_download_url}"
 
     mkdir -p "$jdk8_archive_dir"
+    rm -f "$part"
 
-    while IFS= read -r url; do
-        if krun::install::jdk8::fetch_url "$url" "${dest}.part"; then
-            mv -f "${dest}.part" "$dest"
-            echo "✓ Downloaded: ${dest}" >&2
-            echo "$dest"
-            return 0
-        fi
-    done < <(krun::install::jdk8::download_urls)
+    echo "Downloading: ${url}" >&2
+    if command -v wget >/dev/null 2>&1; then
+        wget -O "$part" "$url"
+    elif command -v curl >/dev/null 2>&1; then
+        curl -fL "$url" -o "$part"
+    else
+        echo "✗ wget or curl is required" >&2
+        return 1
+    fi
 
-    rm -f "${dest}.part"
-    echo "✗ Failed to download ${jdk8_tar_name} from all mirrors" >&2
-    echo "  Place the tarball locally and run with JDK8_TAR=/path/to/${jdk8_tar_name}" >&2
-    echo "  Or set JDK8_DOWNLOAD_URLS to comma-separated reachable URLs" >&2
-    return 1
+    mv -f "$part" "$dest"
+    echo "✓ Downloaded: ${dest}" >&2
+    echo "$dest"
 }
 
 krun::install::jdk8::resolve_tar() {
