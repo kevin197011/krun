@@ -1,5 +1,6 @@
 {
   "files": [
+    "analyze-disk-cleanup.sh",
     "apply-asdf.sh",
     "check-ip-quality.sh",
     "check-system-baseline.sh",
