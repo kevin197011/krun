@@ -181,6 +181,8 @@ krun::config::centos7_repo::refresh_yum_cache() {
     yum clean all
     yum makecache fast
     echo "✓ YUM cache refreshed"
+    echo ""
+    yum repolist
 }
 
 # debian code
