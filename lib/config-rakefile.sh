@@ -11,10 +11,11 @@ set -o pipefail
 # curl exec:
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-rakefile.sh | bash
 #
-# Idempotent: overwrites ./Rakefile and ensures kk-git (and bundler) gems are installed.
+# Idempotent: overwrites ./Rakefile, ./push.rb; ensures kk-git (and bundler) gems are installed.
 
 # vars
 rakefile_path=${rakefile_path:-./Rakefile}
+push_rb_path=${push_rb_path:-./push.rb}
 
 # run code
 krun::config::rakefile::run() {
@@ -91,10 +92,25 @@ end
 EOF
 
     echo "✓ Rakefile written: ${rakefile_path}"
+
+    echo "Writing push.rb..."
+    cat >"$push_rb_path" <<'EOF'
+# frozen_string_literal: true
+
+# Copyright (c) 2025 kk
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+system 'rake'
+EOF
+
+    echo "✓ push.rb written: ${push_rb_path}"
     echo ""
     echo "Available tasks:"
-    echo "  rake push    # git auto commit and push (kk-git)"
-    echo "  rake run     # docker compose up"
+    echo "  rake push       # git auto commit and push (kk-git)"
+    echo "  rake run        # docker compose up"
+    echo "  ruby push.rb    # editor / Code Runner shortcut"
 }
 
 # run main
