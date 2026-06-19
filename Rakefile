@@ -3,9 +3,9 @@
 # Copyright (c) 2025 kk
 # MIT License: https://opensource.org/licenses/MIT
 
+require 'bundler/setup'
 require 'json'
 require 'fileutils'
-require 'bundler/setup'
 require 'kk/git/rake_tasks'
 
 task default: %w[push]

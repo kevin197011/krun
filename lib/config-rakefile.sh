@@ -10,13 +10,15 @@ set -o pipefail
 
 # curl exec:
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-rakefile.sh | bash
+#
+# Idempotent: overwrites ./Rakefile and ensures kk-git (and bundler) gems are installed.
 
 # vars
+rakefile_path=${rakefile_path:-./Rakefile}
 
 # run code
 krun::config::rakefile::run() {
-    # default debian platform
-    platform='debian'
+    local platform='debian'
     command -v yum >/dev/null && platform='centos'
     command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'
@@ -38,19 +40,32 @@ krun::config::rakefile::mac() {
     krun::config::rakefile::common
 }
 
-# common code
-krun::config::rakefile::common() {
-    local rakefile_path="./Rakefile"
+krun::config::rakefile::install_gems() {
+    command -v gem >/dev/null 2>&1 || {
+        echo "✗ gem not found; install Ruby first (lib/install-ruby.sh)"
+        return 1
+    }
 
-    # check if Rakefile already exists
-    if [[ -f "$rakefile_path" ]]; then
-        echo "⚠️  Rakefile already exists, skipping..."
-        echo "   Location: $rakefile_path"
-        return 0
+    if ! gem list bundler -i >/dev/null 2>&1; then
+        echo "Installing bundler..."
+        gem install bundler --no-document
+    else
+        echo "✓ bundler already installed"
     fi
 
-    # create Rakefile
-    echo "Creating Rakefile..."
+    if ! gem list kk-git -i >/dev/null 2>&1; then
+        echo "Installing kk-git..."
+        gem install kk-git --no-document
+    else
+        echo "✓ kk-git already installed"
+    fi
+}
+
+# common code
+krun::config::rakefile::common() {
+    krun::config::rakefile::install_gems
+
+    echo "Writing Rakefile..."
     cat >"$rakefile_path" <<'EOF'
 # frozen_string_literal: true
 
@@ -59,29 +74,27 @@ krun::config::rakefile::common() {
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-require 'time'
+require 'bundler/setup'
+require 'kk/git/rake_tasks'
 
 task default: %w[push]
 
 task :push do
-  system 'rubocop -A'
-  system 'git add .'
-  system "git commit -m \"Update #{Time.now}\""
-  system 'git pull'
-  system 'git push origin main'
+  Rake::Task['git:auto_commit_push'].invoke
 end
 
 task :run do
-  system "echo 'running ...'"
+  system 'docker compose down'
+  system 'docker compose up -d --build --remove-orphans'
+  # system 'docker compose logs -f'
 end
 EOF
 
-    echo "✅ Rakefile created successfully"
-    echo "   Location: $rakefile_path"
+    echo "✓ Rakefile written: ${rakefile_path}"
     echo ""
     echo "Available tasks:"
-    echo "  rake push    # Format, commit and push changes"
-    echo "  rake run     # Run the application"
+    echo "  rake push    # git auto commit and push (kk-git)"
+    echo "  rake run     # docker compose up"
 }
 
 # run main
