@@ -17,8 +17,7 @@ commit_message="${commit_message:-Initial commit}"
 
 # run code
 krun::reset::git-history::run() {
-    # default debian platform
-    platform='debian'
+    local platform='debian'
     command -v yum >/dev/null && platform='centos'
     command -v dnf >/dev/null && platform='centos'
     command -v brew >/dev/null && platform='mac'

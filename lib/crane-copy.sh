@@ -14,12 +14,13 @@ set -o pipefail
 # vars
 # 两端仓库认证：crane 使用 ~/.docker/config.json，需对源、目标仓库分别登录
 #   docker login ghcr.io
-#   docker login harbor.slileisure.com
+#   docker login harbor.devops.com
 # 或设置 DOCKER_CONFIG 指向含 auth 的 config.json
 #
 # 直接执行: krun crane-copy.sh <源镜像> <目标镜像>
 # 或环境变量: CRANE_COPY_SRC / CRANE_COPY_DST
 
+# run code
 krun::crane::copy::run() {
     local platform='debian'
     command -v yum >/dev/null && platform='centos'
