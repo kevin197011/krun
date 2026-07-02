@@ -1,16 +1,16 @@
 # Graph Report - krun  (2026-07-02)
 
 ## Corpus Check
-- 96 files · ~9,946 words
+- 97 files · ~16,942 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1661 nodes · 2703 edges · 249 communities (245 shown, 4 thin omitted)
+- 1776 nodes · 2883 edges · 250 communities (245 shown, 5 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 57 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e1e8335e`
+- Built from commit: `42f60a1e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -35,6 +35,7 @@
 - [[_COMMUNITY_Community 17|Community 17]]
 - [[_COMMUNITY_Community 18|Community 18]]
 - [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
 - [[_COMMUNITY_Community 21|Community 21]]
 - [[_COMMUNITY_Community 22|Community 22]]
 - [[_COMMUNITY_Community 23|Community 23]]
@@ -180,18 +181,19 @@
 - [[_COMMUNITY_Community 171|Community 171]]
 - [[_COMMUNITY_Community 172|Community 172]]
 - [[_COMMUNITY_Community 174|Community 174]]
+- [[_COMMUNITY_Community 249|Community 249]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `SystemInit` - 30 edges
-2. `run()` - 24 edges
-3. `krun::config::system::common()` - 19 edges
-4. `krun::check::system_troubleshoot::common()` - 18 edges
+2. `SystemInit` - 30 edges
+3. `run()` - 24 edges
+4. `krun::config::system::common()` - 19 edges
 5. `krun::check::system_troubleshoot::common()` - 18 edges
-6. `require_root()` - 17 edges
-7. `krun::init::system::common()` - 17 edges
+6. `krun::check::system_troubleshoot::common()` - 18 edges
+7. `require_root()` - 17 edges
 8. `krun::init::system::common()` - 17 edges
-9. `Krun - 运维自动化脚本工具集` - 16 edges
-10. `krun::disk::analyze_cleanup::run_clean()` - 15 edges
+9. `krun::init::system::common()` - 17 edges
+10. `Krun - 运维自动化脚本工具集` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `install_docker()` --calls--> `read_os_release()`  [INFERRED]
@@ -205,7 +207,7 @@
 - `install_zsh()` --calls--> `install_packages()`  [INFERRED]
   lib/py/handlers/install.py → lib/py/krun_common.py
 
-## Communities (249 total, 4 thin omitted)
+## Communities (250 total, 5 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.16
@@ -851,10 +853,14 @@ Nodes (3): krun::deploy::node_exporter::centos(), krun::deploy::node_exporter::c
 Cohesion: 0.16
 Nodes (9): ensure_line(), has_cmd(), main(), read_os_release(), run(), service_enabled(), SystemInit, write_if_changed() (+1 more)
 
+### Community 249 - "Community 249"
+Cohesion: 0.17
+Nodes (6): has_cmd(), main(), read_os_release(), run(), SystemInit, write_text()
+
 ## Knowledge Gaps
 - **18 isolated node(s):** `sh`, `py`, `code:block1 (______)`, `核心特性`, `系统配置` (+13 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_

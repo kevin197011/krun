@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
+from bootstrap import LOADER  # noqa: E402
 from registry import SCRIPTS  # noqa: E402
 
 TEMPLATE = '''#!/usr/bin/env python3
@@ -17,6 +18,8 @@ TEMPLATE = '''#!/usr/bin/env python3
 # curl exec:
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/{name}.py | sudo python3
 # idempotent: safe to re-run
+
+{loader}
 
 import bootstrap
 bootstrap.setup()
@@ -28,17 +31,16 @@ if __name__ == "__main__":
 
 
 def main() -> None:
-    keep = {"bootstrap.py", "krun_common.py", "registry.py", "init_system.py"}
+    keep = {"bootstrap.py", "krun_common.py", "registry.py", "generate_wrappers.py"}
     for path in ROOT.glob("*.py"):
-        if path.name not in keep and path.name != "generate_wrappers.py":
+        if path.name not in keep:
             path.unlink()
 
-    handlers = ROOT / "handlers"
-    handlers.mkdir(exist_ok=True)
+    (ROOT / "handlers").mkdir(exist_ok=True)
 
     for name in sorted(SCRIPTS):
         out = ROOT / f"{name}.py"
-        out.write_text(TEMPLATE.format(name=name), encoding="utf-8")
+        out.write_text(TEMPLATE.format(name=name, loader=LOADER), encoding="utf-8")
         out.chmod(0o755)
         print(f"wrote {out.name}")
 

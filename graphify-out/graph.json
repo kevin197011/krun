@@ -166,10 +166,19 @@
       "norm_label": "bootstrap.py"
     },
     {
+      "label": "_fetch()",
+      "file_type": "code",
+      "source_file": "lib/py/bootstrap.py",
+      "source_location": "L56",
+      "id": "py_bootstrap_fetch",
+      "community": 20,
+      "norm_label": "_fetch()"
+    },
+    {
       "label": "setup()",
       "file_type": "code",
       "source_file": "lib/py/bootstrap.py",
-      "source_location": "L28",
+      "source_location": "L62",
       "id": "py_bootstrap_setup",
       "community": 20,
       "norm_label": "setup()"
@@ -184,6 +193,15 @@
       "norm_label": "install_awscli.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_awscli.py",
+      "source_location": "L11",
+      "id": "py_install_awscli_krun_bootstrap_path",
+      "community": 206,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_zsh.py",
       "file_type": "code",
       "source_file": "lib/py/install_zsh.py",
@@ -191,6 +209,15 @@
       "id": "lib_py_install_zsh_py",
       "community": 246,
       "norm_label": "install_zsh.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_zsh.py",
+      "source_location": "L11",
+      "id": "py_install_zsh_krun_bootstrap_path",
+      "community": 246,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_openjdk.py",
@@ -202,6 +229,15 @@
       "norm_label": "install_openjdk.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_openjdk.py",
+      "source_location": "L11",
+      "id": "py_install_openjdk_krun_bootstrap_path",
+      "community": 233,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_kind.py",
       "file_type": "code",
       "source_file": "lib/py/install_kind.py",
@@ -209,6 +245,15 @@
       "id": "lib_py_install_kind_py",
       "community": 225,
       "norm_label": "install_kind.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_kind.py",
+      "source_location": "L11",
+      "id": "py_install_kind_krun_bootstrap_path",
+      "community": 225,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_blackbox_exporter.py",
@@ -220,6 +265,15 @@
       "norm_label": "install_blackbox_exporter.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_blackbox_exporter.py",
+      "source_location": "L11",
+      "id": "py_install_blackbox_exporter_krun_bootstrap_path",
+      "community": 208,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_lsyncd.py",
       "file_type": "code",
       "source_file": "lib/py/install_lsyncd.py",
@@ -227,6 +281,15 @@
       "id": "lib_py_install_lsyncd_py",
       "community": 227,
       "norm_label": "install_lsyncd.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_lsyncd.py",
+      "source_location": "L11",
+      "id": "py_install_lsyncd_krun_bootstrap_path",
+      "community": 227,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_rclone.py",
@@ -238,6 +301,15 @@
       "norm_label": "install_rclone.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_rclone.py",
+      "source_location": "L11",
+      "id": "py_install_rclone_krun_bootstrap_path",
+      "community": 237,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_cursor_cli.py",
       "file_type": "code",
       "source_file": "lib/py/install_cursor_cli.py",
@@ -245,6 +317,15 @@
       "id": "lib_py_install_cursor_cli_py",
       "community": 211,
       "norm_label": "install_cursor_cli.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_cursor_cli.py",
+      "source_location": "L11",
+      "id": "py_install_cursor_cli_krun_bootstrap_path",
+      "community": 211,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "config_elasticsearch.py",
@@ -256,6 +337,15 @@
       "norm_label": "config_elasticsearch.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_elasticsearch.py",
+      "source_location": "L11",
+      "id": "py_config_elasticsearch_krun_bootstrap_path",
+      "community": 179,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_git.py",
       "file_type": "code",
       "source_file": "lib/py/config_git.py",
@@ -263,6 +353,15 @@
       "id": "lib_py_config_git_py",
       "community": 181,
       "norm_label": "config_git.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_git.py",
+      "source_location": "L11",
+      "id": "py_config_git_krun_bootstrap_path",
+      "community": 181,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_golang.py",
@@ -274,6 +373,15 @@
       "norm_label": "install_golang.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_golang.py",
+      "source_location": "L11",
+      "id": "py_install_golang_krun_bootstrap_path",
+      "community": 221,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "hello_world.py",
       "file_type": "code",
       "source_file": "lib/py/hello_world.py",
@@ -281,6 +389,15 @@
       "id": "lib_py_hello_world_py",
       "community": 173,
       "norm_label": "hello_world.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/hello_world.py",
+      "source_location": "L11",
+      "id": "py_hello_world_krun_bootstrap_path",
+      "community": 173,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_asdf.py",
@@ -292,6 +409,15 @@
       "norm_label": "install_asdf.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_asdf.py",
+      "source_location": "L11",
+      "id": "py_install_asdf_krun_bootstrap_path",
+      "community": 205,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_jdk8.py",
       "file_type": "code",
       "source_file": "lib/py/install_jdk8.py",
@@ -299,6 +425,15 @@
       "id": "lib_py_install_jdk8_py",
       "community": 223,
       "norm_label": "install_jdk8.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_jdk8.py",
+      "source_location": "L11",
+      "id": "py_install_jdk8_krun_bootstrap_path",
+      "community": 223,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "init_system.py",
@@ -310,6 +445,15 @@
       "norm_label": "init_system.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/init_system.py",
+      "source_location": "L11",
+      "id": "py_init_system_krun_bootstrap_path",
+      "community": 174,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_vm.py",
       "file_type": "code",
       "source_file": "lib/py/config_vm.py",
@@ -317,6 +461,15 @@
       "id": "lib_py_config_vm_py",
       "community": 193,
       "norm_label": "config_vm.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_vm.py",
+      "source_location": "L11",
+      "id": "py_config_vm_krun_bootstrap_path",
+      "community": 193,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "apply_asdf.py",
@@ -328,6 +481,15 @@
       "norm_label": "apply_asdf.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/apply_asdf.py",
+      "source_location": "L11",
+      "id": "py_apply_asdf_krun_bootstrap_path",
+      "community": 26,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_salt_minion.py",
       "file_type": "code",
       "source_file": "lib/py/install_salt_minion.py",
@@ -335,6 +497,15 @@
       "id": "lib_py_install_salt_minion_py",
       "community": 241,
       "norm_label": "install_salt_minion.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_salt_minion.py",
+      "source_location": "L11",
+      "id": "py_install_salt_minion_krun_bootstrap_path",
+      "community": 241,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_salt_master.py",
@@ -346,6 +517,15 @@
       "norm_label": "install_salt_master.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_salt_master.py",
+      "source_location": "L11",
+      "id": "py_install_salt_master_krun_bootstrap_path",
+      "community": 240,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_acme.py",
       "file_type": "code",
       "source_file": "lib/py/config_acme.py",
@@ -353,6 +533,15 @@
       "id": "lib_py_config_acme_py",
       "community": 175,
       "norm_label": "config_acme.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_acme.py",
+      "source_location": "L11",
+      "id": "py_config_acme_krun_bootstrap_path",
+      "community": 175,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_elixir.py",
@@ -364,6 +553,15 @@
       "norm_label": "install_elixir.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_elixir.py",
+      "source_location": "L11",
+      "id": "py_install_elixir_krun_bootstrap_path",
+      "community": 214,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_system_baseline.py",
       "file_type": "code",
       "source_file": "lib/py/config_system_baseline.py",
@@ -371,6 +569,15 @@
       "id": "lib_py_config_system_baseline_py",
       "community": 190,
       "norm_label": "config_system_baseline.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_system_baseline.py",
+      "source_location": "L11",
+      "id": "py_config_system_baseline_krun_bootstrap_path",
+      "community": 190,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "config_vagrant_ssh.py",
@@ -382,6 +589,15 @@
       "norm_label": "config_vagrant_ssh.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_vagrant_ssh.py",
+      "source_location": "L11",
+      "id": "py_config_vagrant_ssh_krun_bootstrap_path",
+      "community": 192,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_proxy.py",
       "file_type": "code",
       "source_file": "lib/py/config_proxy.py",
@@ -389,6 +605,15 @@
       "id": "lib_py_config_proxy_py",
       "community": 183,
       "norm_label": "config_proxy.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_proxy.py",
+      "source_location": "L11",
+      "id": "py_config_proxy_krun_bootstrap_path",
+      "community": 183,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_aapanel.py",
@@ -400,6 +625,15 @@
       "norm_label": "install_aapanel.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_aapanel.py",
+      "source_location": "L11",
+      "id": "py_install_aapanel_krun_bootstrap_path",
+      "community": 202,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_cursor.py",
       "file_type": "code",
       "source_file": "lib/py/config_cursor.py",
@@ -407,6 +641,15 @@
       "id": "lib_py_config_cursor_py",
       "community": 177,
       "norm_label": "config_cursor.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_cursor.py",
+      "source_location": "L11",
+      "id": "py_config_cursor_krun_bootstrap_path",
+      "community": 177,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "registry.py",
@@ -499,6 +742,15 @@
       "norm_label": "install_devbox.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_devbox.py",
+      "source_location": "L11",
+      "id": "py_install_devbox_krun_bootstrap_path",
+      "community": 212,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "reset_git_history.py",
       "file_type": "code",
       "source_file": "lib/py/reset_git_history.py",
@@ -506,6 +758,15 @@
       "id": "lib_py_reset_git_history_py",
       "community": 247,
       "norm_label": "reset_git_history.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/reset_git_history.py",
+      "source_location": "L11",
+      "id": "py_reset_git_history_krun_bootstrap_path",
+      "community": 247,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_tinyproxy.py",
@@ -517,6 +778,15 @@
       "norm_label": "install_tinyproxy.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_tinyproxy.py",
+      "source_location": "L11",
+      "id": "py_install_tinyproxy_krun_bootstrap_path",
+      "community": 243,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_centos7_repo.py",
       "file_type": "code",
       "source_file": "lib/py/config_centos7_repo.py",
@@ -524,6 +794,15 @@
       "id": "lib_py_config_centos7_repo_py",
       "community": 176,
       "norm_label": "config_centos7_repo.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_centos7_repo.py",
+      "source_location": "L11",
+      "id": "py_config_centos7_repo_krun_bootstrap_path",
+      "community": 176,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "disk_cleanup.py",
@@ -535,6 +814,15 @@
       "norm_label": "disk_cleanup.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/disk_cleanup.py",
+      "source_location": "L11",
+      "id": "py_disk_cleanup_krun_bootstrap_path",
+      "community": 199,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_disk_data.py",
       "file_type": "code",
       "source_file": "lib/py/config_disk_data.py",
@@ -542,6 +830,15 @@
       "id": "lib_py_config_disk_data_py",
       "community": 178,
       "norm_label": "config_disk_data.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_disk_data.py",
+      "source_location": "L11",
+      "id": "py_config_disk_data_krun_bootstrap_path",
+      "community": 178,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "check_system_troubleshoot.py",
@@ -553,6 +850,15 @@
       "norm_label": "check_system_troubleshoot.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/check_system_troubleshoot.py",
+      "source_location": "L11",
+      "id": "py_check_system_troubleshoot_krun_bootstrap_path",
+      "community": 85,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "check_ip_quality.py",
       "file_type": "code",
       "source_file": "lib/py/check_ip_quality.py",
@@ -560,6 +866,15 @@
       "id": "lib_py_check_ip_quality_py",
       "community": 32,
       "norm_label": "check_ip_quality.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/check_ip_quality.py",
+      "source_location": "L11",
+      "id": "py_check_ip_quality_krun_bootstrap_path",
+      "community": 32,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_ruby.py",
@@ -571,6 +886,15 @@
       "norm_label": "install_ruby.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_ruby.py",
+      "source_location": "L11",
+      "id": "py_install_ruby_krun_bootstrap_path",
+      "community": 239,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_git.py",
       "file_type": "code",
       "source_file": "lib/py/install_git.py",
@@ -578,6 +902,15 @@
       "id": "lib_py_install_git_py",
       "community": 220,
       "norm_label": "install_git.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_git.py",
+      "source_location": "L11",
+      "id": "py_install_git_krun_bootstrap_path",
+      "community": 220,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_base_packages.py",
@@ -589,6 +922,15 @@
       "norm_label": "install_base_packages.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_base_packages.py",
+      "source_location": "L11",
+      "id": "py_install_base_packages_krun_bootstrap_path",
+      "community": 207,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_locales.py",
       "file_type": "code",
       "source_file": "lib/py/config_locales.py",
@@ -596,6 +938,15 @@
       "id": "lib_py_config_locales_py",
       "community": 182,
       "norm_label": "config_locales.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_locales.py",
+      "source_location": "L11",
+      "id": "py_config_locales_krun_bootstrap_path",
+      "community": 182,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_crane.py",
@@ -607,6 +958,15 @@
       "norm_label": "install_crane.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_crane.py",
+      "source_location": "L11",
+      "id": "py_install_crane_krun_bootstrap_path",
+      "community": 210,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_fstab.py",
       "file_type": "code",
       "source_file": "lib/py/config_fstab.py",
@@ -614,6 +974,15 @@
       "id": "lib_py_config_fstab_py",
       "community": 180,
       "norm_label": "config_fstab.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_fstab.py",
+      "source_location": "L11",
+      "id": "py_config_fstab_krun_bootstrap_path",
+      "community": 180,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_oh_my_zsh.py",
@@ -625,6 +994,15 @@
       "norm_label": "install_oh_my_zsh.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_oh_my_zsh.py",
+      "source_location": "L11",
+      "id": "py_install_oh_my_zsh_krun_bootstrap_path",
+      "community": 232,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_fonts_nerd_jetbrains.py",
       "file_type": "code",
       "source_file": "lib/py/install_fonts_nerd_jetbrains.py",
@@ -632,6 +1010,15 @@
       "id": "lib_py_install_fonts_nerd_jetbrains_py",
       "community": 217,
       "norm_label": "install_fonts_nerd_jetbrains.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_fonts_nerd_jetbrains.py",
+      "source_location": "L11",
+      "id": "py_install_fonts_nerd_jetbrains_krun_bootstrap_path",
+      "community": 217,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_1panel.py",
@@ -643,6 +1030,15 @@
       "norm_label": "install_1panel.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_1panel.py",
+      "source_location": "L11",
+      "id": "py_install_1panel_krun_bootstrap_path",
+      "community": 201,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_ssh_authorized_keys.py",
       "file_type": "code",
       "source_file": "lib/py/config_ssh_authorized_keys.py",
@@ -650,6 +1046,15 @@
       "id": "lib_py_config_ssh_authorized_keys_py",
       "community": 188,
       "norm_label": "config_ssh_authorized_keys.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_ssh_authorized_keys.py",
+      "source_location": "L11",
+      "id": "py_config_ssh_authorized_keys_krun_bootstrap_path",
+      "community": 188,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "config_rocky_repo.py",
@@ -661,6 +1066,15 @@
       "norm_label": "config_rocky_repo.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_rocky_repo.py",
+      "source_location": "L11",
+      "id": "py_config_rocky_repo_krun_bootstrap_path",
+      "community": 185,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_nginx.py",
       "file_type": "code",
       "source_file": "lib/py/install_nginx.py",
@@ -668,6 +1082,15 @@
       "id": "lib_py_install_nginx_py",
       "community": 230,
       "norm_label": "install_nginx.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_nginx.py",
+      "source_location": "L11",
+      "id": "py_install_nginx_krun_bootstrap_path",
+      "community": 230,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_redis.py",
@@ -679,6 +1102,15 @@
       "norm_label": "install_redis.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_redis.py",
+      "source_location": "L11",
+      "id": "py_install_redis_krun_bootstrap_path",
+      "community": 238,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_kssh.py",
       "file_type": "code",
       "source_file": "lib/py/install_kssh.py",
@@ -686,6 +1118,15 @@
       "id": "lib_py_install_kssh_py",
       "community": 226,
       "norm_label": "install_kssh.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_kssh.py",
+      "source_location": "L11",
+      "id": "py_install_kssh_krun_bootstrap_path",
+      "community": 226,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_k9s.py",
@@ -697,6 +1138,15 @@
       "norm_label": "install_k9s.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_k9s.py",
+      "source_location": "L11",
+      "id": "py_install_k9s_krun_bootstrap_path",
+      "community": 224,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_puppet_bolt.py",
       "file_type": "code",
       "source_file": "lib/py/install_puppet_bolt.py",
@@ -704,6 +1154,15 @@
       "id": "lib_py_install_puppet_bolt_py",
       "community": 235,
       "norm_label": "install_puppet_bolt.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_puppet_bolt.py",
+      "source_location": "L11",
+      "id": "py_install_puppet_bolt_krun_bootstrap_path",
+      "community": 235,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_aliyun_cli.py",
@@ -715,6 +1174,15 @@
       "norm_label": "install_aliyun_cli.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_aliyun_cli.py",
+      "source_location": "L11",
+      "id": "py_install_aliyun_cli_krun_bootstrap_path",
+      "community": 203,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "delete_video.py",
       "file_type": "code",
       "source_file": "lib/py/delete_video.py",
@@ -724,6 +1192,15 @@
       "norm_label": "delete_video.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/delete_video.py",
+      "source_location": "L11",
+      "id": "py_delete_video_krun_bootstrap_path",
+      "community": 195,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "update_vagrant_box.py",
       "file_type": "code",
       "source_file": "lib/py/update_vagrant_box.py",
@@ -731,6 +1208,15 @@
       "id": "lib_py_update_vagrant_box_py",
       "community": 248,
       "norm_label": "update_vagrant_box.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/update_vagrant_box.py",
+      "source_location": "L11",
+      "id": "py_update_vagrant_box_krun_bootstrap_path",
+      "community": 248,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "generate_wrappers.py",
@@ -745,7 +1231,7 @@
       "label": "main()",
       "file_type": "code",
       "source_file": "lib/py/generate_wrappers.py",
-      "source_location": "L30",
+      "source_location": "L33",
       "id": "py_generate_wrappers_main",
       "community": 16,
       "norm_label": "main()"
@@ -760,6 +1246,15 @@
       "norm_label": "install_vim.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_vim.py",
+      "source_location": "L11",
+      "id": "py_install_vim_krun_bootstrap_path",
+      "community": 245,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "disable_firewall_selinux.py",
       "file_type": "code",
       "source_file": "lib/py/disable_firewall_selinux.py",
@@ -767,6 +1262,15 @@
       "id": "lib_py_disable_firewall_selinux_py",
       "community": 198,
       "norm_label": "disable_firewall_selinux.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/disable_firewall_selinux.py",
+      "source_location": "L11",
+      "id": "py_disable_firewall_selinux_krun_bootstrap_path",
+      "community": 198,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_ffmpeg.py",
@@ -778,6 +1282,15 @@
       "norm_label": "install_ffmpeg.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_ffmpeg.py",
+      "source_location": "L11",
+      "id": "py_install_ffmpeg_krun_bootstrap_path",
+      "community": 215,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_mc.py",
       "file_type": "code",
       "source_file": "lib/py/install_mc.py",
@@ -785,6 +1298,15 @@
       "id": "lib_py_install_mc_py",
       "community": 229,
       "norm_label": "install_mc.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_mc.py",
+      "source_location": "L11",
+      "id": "py_install_mc_krun_bootstrap_path",
+      "community": 229,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "config_ssh.py",
@@ -796,6 +1318,15 @@
       "norm_label": "config_ssh.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_ssh.py",
+      "source_location": "L11",
+      "id": "py_config_ssh_krun_bootstrap_path",
+      "community": 189,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_ruby_http.py",
       "file_type": "code",
       "source_file": "lib/py/config_ruby_http.py",
@@ -803,6 +1334,15 @@
       "id": "lib_py_config_ruby_http_py",
       "community": 187,
       "norm_label": "config_ruby_http.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_ruby_http.py",
+      "source_location": "L11",
+      "id": "py_config_ruby_http_krun_bootstrap_path",
+      "community": 187,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_gcloud.py",
@@ -814,6 +1354,15 @@
       "norm_label": "install_gcloud.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_gcloud.py",
+      "source_location": "L11",
+      "id": "py_install_gcloud_krun_bootstrap_path",
+      "community": 218,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_rpm_repo.py",
       "file_type": "code",
       "source_file": "lib/py/config_rpm_repo.py",
@@ -821,6 +1370,15 @@
       "id": "lib_py_config_rpm_repo_py",
       "community": 186,
       "norm_label": "config_rpm_repo.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_rpm_repo.py",
+      "source_location": "L11",
+      "id": "py_config_rpm_repo_krun_bootstrap_path",
+      "community": 186,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "check_system_baseline.py",
@@ -832,6 +1390,15 @@
       "norm_label": "check_system_baseline.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/check_system_baseline.py",
+      "source_location": "L11",
+      "id": "py_check_system_baseline_krun_bootstrap_path",
+      "community": 84,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_docker.py",
       "file_type": "code",
       "source_file": "lib/py/install_docker.py",
@@ -841,6 +1408,15 @@
       "norm_label": "install_docker.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_docker.py",
+      "source_location": "L11",
+      "id": "py_install_docker_krun_bootstrap_path",
+      "community": 213,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "crane_copy.py",
       "file_type": "code",
       "source_file": "lib/py/crane_copy.py",
@@ -848,6 +1424,15 @@
       "id": "lib_py_crane_copy_py",
       "community": 194,
       "norm_label": "crane_copy.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/crane_copy.py",
+      "source_location": "L11",
+      "id": "py_crane_copy_krun_bootstrap_path",
+      "community": 194,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "krun_common.py",
@@ -1003,6 +1588,15 @@
       "norm_label": "install_filebeat.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_filebeat.py",
+      "source_location": "L11",
+      "id": "py_install_filebeat_krun_bootstrap_path",
+      "community": 216,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_maven.py",
       "file_type": "code",
       "source_file": "lib/py/install_maven.py",
@@ -1010,6 +1604,15 @@
       "id": "lib_py_install_maven_py",
       "community": 228,
       "norm_label": "install_maven.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_maven.py",
+      "source_location": "L11",
+      "id": "py_install_maven_krun_bootstrap_path",
+      "community": 228,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_ansible.py",
@@ -1021,6 +1624,15 @@
       "norm_label": "install_ansible.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_ansible.py",
+      "source_location": "L11",
+      "id": "py_install_ansible_krun_bootstrap_path",
+      "community": 204,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "deploy_sshkey.py",
       "file_type": "code",
       "source_file": "lib/py/deploy_sshkey.py",
@@ -1028,6 +1640,15 @@
       "id": "lib_py_deploy_sshkey_py",
       "community": 197,
       "norm_label": "deploy_sshkey.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/deploy_sshkey.py",
+      "source_location": "L11",
+      "id": "py_deploy_sshkey_krun_bootstrap_path",
+      "community": 197,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_node_exporter.py",
@@ -1039,6 +1660,15 @@
       "norm_label": "install_node_exporter.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_node_exporter.py",
+      "source_location": "L11",
+      "id": "py_install_node_exporter_krun_bootstrap_path",
+      "community": 231,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "config_timezone.py",
       "file_type": "code",
       "source_file": "lib/py/config_timezone.py",
@@ -1046,6 +1676,15 @@
       "id": "lib_py_config_timezone_py",
       "community": 191,
       "norm_label": "config_timezone.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_timezone.py",
+      "source_location": "L11",
+      "id": "py_config_timezone_krun_bootstrap_path",
+      "community": 191,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_spacevim.py",
@@ -1057,6 +1696,15 @@
       "norm_label": "install_spacevim.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_spacevim.py",
+      "source_location": "L11",
+      "id": "py_install_spacevim_krun_bootstrap_path",
+      "community": 242,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_rbenv.py",
       "file_type": "code",
       "source_file": "lib/py/install_rbenv.py",
@@ -1064,6 +1712,15 @@
       "id": "lib_py_install_rbenv_py",
       "community": 236,
       "norm_label": "install_rbenv.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_rbenv.py",
+      "source_location": "L11",
+      "id": "py_install_rbenv_krun_bootstrap_path",
+      "community": 236,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_percona_toolkit.py",
@@ -1075,6 +1732,15 @@
       "norm_label": "install_percona_toolkit.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_percona_toolkit.py",
+      "source_location": "L11",
+      "id": "py_install_percona_toolkit_krun_bootstrap_path",
+      "community": 234,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "deploy_node_exporter.py",
       "file_type": "code",
       "source_file": "lib/py/deploy_node_exporter.py",
@@ -1082,6 +1748,15 @@
       "id": "lib_py_deploy_node_exporter_py",
       "community": 196,
       "norm_label": "deploy_node_exporter.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/deploy_node_exporter.py",
+      "source_location": "L11",
+      "id": "py_deploy_node_exporter_krun_bootstrap_path",
+      "community": 196,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "config_rakefile.py",
@@ -1093,6 +1768,15 @@
       "norm_label": "config_rakefile.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/config_rakefile.py",
+      "source_location": "L11",
+      "id": "py_config_rakefile_krun_bootstrap_path",
+      "community": 184,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_helm.py",
       "file_type": "code",
       "source_file": "lib/py/install_helm.py",
@@ -1100,6 +1784,15 @@
       "id": "lib_py_install_helm_py",
       "community": 222,
       "norm_label": "install_helm.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_helm.py",
+      "source_location": "L11",
+      "id": "py_install_helm_krun_bootstrap_path",
+      "community": 222,
+      "norm_label": "_krun_bootstrap_path()"
     },
     {
       "label": "install_cpanm.py",
@@ -1111,6 +1804,15 @@
       "norm_label": "install_cpanm.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_cpanm.py",
+      "source_location": "L11",
+      "id": "py_install_cpanm_krun_bootstrap_path",
+      "community": 209,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_geoipupdate.py",
       "file_type": "code",
       "source_file": "lib/py/install_geoipupdate.py",
@@ -1120,6 +1822,15 @@
       "norm_label": "install_geoipupdate.py"
     },
     {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_geoipupdate.py",
+      "source_location": "L11",
+      "id": "py_install_geoipupdate_krun_bootstrap_path",
+      "community": 219,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
       "label": "install_vagrant_virtualbox.py",
       "file_type": "code",
       "source_file": "lib/py/install_vagrant_virtualbox.py",
@@ -1127,6 +1838,330 @@
       "id": "lib_py_install_vagrant_virtualbox_py",
       "community": 244,
       "norm_label": "install_vagrant_virtualbox.py"
+    },
+    {
+      "label": "_krun_bootstrap_path()",
+      "file_type": "code",
+      "source_file": "lib/py/install_vagrant_virtualbox.py",
+      "source_location": "L11",
+      "id": "py_install_vagrant_virtualbox_krun_bootstrap_path",
+      "community": 244,
+      "norm_label": "_krun_bootstrap_path()"
+    },
+    {
+      "label": "system.py",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L1",
+      "id": "lib_py_handlers_system_py",
+      "community": 249,
+      "norm_label": "system.py"
+    },
+    {
+      "label": "has_cmd()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L201",
+      "id": "handlers_system_has_cmd",
+      "community": 249,
+      "norm_label": "has_cmd()"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L205",
+      "id": "handlers_system_run",
+      "community": 249,
+      "norm_label": "run()"
+    },
+    {
+      "label": "write_text()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L211",
+      "id": "handlers_system_write_text",
+      "community": 249,
+      "norm_label": "write_text()"
+    },
+    {
+      "label": "read_os_release()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L217",
+      "id": "handlers_system_read_os_release",
+      "community": 249,
+      "norm_label": "read_os_release()"
+    },
+    {
+      "label": "SystemInit",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L230",
+      "id": "handlers_system_systeminit",
+      "community": 249,
+      "norm_label": "systeminit"
+    },
+    {
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L231",
+      "id": "handlers_system_systeminit_init",
+      "community": 249,
+      "norm_label": ".__init__()"
+    },
+    {
+      "label": ".platform()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L239",
+      "id": "handlers_system_systeminit_platform",
+      "community": 249,
+      "norm_label": ".platform()"
+    },
+    {
+      "label": ".check_root()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L248",
+      "id": "handlers_system_systeminit_check_root",
+      "community": 249,
+      "norm_label": ".check_root()"
+    },
+    {
+      "label": ".check_rhel_version()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L253",
+      "id": "handlers_system_systeminit_check_rhel_version",
+      "community": 249,
+      "norm_label": ".check_rhel_version()"
+    },
+    {
+      "label": ".check_debian_version()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L262",
+      "id": "handlers_system_systeminit_check_debian_version",
+      "community": 249,
+      "norm_label": ".check_debian_version()"
+    },
+    {
+      "label": ".backup_configs()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L268",
+      "id": "handlers_system_systeminit_backup_configs",
+      "community": 249,
+      "norm_label": ".backup_configs()"
+    },
+    {
+      "label": ".pm()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L284",
+      "id": "handlers_system_systeminit_pm",
+      "community": 249,
+      "norm_label": ".pm()"
+    },
+    {
+      "label": ".pm_install()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L287",
+      "id": "handlers_system_systeminit_pm_install",
+      "community": 249,
+      "norm_label": ".pm_install()"
+    },
+    {
+      "label": ".install_packages_rhel()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L292",
+      "id": "handlers_system_systeminit_install_packages_rhel",
+      "community": 249,
+      "norm_label": ".install_packages_rhel()"
+    },
+    {
+      "label": ".install_packages_debian()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L302",
+      "id": "handlers_system_systeminit_install_packages_debian",
+      "community": 249,
+      "norm_label": ".install_packages_debian()"
+    },
+    {
+      "label": ".configure_timezone()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L317",
+      "id": "handlers_system_systeminit_configure_timezone",
+      "community": 249,
+      "norm_label": ".configure_timezone()"
+    },
+    {
+      "label": ".configure_locale()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L331",
+      "id": "handlers_system_systeminit_configure_locale",
+      "community": 249,
+      "norm_label": ".configure_locale()"
+    },
+    {
+      "label": ".configure_sysctl()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L349",
+      "id": "handlers_system_systeminit_configure_sysctl",
+      "community": 249,
+      "norm_label": ".configure_sysctl()"
+    },
+    {
+      "label": ".configure_limits()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L354",
+      "id": "handlers_system_systeminit_configure_limits",
+      "community": 249,
+      "norm_label": ".configure_limits()"
+    },
+    {
+      "label": ".configure_network()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L372",
+      "id": "handlers_system_systeminit_configure_network",
+      "community": 249,
+      "norm_label": ".configure_network()"
+    },
+    {
+      "label": ".configure_filesystem()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L386",
+      "id": "handlers_system_systeminit_configure_filesystem",
+      "community": 249,
+      "norm_label": ".configure_filesystem()"
+    },
+    {
+      "label": ".configure_memory()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L401",
+      "id": "handlers_system_systeminit_configure_memory",
+      "community": 249,
+      "norm_label": ".configure_memory()"
+    },
+    {
+      "label": ".configure_io()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L416",
+      "id": "handlers_system_systeminit_configure_io",
+      "community": 249,
+      "norm_label": ".configure_io()"
+    },
+    {
+      "label": ".configure_selinux()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L434",
+      "id": "handlers_system_systeminit_configure_selinux",
+      "community": 249,
+      "norm_label": ".configure_selinux()"
+    },
+    {
+      "label": ".configure_ntp()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L446",
+      "id": "handlers_system_systeminit_configure_ntp",
+      "community": 249,
+      "norm_label": ".configure_ntp()"
+    },
+    {
+      "label": ".configure_tuned()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L460",
+      "id": "handlers_system_systeminit_configure_tuned",
+      "community": 249,
+      "norm_label": ".configure_tuned()"
+    },
+    {
+      "label": ".configure_cpufreq()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L467",
+      "id": "handlers_system_systeminit_configure_cpufreq",
+      "community": 249,
+      "norm_label": ".configure_cpufreq()"
+    },
+    {
+      "label": ".configure_tools()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L481",
+      "id": "handlers_system_systeminit_configure_tools",
+      "community": 249,
+      "norm_label": ".configure_tools()"
+    },
+    {
+      "label": ".disable_services()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L501",
+      "id": "handlers_system_systeminit_disable_services",
+      "community": 249,
+      "norm_label": ".disable_services()"
+    },
+    {
+      "label": ".run_common()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L508",
+      "id": "handlers_system_systeminit_run_common",
+      "community": 249,
+      "norm_label": ".run_common()"
+    },
+    {
+      "label": ".run_rhel()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L526",
+      "id": "handlers_system_systeminit_run_rhel",
+      "community": 249,
+      "norm_label": ".run_rhel()"
+    },
+    {
+      "label": ".run_debian()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L533",
+      "id": "handlers_system_systeminit_run_debian",
+      "community": 249,
+      "norm_label": ".run_debian()"
+    },
+    {
+      "label": ".run()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L540",
+      "id": "handlers_system_systeminit_run",
+      "community": 249,
+      "norm_label": ".run()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L556",
+      "id": "handlers_system_main",
+      "community": 249,
+      "norm_label": "main()"
     },
     {
       "label": "config.py",
@@ -15166,10 +16201,151 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "lib/py/bootstrap.py",
-      "source_location": "L28",
+      "source_location": "L56",
       "weight": 1.0,
       "source": "lib_py_bootstrap_py",
-      "target": "py_bootstrap_setup",
+      "target": "py_bootstrap_fetch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/bootstrap.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_py_bootstrap_py",
+      "target": "py_bootstrap_setup"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/bootstrap.py",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "py_bootstrap_setup",
+      "target": "py_bootstrap_fetch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_awscli.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_awscli_py",
+      "target": "py_install_awscli_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_zsh.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_zsh_py",
+      "target": "py_install_zsh_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_openjdk.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_openjdk_py",
+      "target": "py_install_openjdk_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_kind.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_kind_py",
+      "target": "py_install_kind_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_blackbox_exporter.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_blackbox_exporter_py",
+      "target": "py_install_blackbox_exporter_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_lsyncd.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_lsyncd_py",
+      "target": "py_install_lsyncd_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_rclone.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_rclone_py",
+      "target": "py_install_rclone_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_cursor_cli.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_cursor_cli_py",
+      "target": "py_install_cursor_cli_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_elasticsearch.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_elasticsearch_py",
+      "target": "py_config_elasticsearch_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_git.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_git_py",
+      "target": "py_config_git_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_golang.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_golang_py",
+      "target": "py_install_golang_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/hello_world.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_hello_world_py",
+      "target": "py_hello_world_krun_bootstrap_path",
       "confidence_score": 1.0
     },
     {
@@ -15181,6 +16357,36 @@
       "confidence_score": 1.0,
       "source": "lib_py_hello_world_py",
       "target": "py_hello_world_main"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_asdf.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_asdf_py",
+      "target": "py_install_asdf_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_jdk8.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_jdk8_py",
+      "target": "py_install_jdk8_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/init_system.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_init_system_py",
+      "target": "py_init_system_krun_bootstrap_path",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -15275,12 +16481,122 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_vm.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_vm_py",
+      "target": "py_config_vm_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/apply_asdf.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_apply_asdf_py",
+      "target": "py_apply_asdf_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_salt_minion.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_salt_minion_py",
+      "target": "py_install_salt_minion_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_salt_master.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_salt_master_py",
+      "target": "py_install_salt_master_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_acme.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_acme_py",
+      "target": "py_config_acme_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_elixir.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_elixir_py",
+      "target": "py_install_elixir_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_system_baseline.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_system_baseline_py",
+      "target": "py_config_system_baseline_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_vagrant_ssh.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_vagrant_ssh_py",
+      "target": "py_config_vagrant_ssh_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_proxy.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_proxy_py",
+      "target": "py_config_proxy_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_aapanel.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_aapanel_py",
+      "target": "py_install_aapanel_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_cursor.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_cursor_py",
+      "target": "py_config_cursor_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "lib/py/registry.py",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_registry_py",
-      "target": "py_registry_init_system",
-      "confidence_score": 1.0
+      "target": "py_registry_init_system"
     },
     {
       "relation": "contains",
@@ -15288,9 +16604,9 @@
       "source_file": "lib/py/registry.py",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_registry_py",
-      "target": "py_registry_config_rpm_repo",
-      "confidence_score": 1.0
+      "target": "py_registry_config_rpm_repo"
     },
     {
       "relation": "contains",
@@ -15298,9 +16614,9 @@
       "source_file": "lib/py/registry.py",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_registry_py",
-      "target": "py_registry_asdf_setup",
-      "confidence_score": 1.0
+      "target": "py_registry_asdf_setup"
     },
     {
       "relation": "contains",
@@ -15308,9 +16624,9 @@
       "source_file": "lib/py/registry.py",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_registry_py",
-      "target": "py_registry_system_baseline",
-      "confidence_score": 1.0
+      "target": "py_registry_system_baseline"
     },
     {
       "relation": "contains",
@@ -15318,9 +16634,9 @@
       "source_file": "lib/py/registry.py",
       "source_location": "L43",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_registry_py",
-      "target": "py_registry_check_ip_quality",
-      "confidence_score": 1.0
+      "target": "py_registry_check_ip_quality"
     },
     {
       "relation": "contains",
@@ -15328,9 +16644,9 @@
       "source_file": "lib/py/registry.py",
       "source_location": "L53",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_registry_py",
-      "target": "py_registry_acme_cert",
-      "confidence_score": 1.0
+      "target": "py_registry_acme_cert"
     },
     {
       "relation": "contains",
@@ -15338,9 +16654,9 @@
       "source_file": "lib/py/registry.py",
       "source_location": "L60",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_registry_py",
-      "target": "py_registry_prometheus_exporter",
-      "confidence_score": 1.0
+      "target": "py_registry_prometheus_exporter"
     },
     {
       "relation": "contains",
@@ -15348,9 +16664,9 @@
       "source_file": "lib/py/registry.py",
       "source_location": "L178",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_registry_py",
-      "target": "py_registry_run_script",
-      "confidence_score": 1.0
+      "target": "py_registry_run_script"
     },
     {
       "relation": "calls",
@@ -15388,11 +16704,391 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_devbox.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_devbox_py",
+      "target": "py_install_devbox_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/reset_git_history.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_reset_git_history_py",
+      "target": "py_reset_git_history_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_tinyproxy.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_tinyproxy_py",
+      "target": "py_install_tinyproxy_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_centos7_repo.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_centos7_repo_py",
+      "target": "py_config_centos7_repo_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/disk_cleanup.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_disk_cleanup_py",
+      "target": "py_disk_cleanup_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_disk_data.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_disk_data_py",
+      "target": "py_config_disk_data_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/check_system_troubleshoot.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_check_system_troubleshoot_py",
+      "target": "py_check_system_troubleshoot_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/check_ip_quality.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_check_ip_quality_py",
+      "target": "py_check_ip_quality_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_ruby.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_ruby_py",
+      "target": "py_install_ruby_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_git.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_git_py",
+      "target": "py_install_git_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_base_packages.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_base_packages_py",
+      "target": "py_install_base_packages_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_locales.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_locales_py",
+      "target": "py_config_locales_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_crane.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_crane_py",
+      "target": "py_install_crane_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_fstab.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_fstab_py",
+      "target": "py_config_fstab_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_oh_my_zsh.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_oh_my_zsh_py",
+      "target": "py_install_oh_my_zsh_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_fonts_nerd_jetbrains.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_fonts_nerd_jetbrains_py",
+      "target": "py_install_fonts_nerd_jetbrains_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_1panel.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_1panel_py",
+      "target": "py_install_1panel_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_ssh_authorized_keys.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_ssh_authorized_keys_py",
+      "target": "py_config_ssh_authorized_keys_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_rocky_repo.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_rocky_repo_py",
+      "target": "py_config_rocky_repo_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_nginx.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_nginx_py",
+      "target": "py_install_nginx_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_redis.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_redis_py",
+      "target": "py_install_redis_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_kssh.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_kssh_py",
+      "target": "py_install_kssh_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_k9s.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_k9s_py",
+      "target": "py_install_k9s_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_puppet_bolt.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_puppet_bolt_py",
+      "target": "py_install_puppet_bolt_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_aliyun_cli.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_aliyun_cli_py",
+      "target": "py_install_aliyun_cli_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/delete_video.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_delete_video_py",
+      "target": "py_delete_video_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/update_vagrant_box.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_update_vagrant_box_py",
+      "target": "py_update_vagrant_box_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "lib/py/generate_wrappers.py",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_generate_wrappers_py",
-      "target": "py_generate_wrappers_main",
+      "target": "py_generate_wrappers_main"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_vim.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_vim_py",
+      "target": "py_install_vim_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/disable_firewall_selinux.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_disable_firewall_selinux_py",
+      "target": "py_disable_firewall_selinux_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_ffmpeg.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_ffmpeg_py",
+      "target": "py_install_ffmpeg_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_mc.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_mc_py",
+      "target": "py_install_mc_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_ssh.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_ssh_py",
+      "target": "py_config_ssh_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_ruby_http.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_ruby_http_py",
+      "target": "py_config_ruby_http_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_gcloud.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_gcloud_py",
+      "target": "py_install_gcloud_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_rpm_repo.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_rpm_repo_py",
+      "target": "py_config_rpm_repo_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/check_system_baseline.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_check_system_baseline_py",
+      "target": "py_check_system_baseline_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_docker.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_docker_py",
+      "target": "py_install_docker_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/crane_copy.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_crane_copy_py",
+      "target": "py_crane_copy_krun_bootstrap_path",
       "confidence_score": 1.0
     },
     {
@@ -15401,9 +17097,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_has_cmd",
-      "confidence_score": 1.0
+      "target": "py_krun_common_has_cmd"
     },
     {
       "relation": "contains",
@@ -15411,9 +17107,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_platform",
-      "confidence_score": 1.0
+      "target": "py_krun_common_platform"
     },
     {
       "relation": "contains",
@@ -15421,9 +17117,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_read_os_release",
-      "confidence_score": 1.0
+      "target": "py_krun_common_read_os_release"
     },
     {
       "relation": "contains",
@@ -15431,9 +17127,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_require_root",
-      "confidence_score": 1.0
+      "target": "py_krun_common_require_root"
     },
     {
       "relation": "contains",
@@ -15441,9 +17137,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_run",
-      "confidence_score": 1.0
+      "target": "py_krun_common_run"
     },
     {
       "relation": "contains",
@@ -15451,9 +17147,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L58",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_run_ok",
-      "confidence_score": 1.0
+      "target": "py_krun_common_run_ok"
     },
     {
       "relation": "contains",
@@ -15461,9 +17157,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L62",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_write_if_changed",
-      "confidence_score": 1.0
+      "target": "py_krun_common_write_if_changed"
     },
     {
       "relation": "contains",
@@ -15471,9 +17167,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_ensure_line",
-      "confidence_score": 1.0
+      "target": "py_krun_common_ensure_line"
     },
     {
       "relation": "contains",
@@ -15481,9 +17177,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L81",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_service_enable",
-      "confidence_score": 1.0
+      "target": "py_krun_common_service_enable"
     },
     {
       "relation": "contains",
@@ -15491,9 +17187,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_service_enabled",
-      "confidence_score": 1.0
+      "target": "py_krun_common_service_enabled"
     },
     {
       "relation": "contains",
@@ -15501,9 +17197,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L91",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_pm_rhel",
-      "confidence_score": 1.0
+      "target": "py_krun_common_pm_rhel"
     },
     {
       "relation": "contains",
@@ -15511,9 +17207,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L95",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_install_packages",
-      "confidence_score": 1.0
+      "target": "py_krun_common_install_packages"
     },
     {
       "relation": "contains",
@@ -15521,9 +17217,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L137",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_curl_pipe",
-      "confidence_score": 1.0
+      "target": "py_krun_common_curl_pipe"
     },
     {
       "relation": "contains",
@@ -15531,9 +17227,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L150",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_github_binary",
-      "confidence_score": 1.0
+      "target": "py_krun_common_github_binary"
     },
     {
       "relation": "contains",
@@ -15541,9 +17237,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L176",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_krun_common_py",
-      "target": "py_krun_common_script_header",
-      "confidence_score": 1.0
+      "target": "py_krun_common_script_header"
     },
     {
       "relation": "calls",
@@ -15552,9 +17248,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L26",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_platform",
-      "target": "py_krun_common_has_cmd",
-      "confidence_score": 1.0
+      "target": "py_krun_common_has_cmd"
     },
     {
       "relation": "calls",
@@ -15563,9 +17259,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L92",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_pm_rhel",
-      "target": "py_krun_common_has_cmd",
-      "confidence_score": 1.0
+      "target": "py_krun_common_has_cmd"
     },
     {
       "relation": "calls",
@@ -15574,9 +17270,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L109",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_install_packages",
-      "target": "py_krun_common_has_cmd",
-      "confidence_score": 1.0
+      "target": "py_krun_common_has_cmd"
     },
     {
       "relation": "calls",
@@ -15596,9 +17292,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_install_packages",
-      "target": "py_krun_common_platform",
-      "confidence_score": 1.0
+      "target": "py_krun_common_platform"
     },
     {
       "relation": "calls",
@@ -15662,9 +17358,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L108",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_install_packages",
-      "target": "py_krun_common_require_root",
-      "confidence_score": 1.0
+      "target": "py_krun_common_require_root"
     },
     {
       "relation": "calls",
@@ -15673,9 +17369,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L138",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_curl_pipe",
-      "target": "py_krun_common_require_root",
-      "confidence_score": 1.0
+      "target": "py_krun_common_require_root"
     },
     {
       "relation": "calls",
@@ -15684,9 +17380,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L156",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_github_binary",
-      "target": "py_krun_common_require_root",
-      "confidence_score": 1.0
+      "target": "py_krun_common_require_root"
     },
     {
       "relation": "calls",
@@ -15838,9 +17534,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_run_ok",
-      "target": "py_krun_common_run",
-      "confidence_score": 1.0
+      "target": "py_krun_common_run"
     },
     {
       "relation": "calls",
@@ -15849,9 +17545,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L82",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_service_enable",
-      "target": "py_krun_common_run",
-      "confidence_score": 1.0
+      "target": "py_krun_common_run"
     },
     {
       "relation": "calls",
@@ -15860,9 +17556,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L87",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_service_enabled",
-      "target": "py_krun_common_run",
-      "confidence_score": 1.0
+      "target": "py_krun_common_run"
     },
     {
       "relation": "calls",
@@ -15871,9 +17567,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L112",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_install_packages",
-      "target": "py_krun_common_run",
-      "confidence_score": 1.0
+      "target": "py_krun_common_run"
     },
     {
       "relation": "calls",
@@ -15882,9 +17578,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L139",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_curl_pipe",
-      "target": "py_krun_common_run",
-      "confidence_score": 1.0
+      "target": "py_krun_common_run"
     },
     {
       "relation": "calls",
@@ -15893,9 +17589,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L158",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_github_binary",
-      "target": "py_krun_common_run",
-      "confidence_score": 1.0
+      "target": "py_krun_common_run"
     },
     {
       "relation": "calls",
@@ -16091,9 +17787,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L169",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_github_binary",
-      "target": "py_krun_common_run_ok",
-      "confidence_score": 1.0
+      "target": "py_krun_common_run_ok"
     },
     {
       "relation": "calls",
@@ -16168,9 +17864,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L133",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_install_packages",
-      "target": "py_krun_common_service_enable",
-      "confidence_score": 1.0
+      "target": "py_krun_common_service_enable"
     },
     {
       "relation": "calls",
@@ -16190,9 +17886,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L130",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_install_packages",
-      "target": "py_krun_common_service_enabled",
-      "confidence_score": 1.0
+      "target": "py_krun_common_service_enabled"
     },
     {
       "relation": "calls",
@@ -16201,9 +17897,9 @@
       "source_file": "lib/py/krun_common.py",
       "source_location": "L115",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "py_krun_common_install_packages",
-      "target": "py_krun_common_pm_rhel",
-      "confidence_score": 1.0
+      "target": "py_krun_common_pm_rhel"
     },
     {
       "relation": "calls",
@@ -16329,12 +18025,1217 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_filebeat.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_filebeat_py",
+      "target": "py_install_filebeat_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_maven.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_maven_py",
+      "target": "py_install_maven_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_ansible.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_ansible_py",
+      "target": "py_install_ansible_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/deploy_sshkey.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_deploy_sshkey_py",
+      "target": "py_deploy_sshkey_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_node_exporter.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_node_exporter_py",
+      "target": "py_install_node_exporter_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_timezone.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_timezone_py",
+      "target": "py_config_timezone_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_spacevim.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_spacevim_py",
+      "target": "py_install_spacevim_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_rbenv.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_rbenv_py",
+      "target": "py_install_rbenv_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_percona_toolkit.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_percona_toolkit_py",
+      "target": "py_install_percona_toolkit_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/deploy_node_exporter.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_deploy_node_exporter_py",
+      "target": "py_deploy_node_exporter_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/config_rakefile.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_config_rakefile_py",
+      "target": "py_config_rakefile_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_helm.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_helm_py",
+      "target": "py_install_helm_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_cpanm.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_cpanm_py",
+      "target": "py_install_cpanm_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_geoipupdate.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_geoipupdate_py",
+      "target": "py_install_geoipupdate_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/install_vagrant_virtualbox.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "lib_py_install_vagrant_virtualbox_py",
+      "target": "py_install_vagrant_virtualbox_krun_bootstrap_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L201",
+      "weight": 1.0,
+      "source": "lib_py_handlers_system_py",
+      "target": "handlers_system_has_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L205",
+      "weight": 1.0,
+      "source": "lib_py_handlers_system_py",
+      "target": "handlers_system_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L211",
+      "weight": 1.0,
+      "source": "lib_py_handlers_system_py",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L217",
+      "weight": 1.0,
+      "source": "lib_py_handlers_system_py",
+      "target": "handlers_system_read_os_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L230",
+      "weight": 1.0,
+      "source": "lib_py_handlers_system_py",
+      "target": "handlers_system_systeminit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L556",
+      "weight": 1.0,
+      "source": "lib_py_handlers_system_py",
+      "target": "handlers_system_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L242",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_platform",
+      "target": "handlers_system_has_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L285",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_pm",
+      "target": "handlers_system_has_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L320",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_timezone",
+      "target": "handlers_system_has_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L333",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_locale",
+      "target": "handlers_system_has_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L395",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_filesystem",
+      "target": "handlers_system_has_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L417",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_io",
+      "target": "handlers_system_has_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L461",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_tuned",
+      "target": "handlers_system_has_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L207",
+      "weight": 1.0,
+      "source": "handlers_system_run",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L325",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_timezone",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L337",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_locale",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L351",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_sysctl",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L356",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_limits",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L376",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_network",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L393",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_filesystem",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L405",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_memory",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L429",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_io",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L442",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_selinux",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L473",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_cpufreq",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L486",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_tools",
+      "target": "handlers_system_write_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L235",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_init",
+      "target": "handlers_system_read_os_release",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L231",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_init",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L239",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_platform",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L248",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_check_root",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L253",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_check_rhel_version",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L262",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_check_debian_version",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L268",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_backup_configs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L284",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_pm",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L287",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_pm_install",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L292",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_install_packages_rhel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L302",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_install_packages_debian",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L317",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_timezone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L331",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_locale",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L349",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_sysctl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L354",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_limits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L372",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_network",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L386",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_filesystem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L401",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_memory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L416",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_io",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L434",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_selinux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L446",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_ntp",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L460",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_tuned",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L467",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_cpufreq",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L481",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_configure_tools",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L501",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_disable_services",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L508",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_run_common",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L526",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_run_rhel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L533",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_run_debian",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L540",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L557",
+      "weight": 1.0,
+      "source": "handlers_system_main",
+      "target": "handlers_system_systeminit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L542",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run",
+      "target": "handlers_system_systeminit_platform",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L541",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run",
+      "target": "handlers_system_systeminit_check_root",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L528",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_rhel",
+      "target": "handlers_system_systeminit_check_rhel_version",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L535",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_debian",
+      "target": "handlers_system_systeminit_check_debian_version",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L529",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_rhel",
+      "target": "handlers_system_systeminit_backup_configs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L536",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_debian",
+      "target": "handlers_system_systeminit_backup_configs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L294",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_install_packages_rhel",
+      "target": "handlers_system_systeminit_pm",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L290",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_pm_install",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L296",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_install_packages_rhel",
+      "target": "handlers_system_systeminit_pm_install",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L295",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_install_packages_rhel",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L530",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_rhel",
+      "target": "handlers_system_systeminit_install_packages_rhel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L305",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_install_packages_debian",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L537",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_debian",
+      "target": "handlers_system_systeminit_install_packages_debian",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L321",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_timezone",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L509",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_timezone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L334",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_locale",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L510",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_locale",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L511",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_sysctl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L369",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_limits",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L512",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_limits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L378",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_network",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L513",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_network",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L399",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_filesystem",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L514",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_filesystem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L410",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_memory",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L515",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_memory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L516",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_io",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L443",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_selinux",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L517",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_selinux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L448",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_ntp",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L518",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_ntp",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L463",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_tuned",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L519",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_tuned",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L520",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_cpufreq",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L495",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_configure_tools",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L521",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_configure_tools",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L503",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_disable_services",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L522",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_disable_services",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L523",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_common",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L531",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_rhel",
+      "target": "handlers_system_systeminit_run_common",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L538",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run_debian",
+      "target": "handlers_system_systeminit_run_common",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L547",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run",
+      "target": "handlers_system_systeminit_run_rhel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L550",
+      "weight": 1.0,
+      "source": "handlers_system_systeminit_run",
+      "target": "handlers_system_systeminit_run_debian",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/py/handlers/system.py",
+      "source_location": "L557",
+      "weight": 1.0,
+      "source": "handlers_system_main",
+      "target": "handlers_system_systeminit_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L62",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_config_rpm_repo",
-      "confidence_score": 1.0
+      "target": "handlers_config_config_rpm_repo"
     },
     {
       "relation": "contains",
@@ -16342,9 +19243,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L78",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_config_timezone",
-      "confidence_score": 1.0
+      "target": "handlers_config_config_timezone"
     },
     {
       "relation": "contains",
@@ -16352,9 +19253,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L93",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_config_locale",
-      "confidence_score": 1.0
+      "target": "handlers_config_config_locale"
     },
     {
       "relation": "contains",
@@ -16362,9 +19263,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L102",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_config_proxy",
-      "confidence_score": 1.0
+      "target": "handlers_config_config_proxy"
     },
     {
       "relation": "contains",
@@ -16372,9 +19273,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L115",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_disable_firewall_selinux",
-      "confidence_score": 1.0
+      "target": "handlers_config_disable_firewall_selinux"
     },
     {
       "relation": "contains",
@@ -16382,9 +19283,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L133",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_config_ssh_harden",
-      "confidence_score": 1.0
+      "target": "handlers_config_config_ssh_harden"
     },
     {
       "relation": "contains",
@@ -16392,9 +19293,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L152",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_config_ssh_keys",
-      "confidence_score": 1.0
+      "target": "handlers_config_config_ssh_keys"
     },
     {
       "relation": "contains",
@@ -16402,9 +19303,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L170",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_config_disk_data",
-      "confidence_score": 1.0
+      "target": "handlers_config_config_disk_data"
     },
     {
       "relation": "contains",
@@ -16412,9 +19313,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L208",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_config_fstab_guide",
-      "confidence_score": 1.0
+      "target": "handlers_config_config_fstab_guide"
     },
     {
       "relation": "contains",
@@ -16422,9 +19323,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L217",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_config_git_global",
-      "confidence_score": 1.0
+      "target": "handlers_config_config_git_global"
     },
     {
       "relation": "contains",
@@ -16432,9 +19333,9 @@
       "source_file": "lib/py/handlers/config.py",
       "source_location": "L224",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_config_py",
-      "target": "handlers_config_reset_git_history",
-      "confidence_score": 1.0
+      "target": "handlers_config_reset_git_history"
     },
     {
       "relation": "contains",
@@ -16442,9 +19343,9 @@
       "source_file": "lib/py/handlers/ops.py",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_ops_py",
-      "target": "handlers_ops_human",
-      "confidence_score": 1.0
+      "target": "handlers_ops_human"
     },
     {
       "relation": "contains",
@@ -16452,9 +19353,9 @@
       "source_file": "lib/py/handlers/ops.py",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_ops_py",
-      "target": "handlers_ops_disk_cleanup",
-      "confidence_score": 1.0
+      "target": "handlers_ops_disk_cleanup"
     },
     {
       "relation": "contains",
@@ -16462,9 +19363,9 @@
       "source_file": "lib/py/handlers/ops.py",
       "source_location": "L82",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_ops_py",
-      "target": "handlers_ops_crane_copy",
-      "confidence_score": 1.0
+      "target": "handlers_ops_crane_copy"
     },
     {
       "relation": "contains",
@@ -16472,9 +19373,9 @@
       "source_file": "lib/py/handlers/ops.py",
       "source_location": "L96",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_ops_py",
-      "target": "handlers_ops_deploy_node_exporter",
-      "confidence_score": 1.0
+      "target": "handlers_ops_deploy_node_exporter"
     },
     {
       "relation": "contains",
@@ -16482,9 +19383,9 @@
       "source_file": "lib/py/handlers/ops.py",
       "source_location": "L110",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_ops_py",
-      "target": "handlers_ops_delete_video",
-      "confidence_score": 1.0
+      "target": "handlers_ops_delete_video"
     },
     {
       "relation": "contains",
@@ -16492,9 +19393,9 @@
       "source_file": "lib/py/handlers/ops.py",
       "source_location": "L127",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_ops_py",
-      "target": "handlers_ops_hello_world",
-      "confidence_score": 1.0
+      "target": "handlers_ops_hello_world"
     },
     {
       "relation": "rationale_for",
@@ -16502,9 +19403,9 @@
       "source_file": "lib/py/handlers/ops.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "handlers_ops_rationale_1",
-      "target": "lib_py_handlers_ops_py",
-      "confidence_score": 1.0
+      "target": "lib_py_handlers_ops_py"
     },
     {
       "relation": "contains",
@@ -16512,9 +19413,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L43",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_zsh",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_zsh"
     },
     {
       "relation": "contains",
@@ -16522,9 +19423,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L48",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_pkg",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_pkg"
     },
     {
       "relation": "contains",
@@ -16532,9 +19433,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_docker",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_docker"
     },
     {
       "relation": "contains",
@@ -16542,9 +19443,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L95",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_base_packages",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_base_packages"
     },
     {
       "relation": "contains",
@@ -16552,9 +19453,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_web_panel",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_web_panel"
     },
     {
       "relation": "contains",
@@ -16562,9 +19463,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_salt",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_salt"
     },
     {
       "relation": "contains",
@@ -16572,9 +19473,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L124",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_github_tool",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_github_tool"
     },
     {
       "relation": "contains",
@@ -16582,9 +19483,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L135",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_awscli",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_awscli"
     },
     {
       "relation": "contains",
@@ -16592,9 +19493,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L144",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_cloud_cli",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_cloud_cli"
     },
     {
       "relation": "contains",
@@ -16602,9 +19503,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L153",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_devbox",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_devbox"
     },
     {
       "relation": "contains",
@@ -16612,9 +19513,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L157",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_cursor_cli",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_cursor_cli"
     },
     {
       "relation": "contains",
@@ -16622,9 +19523,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L161",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_oh_my_zsh",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_oh_my_zsh"
     },
     {
       "relation": "contains",
@@ -16632,9 +19533,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L165",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_spacevim",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_spacevim"
     },
     {
       "relation": "contains",
@@ -16642,9 +19543,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L169",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_py_handlers_install_py",
-      "target": "handlers_install_install_kssh",
-      "confidence_score": 1.0
+      "target": "handlers_install_install_kssh"
     },
     {
       "relation": "rationale_for",
@@ -16652,9 +19553,9 @@
       "source_file": "lib/py/handlers/install.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "handlers_install_rationale_1",
-      "target": "lib_py_handlers_install_py",
-      "confidence_score": 1.0
+      "target": "lib_py_handlers_install_py"
     },
     {
       "relation": "defines",
@@ -16816,9 +19717,9 @@
       "source_file": "README.md",
       "source_location": "L127",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_krun_\u8fd0\u7ef4\u81ea\u52a8\u5316\u811a\u672c\u5de5\u5177\u96c6",
-      "target": "krun_readme_\u811a\u672c\u5217\u8868",
-      "confidence_score": 1.0
+      "target": "krun_readme_\u811a\u672c\u5217\u8868"
     },
     {
       "relation": "contains",
@@ -17086,9 +19987,9 @@
       "source_file": "README.md",
       "source_location": "L131",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_\u811a\u672c\u5217\u8868",
-      "target": "krun_readme_codeblock_6",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_6"
     },
     {
       "relation": "contains",
@@ -17156,9 +20057,9 @@
       "source_file": "README.md",
       "source_location": "L162",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_\u65b0\u670d\u52a1\u5668\u521d\u59cb\u5316",
-      "target": "krun_readme_codeblock_7",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_7"
     },
     {
       "relation": "contains",
@@ -17186,9 +20087,9 @@
       "source_file": "README.md",
       "source_location": "L186",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_rocky_linux_9_\u4fee\u590d_ipv6_\u6e90\u95ee\u9898",
-      "target": "krun_readme_codeblock_8",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_8"
     },
     {
       "relation": "contains",
@@ -17216,9 +20117,9 @@
       "source_file": "README.md",
       "source_location": "L193",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_kubernetes_\u73af\u5883\u642d\u5efa",
-      "target": "krun_readme_codeblock_9",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_9"
     },
     {
       "relation": "contains",
@@ -17246,9 +20147,9 @@
       "source_file": "README.md",
       "source_location": "L202",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_\u81ea\u52a8\u6302\u8f7d\u6570\u636e\u76d8",
-      "target": "krun_readme_codeblock_10",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_10"
     },
     {
       "relation": "contains",
@@ -17296,9 +20197,9 @@
       "source_file": "README.md",
       "source_location": "L230",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_\u521b\u5efa\u65b0\u811a\u672c",
-      "target": "krun_readme_codeblock_11",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_11"
     },
     {
       "relation": "contains",
@@ -17376,9 +20277,9 @@
       "source_file": "README.md",
       "source_location": "L251",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_q_\u5982\u4f55\u66f4\u65b0_krun_\u5de5\u5177",
-      "target": "krun_readme_codeblock_12",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_12"
     },
     {
       "relation": "contains",
@@ -17406,9 +20307,9 @@
       "source_file": "README.md",
       "source_location": "L258",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_q_\u5982\u4f55\u67e5\u770b\u6240\u6709\u53ef\u7528\u811a\u672c",
-      "target": "krun_readme_codeblock_13",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_13"
     },
     {
       "relation": "contains",
@@ -17436,9 +20337,9 @@
       "source_file": "README.md",
       "source_location": "L274",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_q_\u5982\u4f55\u5378\u8f7d_krun",
-      "target": "krun_readme_codeblock_14",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_14"
     },
     {
       "relation": "contains",
@@ -17456,9 +20357,9 @@
       "source_file": "README.md",
       "source_location": "L283",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "krun_readme_q_\u5b89\u88c5\u811a\u672c\u4f1a\u81ea\u52a8\u5b89\u88c5\u4f9d\u8d56\u5417",
-      "target": "krun_readme_codeblock_15",
-      "confidence_score": 1.0
+      "target": "krun_readme_codeblock_15"
     },
     {
       "relation": "calls",
@@ -43254,5 +46155,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e1e8335edfe0afa5a293e4999726e96d13752cb4"
+  "built_at_commit": "42f60a1e0bf6fe3375d693730d40c9d0860749b8"
 }

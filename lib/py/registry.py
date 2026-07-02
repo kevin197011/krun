@@ -10,7 +10,7 @@ from handlers import config, install, ops
 
 
 def _init_system() -> None:
-    from init_system import main
+    from handlers.system import main
     main()
 
 
