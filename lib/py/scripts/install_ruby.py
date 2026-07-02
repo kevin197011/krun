@@ -8,6 +8,13 @@
 import os, sys, urllib.request
 from pathlib import Path
 
+def _krun_fetch_version(base):
+    try:
+        req = urllib.request.Request(f"{base}/krun/VERSION", headers={"User-Agent": "krun/2.1"})
+        return urllib.request.urlopen(req, timeout=30).read().decode().strip()
+    except OSError:
+        return ""
+
 def _krun_bootstrap_path():
     base = os.environ.get("KRUN_PY_BASE", "https://raw.githubusercontent.com/kevin197011/krun/main/lib/py")
     cache = Path(os.environ.get("KRUN_PY_CACHE", Path.home() / ".cache/krun/py"))
@@ -21,9 +28,16 @@ def _krun_bootstrap_path():
     except NameError:
         pass
     cache.mkdir(parents=True, exist_ok=True)
+    remote_ver = _krun_fetch_version(base)
+    ver_path = cache / "krun" / "VERSION"
+    cached_ver = ver_path.read_text(encoding="utf-8").strip() if ver_path.is_file() else ""
+    stale = bool(os.environ.get("KRUN_REFRESH")) or (remote_ver and remote_ver != cached_ver)
+    if stale and (cache / "krun").is_dir():
+        import shutil
+        shutil.rmtree(cache / "krun", ignore_errors=True)
     dest = cache / "krun" / "bootstrap.py"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    if not dest.is_file() or os.environ.get("KRUN_REFRESH"):
+    if not dest.is_file() or stale:
         req = urllib.request.Request(f"{base}/krun/bootstrap.py", headers={"User-Agent": "krun/2.1"})
         dest.write_bytes(urllib.request.urlopen(req, timeout=120).read())
     if str(cache) not in sys.path:

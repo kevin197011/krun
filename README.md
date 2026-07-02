@@ -389,6 +389,20 @@ rake lib:py:generate   # → lib/py/scripts/ + meta/lib-manifest.json
 2. 网络可访问 `raw.githubusercontent.com`
 3. 强制刷新缓存：`KRUN_REFRESH=1 curl ... | sudo python3`
 
+### Q: 缓存后 GitHub 更新了，本地还是旧逻辑？
+`bootstrap` 每次执行会比对远程 `krun/VERSION` 与本地缓存版本，**不一致时自动重新下载**全部核心模块，一般无需手动清缓存。
+
+仍看到旧输出时（例如只 ping 两个 DNS）：
+```bash
+# 立即强制刷新
+KRUN_REFRESH=1 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/check_ip_quality.py | sudo python3
+
+# 或删除缓存目录
+rm -rf ~/.cache/krun/py
+```
+
+缓存目录：`~/.cache/krun/py/krun/`（可用 `KRUN_PY_CACHE` 自定义路径）。
+
 ### Q: 如何更新 krun 工具？
 ```bash
 # 重新运行安装脚本即可（会自动下载最新版本）

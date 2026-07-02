@@ -33,6 +33,10 @@ namespace :lib do
   desc 'Regenerate lib/py entrypoints from registry'
   task 'py:generate' do
     system('python3', 'lib/py/generate_wrappers.py') || raise('generate failed')
+    ver = `git rev-parse --short HEAD 2>/dev/null`.strip
+    ver = Time.now.utc.strftime('%Y%m%d%H%M') if ver.empty?
+    File.write('lib/py/krun/VERSION', "#{ver}\n")
+    puts "Wrote lib/py/krun/VERSION (#{ver})"
     Rake::Task['lib:manifest'].invoke
   end
 end
