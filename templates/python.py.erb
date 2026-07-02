@@ -5,7 +5,9 @@
 # https://opensource.org/licenses/MIT
 
 # curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/<%= @action %>-<%= @name %>.py | python3
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/<%= @action %>_<%= @name %>.py | python3
+#
+# idempotent: check state before each change; safe to re-run
 
 
 def main() -> None:

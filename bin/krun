@@ -63,10 +63,28 @@ _  ,<  _  /   / /_/ /_  / / /
         if '/' in script_name:
             return f"lib/{script_name.lstrip('/')}"
 
+        legacy = script_name.replace('.sh', '').replace('.py', '').replace('-', '_')
+        py_path = os.path.join(self.repo_root, 'lib', 'py', f'{legacy}.py')
+        sh_path = os.path.join(self.repo_root, 'lib', 'sh', script_name if script_name.endswith('.sh') else f'{legacy.replace("_", "-")}.sh')
+
+        # migrated scripts: prefer local py, then remote py via manifest
+        if os.path.isfile(py_path):
+            return f"lib/py/{legacy}.py"
+        _, py_scripts = self.get_script_list()
+        if f'{legacy}.py' in py_scripts:
+            return f"lib/py/{legacy}.py"
+
+        if os.path.isfile(sh_path):
+            return f"lib/sh/{os.path.basename(sh_path)}"
+        sh_scripts, _ = self.get_script_list()
+        for name in sh_scripts:
+            if name.removesuffix('.sh').replace('-', '_') == legacy:
+                return f"lib/sh/{name}"
+
         lang = self.script_lang(script_name)
-        if lang == 'py':
-            return f"lib/py/{script_name}"
-        return f"lib/sh/{script_name}"
+        if lang == 'py' or script_name.endswith('.py'):
+            return f"lib/py/{legacy}.py"
+        return f"lib/sh/{script_name if script_name.endswith('.sh') else legacy.replace('_', '-') + '.sh'}"
 
     def get_interpreter(self, filename, content=None):
         ext = self.get_extension(filename)
@@ -139,10 +157,23 @@ _  ,<  _  /   / /_/ /_  / / /
     def execute_script(self, script_name):
         tmp_path = None
         try:
+            resolved = self.resolve_script_path(script_name)
+            actual_name = os.path.basename(resolved)
             content, source = self.load_script(script_name)
-            interpreter = self.get_interpreter(script_name, content)
+            interpreter = self.get_interpreter(actual_name, content)
             if not interpreter:
                 print(f"✗ no interpreter for {script_name}")
+                return
+
+            env = os.environ.copy()
+            lib_py = os.path.join(self.repo_root, 'lib', 'py')
+            if os.path.isdir(lib_py):
+                env['PYTHONPATH'] = lib_py + os.pathsep + env.get('PYTHONPATH', '')
+                env['KRUN_PY_LIB'] = lib_py
+
+            if local_path := self.local_script_path(script_name):
+                print(f"running {script_name} ({interpreter}) [{source}]")
+                subprocess.run([interpreter, local_path], env=env, cwd=lib_py, check=False)
                 return
 
             suffix = self.get_extension(script_name) or '.sh'
@@ -152,7 +183,7 @@ _  ,<  _  /   / /_/ /_  / / /
 
             os.chmod(tmp_path, 0o755)
             print(f"running {script_name} ({interpreter}) [{source}]")
-            subprocess.run([interpreter, tmp_path], check=False)
+            subprocess.run([interpreter, tmp_path], env=env, check=False)
         except KeyboardInterrupt:
             print("\ninterrupted")
         except Exception as exc:
@@ -166,11 +197,13 @@ _  ,<  _  /   / /_/ /_  / / /
 
     def debug_script(self, script_name):
         try:
+            resolved = self.resolve_script_path(script_name)
+            actual_name = os.path.basename(resolved)
             content, source = self.load_script(script_name)
-            interpreter = self.get_interpreter(script_name, content)
+            interpreter = self.get_interpreter(actual_name, content)
             print("=== debug ===")
             print(f"name: {script_name}")
-            print(f"path: {self.resolve_script_path(script_name)}")
+            print(f"path: {resolved}")
             print(f"source: {source}")
             print(f"interpreter: {interpreter}")
             print("\n=== content ===")
@@ -255,6 +288,18 @@ _  ,<  _  /   / /_/ /_  / / /
     def is_script_name(self, name):
         return bool(re.match(r".*\.(sh|bash|zsh|py)$", name, re.IGNORECASE))
 
+    def resolve_bare_name(self, name: str) -> str | None:
+        """Map install-docker / install_docker -> install_docker.py"""
+        key = name.replace('.sh', '').replace('.py', '').replace('-', '_')
+        sh_scripts, py_scripts = self.get_script_list()
+        for script in py_scripts:
+            if script.removesuffix('.py') == key:
+                return script
+        for script in sh_scripts:
+            if script.removesuffix('.sh').replace('-', '_') == key:
+                return script
+        return None
+
     def run(self, args):
         parser = argparse.ArgumentParser(description="Krun script runner")
         parser.add_argument('command', nargs='?', help='command or script name')
@@ -281,6 +326,8 @@ _  ,<  _  /   / /_/ /_  / / /
             self.run_by_number(command, parsed.debug)
         elif self.is_script_name(command) or command.startswith(('sh/', 'py/')):
             self.run_by_name(command, parsed.debug)
+        elif resolved := self.resolve_bare_name(command):
+            self.run_by_name(resolved, parsed.debug)
         else:
             print(f"✗ unknown command: {command}")
             self.show_help()

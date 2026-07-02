@@ -1,16 +1,16 @@
 # Graph Report - krun  (2026-07-02)
 
 ## Corpus Check
-- 89 files · ~47,074 words
+- 96 files · ~9,946 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1510 nodes · 2533 edges · 175 communities (171 shown, 4 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
+- 1661 nodes · 2703 edges · 249 communities (245 shown, 4 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 57 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bbeddee0`
+- Built from commit: `e1e8335e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -35,19 +35,16 @@
 - [[_COMMUNITY_Community 17|Community 17]]
 - [[_COMMUNITY_Community 18|Community 18]]
 - [[_COMMUNITY_Community 19|Community 19]]
-- [[_COMMUNITY_Community 20|Community 20]]
 - [[_COMMUNITY_Community 21|Community 21]]
 - [[_COMMUNITY_Community 22|Community 22]]
 - [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
-- [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
-- [[_COMMUNITY_Community 32|Community 32]]
 - [[_COMMUNITY_Community 33|Community 33]]
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
@@ -99,8 +96,6 @@
 - [[_COMMUNITY_Community 81|Community 81]]
 - [[_COMMUNITY_Community 82|Community 82]]
 - [[_COMMUNITY_Community 83|Community 83]]
-- [[_COMMUNITY_Community 84|Community 84]]
-- [[_COMMUNITY_Community 85|Community 85]]
 - [[_COMMUNITY_Community 86|Community 86]]
 - [[_COMMUNITY_Community 87|Community 87]]
 - [[_COMMUNITY_Community 88|Community 88]]
@@ -188,20 +183,29 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `SystemInit` - 30 edges
-2. `krun::config::system::common()` - 19 edges
-3. `krun::check::system_troubleshoot::common()` - 18 edges
+2. `run()` - 24 edges
+3. `krun::config::system::common()` - 19 edges
 4. `krun::check::system_troubleshoot::common()` - 18 edges
-5. `krun::init::system::common()` - 17 edges
-6. `krun::init::system::common()` - 17 edges
-7. `Krun - 运维自动化脚本工具集` - 15 edges
-8. `krun::disk::analyze_cleanup::run_clean()` - 15 edges
-9. `krun::check::system_troubleshoot::title()` - 14 edges
-10. `krun::check::system_troubleshoot::title()` - 14 edges
+5. `krun::check::system_troubleshoot::common()` - 18 edges
+6. `require_root()` - 17 edges
+7. `krun::init::system::common()` - 17 edges
+8. `krun::init::system::common()` - 17 edges
+9. `Krun - 运维自动化脚本工具集` - 16 edges
+10. `krun::disk::analyze_cleanup::run_clean()` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
-- None detected - all connections are within the same source files.
+- `install_docker()` --calls--> `read_os_release()`  [INFERRED]
+  lib/py/handlers/install.py → lib/py/krun_common.py
+- `config_git_global()` --calls--> `run()`  [INFERRED]
+  lib/py/handlers/config.py → lib/py/krun_common.py
+- `reset_git_history()` --calls--> `run()`  [INFERRED]
+  lib/py/handlers/config.py → lib/py/krun_common.py
+- `install_oh_my_zsh()` --calls--> `run()`  [INFERRED]
+  lib/py/handlers/install.py → lib/py/krun_common.py
+- `install_zsh()` --calls--> `install_packages()`  [INFERRED]
+  lib/py/handlers/install.py → lib/py/krun_common.py
 
-## Communities (175 total, 4 thin omitted)
+## Communities (249 total, 4 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.16
@@ -264,12 +268,12 @@ Cohesion: 0.38
 Nodes (8): krun::install::centos(), krun::install::debian(), krun::install::install_binary(), krun::install::install_deps_centos(), krun::install::install_deps_debian(), krun::install::install_deps_mac(), krun::install::install_from_package(), krun::install::mac()
 
 ### Community 15 - "Community 15"
-Cohesion: 0.24
-Nodes (11): code:bash (# 参考模板创建), code:bash (# 重新运行安装脚本即可（会自动下载最新版本）), code:bash (# 使用 krun 工具查看脚本列表), code:bash (# 删除安装目录), code:bash (# 是的，install.sh 会自动检测并安装所需依赖：), Q: 如何卸载 krun？, Q: 如何更新 krun 工具？, Q: 如何查看所有可用脚本？ (+3 more)
+Cohesion: 0.05
+Nodes (56): code:block1 (______), code:bash (# 自动格式化并挂载数据盘到 /data), code:bash (# 1. 在 handlers/ 添加逻辑，registry.py 注册名称), code:bash (# 重新运行安装脚本即可（会自动下载最新版本）), code:bash (# 使用 krun 工具查看脚本列表), code:bash (# 删除安装目录), code:bash (# 是的，install.sh 会自动检测并安装所需依赖：), code:block2 (lib/) (+48 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.25
-Nodes (7): code:block1 (______), Krun - 运维自动化脚本工具集, 支持平台, 注意事项, 相关资源, 许可证, 贡献指南
+Cohesion: 0.07
+Nodes (45): config_disk_data(), config_fstab_guide(), config_git_global(), config_locale(), config_rpm_repo(), config_ssh_harden(), config_ssh_keys(), config_timezone() (+37 more)
 
 ### Community 17 - "Community 17"
 Cohesion: 0.36
@@ -282,10 +286,6 @@ Nodes (8): krun::install::redis::centos(), krun::install::redis::common(), krun:
 ### Community 19 - "Community 19"
 Cohesion: 0.33
 Nodes (7): krun::update::vagrant_box::centos(), krun::update::vagrant_box::check_vagrant(), krun::update::vagrant_box::common(), krun::update::vagrant_box::debian(), krun::update::vagrant_box::mac(), krun::update::vagrant_box::show_status(), krun::update::vagrant_box::update_box()
-
-### Community 20 - "Community 20"
-Cohesion: 0.31
-Nodes (9): code:bash (# 克隆仓库), code:bash (# 1. 安装 krun 工具), code:bash (# 修复 Rocky Linux 9 的 IPv6 源导致的包管理器问题), code:bash (krun install-docker.sh), Kubernetes 环境搭建, Rocky Linux 9 修复 IPv6 源问题, 使用示例, 新服务器初始化 (+1 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.33
@@ -307,10 +307,6 @@ Nodes (7): krun::install::rbenv::centos(), krun::install::rbenv::common(), krun:
 Cohesion: 0.39
 Nodes (7): krun::install::tinyproxy::centos(), krun::install::tinyproxy::common(), krun::install::tinyproxy::configure(), krun::install::tinyproxy::create_config(), krun::install::tinyproxy::debian(), krun::install::tinyproxy::mac(), krun::install::tinyproxy::manage_service()
 
-### Community 26 - "Community 26"
-Cohesion: 0.39
-Nodes (9): 🔄 Git 工具类（2个）, 📝 其他工具（3个）, 🚀 开发环境安装类（20个）, 📋 系统配置类（17个）, 脚本列表（66+ 个）, 脚本列表（80+ 个）, 🔧 运维工具安装类（15个）, 🛠️ 运维脚本类（8个） (+1 more)
-
 ### Community 27 - "Community 27"
 Cohesion: 0.43
 Nodes (6): krun::install::docker::centos(), krun::install::docker::common(), krun::install::docker::common_mac(), krun::install::docker::configure_service(), krun::install::docker::debian(), krun::install::docker::mac()
@@ -330,10 +326,6 @@ Nodes (6): krun::install::openjdk::centos(), krun::install::openjdk::common(), k
 ### Community 31 - "Community 31"
 Cohesion: 0.46
 Nodes (6): krun::install::vagrant-virtualbox::centos(), krun::install::vagrant-virtualbox::common(), krun::install::vagrant-virtualbox::debian(), krun::install::vagrant-virtualbox::install_boxes(), krun::install::vagrant-virtualbox::mac(), krun::install::vagrant-virtualbox::verify_installation()
-
-### Community 32 - "Community 32"
-Cohesion: 0.24
-Nodes (10): code:block2 (lib/), code:bash (# 一键安装（自动检测平台并安装依赖）), code:bash (# Docker 安装), 快速开始, 方式一：安装 Krun 工具（推荐）, 方式三：本地使用, 方式二：直接执行脚本, 核心特性 (+2 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.48
@@ -535,14 +527,6 @@ Nodes (4): krun::reset::git-history::centos(), krun::reset::git-history::common(
 Cohesion: 0.60
 Nodes (3): krun::deploy::node_exporter::centos(), krun::deploy::node_exporter::common(), krun::deploy::node_exporter::debian()
 
-### Community 84 - "Community 84"
-Cohesion: 0.50
-Nodes (4): 主要功能, 服务部署, 系统配置, 运维工具
-
-### Community 85 - "Community 85"
-Cohesion: 0.50
-Nodes (4): code:bash (# 自动格式化并挂载数据盘到 /data), 创建新脚本, 开发者指南, 脚本标准格式
-
 ### Community 86 - "Community 86"
 Cohesion: 0.13
 Nodes (29): krun::config::system::backup_configs(), krun::config::system::centos(), krun::config::system::check_debian_version(), krun::config::system::check_rhel_version(), krun::config::system::common(), krun::config::system::configure_bbr(), krun::config::system::configure_cpufreq(), krun::config::system::configure_filesystem() (+21 more)
@@ -565,7 +549,7 @@ Nodes (28): krun::install::helm::centos(), krun::install::helm::common(), krun::
 
 ### Community 96 - "Community 96"
 Cohesion: 0.14
-Nodes (26): krun::init::system::backup_configs(), krun::init::system::centos(), krun::init::system::check_debian_version(), krun::init::system::check_rhel_version(), krun::init::system::common(), krun::init::system::configure_cpufreq(), krun::init::system::configure_filesystem(), krun::init::system::configure_io() (+18 more)
+Nodes (29): krun::init::system::backup_configs(), krun::init::system::centos(), krun::init::system::check_debian_version(), krun::init::system::check_rhel_version(), krun::init::system::common(), krun::init::system::configure_cpufreq(), krun::init::system::configure_filesystem(), krun::init::system::configure_io() (+21 more)
 
 ### Community 97 - "Community 97"
 Cohesion: 0.23
@@ -864,28 +848,28 @@ Cohesion: 0.60
 Nodes (3): krun::deploy::node_exporter::centos(), krun::deploy::node_exporter::common(), krun::deploy::node_exporter::debian()
 
 ### Community 174 - "Community 174"
-Cohesion: 0.17
-Nodes (6): has_cmd(), main(), read_os_release(), run(), SystemInit, write_text()
+Cohesion: 0.16
+Nodes (9): ensure_line(), has_cmd(), main(), read_os_release(), run(), service_enabled(), SystemInit, write_if_changed() (+1 more)
 
 ## Knowledge Gaps
-- **18 isolated node(s):** `sh`, `py`, `TEST_NODES`, `code:block1 (______)`, `核心特性` (+13 more)
+- **18 isolated node(s):** `sh`, `py`, `code:block1 (______)`, `核心特性`, `系统配置` (+13 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Krun - 运维自动化脚本工具集` connect `Community 16` to `Community 32`, `Community 15`, `Community 84`, `Community 85`, `Community 20`, `Community 26`?**
-  _High betweenness centrality (0.002) - this node is a cross-community bridge._
-- **Why does `快速开始` connect `Community 32` to `Community 16`?**
-  _High betweenness centrality (0.001) - this node is a cross-community bridge._
-- **Why does `使用示例` connect `Community 20` to `Community 16`?**
-  _High betweenness centrality (0.001) - this node is a cross-community bridge._
-- **What connects `sh`, `py`, `TEST_NODES` to the rest of the system?**
-  _18 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Are the 17 inferred relationships involving `run()` (e.g. with `config_rpm_repo()` and `config_timezone()`) actually correct?**
+  _`run()` has 17 INFERRED edges - model-reasoned connections that need verification._
+- **What connects `sh`, `py`, `Ops: disk cleanup, crane, deploy, media.` to the rest of the system?**
+  _20 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Community 15` be split into smaller, more focused modules?**
+  _Cohesion score 0.05263157894736842 - nodes in this community are weakly interconnected._
+- **Should `Community 16` be split into smaller, more focused modules?**
+  _Cohesion score 0.0670762928827445 - nodes in this community are weakly interconnected._
 - **Should `Community 86` be split into smaller, more focused modules?**
   _Cohesion score 0.12688172043010754 - nodes in this community are weakly interconnected._
 - **Should `Community 93` be split into smaller, more focused modules?**
   _Cohesion score 0.13756613756613756 - nodes in this community are weakly interconnected._
 - **Should `Community 96` be split into smaller, more focused modules?**
-  _Cohesion score 0.13756613756613756 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.13763440860215054 - nodes in this community are weakly interconnected._

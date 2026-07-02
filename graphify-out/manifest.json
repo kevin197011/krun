@@ -15,13 +15,13 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/bin/krun": {
-    "mtime": 1782992116.3995833,
-    "ast_hash": "cc332705480397b3418da8bb64717cac",
+    "mtime": 1782993209.0490317,
+    "ast_hash": "8da3a3021662383e04dcdb6f5511a44c",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/meta/lib-manifest.json": {
-    "mtime": 1782992256.7628655,
-    "ast_hash": "398f35aa941e8e602b22a4f0fcdd9ebf",
+    "mtime": 1782993146.3995252,
+    "ast_hash": "b8ce6b2c3f76ad9bb946b886f21dfdd5",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/scripts/preremove.sh": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/README.md": {
-    "mtime": 1782992116.3997428,
-    "ast_hash": "4b68bbb5399d7a9f75f2159772ae9129",
+    "mtime": 1782993220.2990322,
+    "ast_hash": "9970053590cf97bc54b7073efd08acd9",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/.rubocop.yml": {
@@ -54,409 +54,444 @@
     "ast_hash": "75b09f376ac78686e8e7eb1fde391e03",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/py/hello-world.py": {
-    "mtime": 1782992116.4040713,
-    "ast_hash": "e306107ff9eb10c10e8fc2afaba261d5",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-cursor-cli.sh": {
-    "mtime": 1782992017.8449614,
-    "ast_hash": "5584dbd916b49437304a07260db4fe18",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-helm.sh": {
-    "mtime": 1782992017.860888,
-    "ast_hash": "d841c8f7a986c104d2f64da79baaadd0",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-mc.sh": {
-    "mtime": 1782992017.8710978,
-    "ast_hash": "c2dd4453d9355e51d39d564beaabd803",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/analyze-disk-cleanup.sh": {
-    "mtime": 1782992017.785722,
-    "ast_hash": "d38a5b47fd7695c44e4b56f0293ce556",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-percona_toolkit.sh": {
-    "mtime": 1782992017.8784976,
-    "ast_hash": "957b8bedc8f725dba0a99eafbaffcd1b",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/crane-copy.sh": {
-    "mtime": 1782992017.8210442,
-    "ast_hash": "e55722b6b875fd9ba16ba3536b673008",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-vagrant-virtualbox.sh": {
-    "mtime": 1782992017.8944318,
-    "ast_hash": "e1bf35ff3782d307b9ea8515d464529a",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-salt-master.sh": {
-    "mtime": 1782992017.888582,
-    "ast_hash": "3c912ee3e5d05fe72153729113129fac",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-tinyproxy.sh": {
-    "mtime": 1782992017.8929594,
-    "ast_hash": "2b19cbeb22cd4a7288840b4a72cfbfbb",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-salt-minion.sh": {
-    "mtime": 1782992017.8902125,
-    "ast_hash": "3daf6ef238f3833db58298eb40f3d718",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-1panel.sh": {
-    "mtime": 1782992017.8305676,
-    "ast_hash": "f8687b99d78ca942823b51d548d2029a",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/deploy-node_exporter.sh": {
-    "mtime": 1782992017.8236597,
-    "ast_hash": "c600a1174a03db9ec62c98369d7ef9fb",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/hello-world.sh": {
-    "mtime": 1782992017.8278053,
-    "ast_hash": "1253856da2c3a85dc3273c9b6483d0de",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-zsh.sh": {
-    "mtime": 1782992017.8974774,
-    "ast_hash": "4fdadd704684156587fe36776a166ac4",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/config-centos7-repo.sh": {
-    "mtime": 1782992017.7966356,
-    "ast_hash": "bf7ea7432879d4d20d0d1cfe3457647a",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-node_exporter.sh": {
-    "mtime": 1782992017.8740356,
-    "ast_hash": "ab65a08cec89ff62fa852b30b19a6914",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/config-proxy.sh": {
-    "mtime": 1782992017.8068132,
-    "ast_hash": "74ef92b2cf49d5b004084880d0c53581",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/config-system-baseline.sh": {
-    "mtime": 1782992017.8153324,
-    "ast_hash": "e583fc1f60750a60c5087ab2fdd0abec",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/config-git.sh": {
-    "mtime": 1782992017.8037899,
-    "ast_hash": "802151fb212814c311ea802639b28922",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/reset-git-history.sh": {
-    "mtime": 1782992017.89917,
-    "ast_hash": "6078d47ac5ee33fbb6acb5021f6d24cf",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-git.sh": {
-    "mtime": 1782992017.8579369,
-    "ast_hash": "0804b156ebf9236776b3553d0b5868e8",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-base-packages.sh": {
-    "mtime": 1782992017.8391097,
-    "ast_hash": "1dde7baa6edc2221e7c8355a305db881",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/deploy-sshkey.sh": {
-    "mtime": 1782992017.8250647,
-    "ast_hash": "a02614494675dcd54f0244ad85ce8b58",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/config-disk-data.sh": {
-    "mtime": 1782992017.7996466,
-    "ast_hash": "78edb88734e23d24ef321bd8d69e4ba0",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/config-rocky-repo.sh": {
-    "mtime": 1782992017.809684,
-    "ast_hash": "c214cb649fb4ad82bb88c925a6ccf6d9",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-kssh.sh": {
-    "mtime": 1782992017.8664768,
-    "ast_hash": "6af7969ff29be5b6cdb30b57ae77173f",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-gcloud.sh": {
-    "mtime": 1782992017.8550744,
-    "ast_hash": "b9071bf3003e3ade114cb03aaf109f37",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-docker.sh": {
-    "mtime": 1782992017.8477871,
-    "ast_hash": "c6f4592de107428720bf6b1a9c8d5841",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/sh/install-ffmpeg.sh": {
-    "mtime": 1782992017.8508902,
-    "ast_hash": "fa26dfffd27bc463b33bb199bff49a9c",
-    "semantic_hash": ""
-  },
   "/Users/kevin/projects/src/krun/lib/sh/install-python3.sh": {
     "mtime": 1782992017.881133,
     "ast_hash": "097f60c1ff96d619c0ac098a3c538bf2",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-crane.sh": {
-    "mtime": 1782992017.8434467,
-    "ast_hash": "89d8307dc29ce5c676a9682ef0734bf3",
+  "/Users/kevin/projects/src/krun/lib/py/bootstrap.py": {
+    "mtime": 1782993073.899827,
+    "ast_hash": "fb6fe7080d3bb70f98d2c82fc467621d",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-ansible.sh": {
-    "mtime": 1782992017.8347783,
-    "ast_hash": "03aa2713acd293bbd339186b43555596",
+  "/Users/kevin/projects/src/krun/lib/py/install_awscli.py": {
+    "mtime": 1782993137.6292074,
+    "ast_hash": "e8c01928f1221fb27012284fe85a6199",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-elixir.sh": {
-    "mtime": 1782992017.8493762,
-    "ast_hash": "5794bfd74550e42a3e8c22c101483d8c",
+  "/Users/kevin/projects/src/krun/lib/py/install_zsh.py": {
+    "mtime": 1782993137.6319904,
+    "ast_hash": "94c7132cfc7748b90901dba9674ee73b",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-fstab.sh": {
-    "mtime": 1782992017.8023639,
-    "ast_hash": "93b7c275401b538d2fef8783397cbfea",
+  "/Users/kevin/projects/src/krun/lib/py/install_openjdk.py": {
+    "mtime": 1782993137.6309597,
+    "ast_hash": "10630626fbdad76b30f063ba3144e6b8",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-vagrant-ssh.sh": {
-    "mtime": 1782992017.818336,
-    "ast_hash": "4eabbd6d499d2692701ac73d2aa9e4c4",
+  "/Users/kevin/projects/src/krun/lib/py/install_kind.py": {
+    "mtime": 1782993137.6303701,
+    "ast_hash": "586b0771226023b72cf51f1c9e2dd509",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-k9s.sh": {
-    "mtime": 1782992017.8638427,
-    "ast_hash": "484d0cdda6b6b18da8459f76e92913f5",
+  "/Users/kevin/projects/src/krun/lib/py/install_blackbox_exporter.py": {
+    "mtime": 1782993137.6293335,
+    "ast_hash": "8d2cb7a7aa21f94bf1bb7874a356bce7",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-rakefile.sh": {
-    "mtime": 1782992017.8083048,
-    "ast_hash": "0003deacddf872caeb25733265136cda",
+  "/Users/kevin/projects/src/krun/lib/py/install_lsyncd.py": {
+    "mtime": 1782993137.630545,
+    "ast_hash": "d4031d6ae03a2df6dbb6ea25685fb8c9",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/check-system-troubleshoot.sh": {
-    "mtime": 1782992017.7932382,
-    "ast_hash": "263264cf5767418a3934fa2e0af99d52",
+  "/Users/kevin/projects/src/krun/lib/py/install_rclone.py": {
+    "mtime": 1782993137.6314008,
+    "ast_hash": "fc3e8dd82d08fe17ec63a477e6183a37",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-openjdk.sh": {
-    "mtime": 1782992017.8770547,
-    "ast_hash": "15f29f5884fc8f9c47f504a0b7e63417",
+  "/Users/kevin/projects/src/krun/lib/py/install_cursor_cli.py": {
+    "mtime": 1782993137.6295104,
+    "ast_hash": "5d6a5f25af759a4ba1bfaf27ab50cf7b",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/init-system.sh": {
-    "mtime": 1782992017.829244,
-    "ast_hash": "f3cde89619ac48b8ffcca6bbfc1fc9e8",
+  "/Users/kevin/projects/src/krun/lib/py/config_elasticsearch.py": {
+    "mtime": 1782993137.6273823,
+    "ast_hash": "91e17196699036180ad7cbaa3aebb530",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-timezone.sh": {
-    "mtime": 1782992017.816791,
-    "ast_hash": "c16045d90221a47102a3e1e01a8db225",
+  "/Users/kevin/projects/src/krun/lib/py/config_git.py": {
+    "mtime": 1782993137.6274853,
+    "ast_hash": "2d4eb1f5eba7ec5bdf08d504a6c1af29",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-spacevim.sh": {
-    "mtime": 1782992017.8915749,
-    "ast_hash": "55ac1796f5d2db979eb7ac936002766f",
+  "/Users/kevin/projects/src/krun/lib/py/install_golang.py": {
+    "mtime": 1782993137.630101,
+    "ast_hash": "f839e6df53f950cd56d9aabb6cd290a8",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-ruby.sh": {
-    "mtime": 1782992017.887215,
-    "ast_hash": "bceb4cb2c2d7743acb55bd2c1c2c1433",
+  "/Users/kevin/projects/src/krun/lib/py/hello_world.py": {
+    "mtime": 1782993137.6287665,
+    "ast_hash": "639fa5772894ed1857386e2c58cf1c47",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/disable-firewall-selinux.sh": {
-    "mtime": 1782992017.826395,
-    "ast_hash": "3f256cf7816198d7605480d959da544e",
+  "/Users/kevin/projects/src/krun/lib/py/install_asdf.py": {
+    "mtime": 1782993137.6291437,
+    "ast_hash": "22be7ea964325af7c7ed972c8a559422",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-filebeat.sh": {
-    "mtime": 1782992017.8523502,
-    "ast_hash": "b5e713de41f1dac29334333288b328ea",
+  "/Users/kevin/projects/src/krun/lib/py/install_jdk8.py": {
+    "mtime": 1782993137.6302223,
+    "ast_hash": "197925e0005d4c21925a67844da30045",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-lsyncd.sh": {
-    "mtime": 1782992017.8680105,
-    "ast_hash": "5d473a8301a3351a203bf317354dd9cc",
+  "/Users/kevin/projects/src/krun/lib/py/init_system.py": {
+    "mtime": 1782993137.6288118,
+    "ast_hash": "298fe9ef6aa7eb6c09ba1d103eb12853",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-rclone.sh": {
-    "mtime": 1782992017.8842702,
-    "ast_hash": "690e4d819adb1c60b53668aa4fc4237e",
+  "/Users/kevin/projects/src/krun/lib/py/config_vm.py": {
+    "mtime": 1782993137.628146,
+    "ast_hash": "f856952ccdcedf838c43c0bac10f99c1",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-puppet_bolt.sh": {
-    "mtime": 1782992017.8797894,
-    "ast_hash": "2efd7b1504f57b31e496798c4734c2b9",
+  "/Users/kevin/projects/src/krun/lib/py/apply_asdf.py": {
+    "mtime": 1782993137.6265643,
+    "ast_hash": "9fcfbfcdd5e56614135cd51337e8657d",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-nginx.sh": {
-    "mtime": 1782992017.8725593,
-    "ast_hash": "6c879ef32c7653fc871deb6d0916a743",
+  "/Users/kevin/projects/src/krun/lib/py/install_salt_minion.py": {
+    "mtime": 1782993137.6316516,
+    "ast_hash": "de3120ad660e9cf153b85eb61dfccb06",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-aliyun-cli.sh": {
-    "mtime": 1782992017.83339,
-    "ast_hash": "3a237efffdb1e0b6a5a813f868d611d7",
+  "/Users/kevin/projects/src/krun/lib/py/install_salt_master.py": {
+    "mtime": 1782993137.6315935,
+    "ast_hash": "8ceb6bc9509a9970d7698ef8afbfd953",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-redis.sh": {
-    "mtime": 1782992017.8857758,
-    "ast_hash": "b7e964b93c0f3315c6ba8c8513f887ca",
+  "/Users/kevin/projects/src/krun/lib/py/config_acme.py": {
+    "mtime": 1782993137.6270366,
+    "ast_hash": "5d2a8f6fd1e13516c9e9b52d8e2990e5",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-golang.sh": {
-    "mtime": 1782992017.8594103,
-    "ast_hash": "6d6b63cfd83ee4e704197383a779a417",
+  "/Users/kevin/projects/src/krun/lib/py/install_elixir.py": {
+    "mtime": 1782993137.629666,
+    "ast_hash": "a686220466ae153455edac37c615326a",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-awscli.sh": {
-    "mtime": 1782992017.8375282,
-    "ast_hash": "9d6ce253aa5cda039437357ef5c4bc46",
+  "/Users/kevin/projects/src/krun/lib/py/config_system_baseline.py": {
+    "mtime": 1782993137.628003,
+    "ast_hash": "ef7349ff577f6566791e646f936abca7",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/delete-video.sh": {
-    "mtime": 1782992017.822339,
-    "ast_hash": "68bdde502d018aded08d06202bafe2a3",
+  "/Users/kevin/projects/src/krun/lib/py/config_vagrant_ssh.py": {
+    "mtime": 1782993137.628092,
+    "ast_hash": "c733a41c4532c711396d57e244307de6",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/update-vagrant_box.sh": {
-    "mtime": 1782992017.9007,
-    "ast_hash": "3cbfe71a68daa314c2c6c2d6ff21a80f",
+  "/Users/kevin/projects/src/krun/lib/py/config_proxy.py": {
+    "mtime": 1782993137.6275818,
+    "ast_hash": "8a31cd3f125e4a2bfb3e430d6c43199e",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-acme.sh": {
-    "mtime": 1782992017.7950022,
-    "ast_hash": "16ec333e09868deb0bfe6f3839fe3861",
+  "/Users/kevin/projects/src/krun/lib/py/install_aapanel.py": {
+    "mtime": 1782993137.628929,
+    "ast_hash": "9985cc7300ef284869830d8bc86ffd8c",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/check-ip-quality.sh": {
-    "mtime": 1782992017.7895951,
-    "ast_hash": "91047c05cc8dbd329d98face19976401",
+  "/Users/kevin/projects/src/krun/lib/py/config_cursor.py": {
+    "mtime": 1782993137.6271572,
+    "ast_hash": "fa6f8d76c08d59a6ee51a5e973030215",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-elasticsearch.sh": {
-    "mtime": 1782992017.8010347,
-    "ast_hash": "32ec9915d4f7836e07b0dbbd2837d2c1",
+  "/Users/kevin/projects/src/krun/lib/py/registry.py": {
+    "mtime": 1782993093.6318264,
+    "ast_hash": "2a3ec3f48a5f185899f9c234120b1b09",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/check-system-baseline.sh": {
-    "mtime": 1782992017.7914758,
-    "ast_hash": "a834ecb741ce42cbf6967c9dfcc8b20a",
+  "/Users/kevin/projects/src/krun/lib/py/install_devbox.py": {
+    "mtime": 1782993137.6295643,
+    "ast_hash": "c9e4704d8a64ab76130b9e6b803ab045",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-asdf.sh": {
-    "mtime": 1782992017.8361654,
-    "ast_hash": "019fe6ff376d1cd6b77b54f8eb396527",
+  "/Users/kevin/projects/src/krun/lib/py/reset_git_history.py": {
+    "mtime": 1782993137.6320403,
+    "ast_hash": "a567b9a3ceb693a1953f770bb3e1deb1",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-jdk8.sh": {
-    "mtime": 1782992017.8623936,
-    "ast_hash": "7f4227202fb83fa4b2bf75c1bb0bf278",
+  "/Users/kevin/projects/src/krun/lib/py/install_tinyproxy.py": {
+    "mtime": 1782993137.6318386,
+    "ast_hash": "e36b511b6914ef441764a6bf7db24682",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/apply-asdf.sh": {
-    "mtime": 1782992017.787615,
-    "ast_hash": "80820508a44821527190d3c09e38c74d",
+  "/Users/kevin/projects/src/krun/lib/py/config_centos7_repo.py": {
+    "mtime": 1782993137.6270885,
+    "ast_hash": "d94b41a9c7d20cc2ab949dd41b7c4346",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-oh_my_zsh.sh": {
-    "mtime": 1782992017.8755853,
-    "ast_hash": "15f026ff37ef74458f86d5a125ff594c",
+  "/Users/kevin/projects/src/krun/lib/py/disk_cleanup.py": {
+    "mtime": 1782993137.6287189,
+    "ast_hash": "4403260cb25aeb91683aab6984ca1773",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-aapanel.sh": {
-    "mtime": 1782992017.8320494,
-    "ast_hash": "9ff5f2c672e6c07d0dabc58a9bd01755",
+  "/Users/kevin/projects/src/krun/lib/py/config_disk_data.py": {
+    "mtime": 1782993137.627217,
+    "ast_hash": "9df6ad6a40ff1c5c7c1c4f57ea8693a9",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-blackbox_exporter.sh": {
-    "mtime": 1782992017.8406165,
-    "ast_hash": "e4bcdfded55942612ddabef3a4727a61",
+  "/Users/kevin/projects/src/krun/lib/py/check_system_troubleshoot.py": {
+    "mtime": 1782993137.626883,
+    "ast_hash": "16ee76d931bb7ae4cf6cda901eb86ba7",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-vim.sh": {
-    "mtime": 1782992017.8959215,
-    "ast_hash": "0968718d3078cd68b9bbf6e46542a3a7",
+  "/Users/kevin/projects/src/krun/lib/py/check_ip_quality.py": {
+    "mtime": 1782993137.6266341,
+    "ast_hash": "b007bd269272a6edfc1e570990a5b8cd",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-vm.sh": {
-    "mtime": 1782992017.8196642,
-    "ast_hash": "95da371fe66d218d49bed23331911397",
+  "/Users/kevin/projects/src/krun/lib/py/install_ruby.py": {
+    "mtime": 1782993137.6315243,
+    "ast_hash": "f3d61008e4a36e837fc0389ec649e061",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-maven.sh": {
-    "mtime": 1782992017.8695433,
-    "ast_hash": "00723642861ff5981a10b3bcc8f7237d",
+  "/Users/kevin/projects/src/krun/lib/py/install_git.py": {
+    "mtime": 1782993137.6300492,
+    "ast_hash": "71fbda66d48fd0207e73778f6aa0dd7d",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-kind.sh": {
-    "mtime": 1782992017.8651445,
-    "ast_hash": "b941c73beb7bc54239e8cc79e3370ca0",
+  "/Users/kevin/projects/src/krun/lib/py/install_base_packages.py": {
+    "mtime": 1782993137.62927,
+    "ast_hash": "b18725e9c64e84a6ad73f63c50f12de9",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-locales.sh": {
-    "mtime": 1782992017.8054297,
-    "ast_hash": "2ce768e4c7fb7a512a8ef5a829f7820a",
+  "/Users/kevin/projects/src/krun/lib/py/config_locales.py": {
+    "mtime": 1782993137.6275346,
+    "ast_hash": "8d418cbb68e6a4633c89779941fd729d",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-ssh.sh": {
-    "mtime": 1782992017.8139334,
-    "ast_hash": "79872b4e71a94cfe21ba3d7ce434b45c",
+  "/Users/kevin/projects/src/krun/lib/py/install_crane.py": {
+    "mtime": 1782993137.6294515,
+    "ast_hash": "547d43179ce7b177267351020abb8fa9",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-fonts-nerd-JetBrainsMono.sh": {
-    "mtime": 1782992017.853704,
-    "ast_hash": "530b0c3c95fe5a9725aeb5ad89664e7c",
+  "/Users/kevin/projects/src/krun/lib/py/config_fstab.py": {
+    "mtime": 1782993137.6274369,
+    "ast_hash": "f894b1c2abb811ef4f61de755f24b367",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-rbenv.sh": {
-    "mtime": 1782992017.8826084,
-    "ast_hash": "79b8c77d3f46aa688b91faea08af223d",
+  "/Users/kevin/projects/src/krun/lib/py/install_oh_my_zsh.py": {
+    "mtime": 1782993137.6308904,
+    "ast_hash": "2f2d5158761fec5d062110896b6df434",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-ssh-authorized-keys.sh": {
-    "mtime": 1782992017.8124797,
-    "ast_hash": "372204c96930e707d82001ecf57a3973",
+  "/Users/kevin/projects/src/krun/lib/py/install_fonts_nerd_jetbrains.py": {
+    "mtime": 1782993137.629819,
+    "ast_hash": "4bcbdce1a04417084c12187737475631",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-cpanm.sh": {
-    "mtime": 1782992017.8421223,
-    "ast_hash": "39fa421154bb5e8fc209f33b805fc35d",
+  "/Users/kevin/projects/src/krun/lib/py/install_1panel.py": {
+    "mtime": 1782993137.6288803,
+    "ast_hash": "a77601bfa81acd45b6671e326e1f93a5",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-devbox.sh": {
-    "mtime": 1782992017.8463926,
-    "ast_hash": "b79bb90994a32ea8a7890d2802f08f54",
+  "/Users/kevin/projects/src/krun/lib/py/config_ssh_authorized_keys.py": {
+    "mtime": 1782993137.6279547,
+    "ast_hash": "3d7044f047ce743333d9fc03052af321",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-cursor.sh": {
-    "mtime": 1782992017.798295,
-    "ast_hash": "3cb3fe7a3612f24c84e617054400cfb6",
+  "/Users/kevin/projects/src/krun/lib/py/config_rocky_repo.py": {
+    "mtime": 1782993137.6277618,
+    "ast_hash": "ddb85662de452499a792aded67eb5e1b",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/install-geoipupdate.sh": {
-    "mtime": 1782992017.8564177,
-    "ast_hash": "9b2ab88411fda3ce8a1b82cb44b2706f",
+  "/Users/kevin/projects/src/krun/lib/py/install_nginx.py": {
+    "mtime": 1782993137.63076,
+    "ast_hash": "203f6cc998730a9b6cd8d5dcdef26765",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/sh/config-ruby-http.sh": {
-    "mtime": 1782992017.8110826,
-    "ast_hash": "15d02b48b3ac935bc68ed08d69c354ea",
+  "/Users/kevin/projects/src/krun/lib/py/install_redis.py": {
+    "mtime": 1782993137.6314642,
+    "ast_hash": "3fc1ffa3d1ac3dc11c133487317d56b0",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/py/init-system.py": {
-    "mtime": 1782992263.5683753,
-    "ast_hash": "df8662830bd99d41229b778fcac5b6e5",
+  "/Users/kevin/projects/src/krun/lib/py/install_kssh.py": {
+    "mtime": 1782993137.6304815,
+    "ast_hash": "a752f4c0b64f0c614203370b6f883f91",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_k9s.py": {
+    "mtime": 1782993137.630291,
+    "ast_hash": "20da73161dac44430259cdc49f8a450a",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_puppet_bolt.py": {
+    "mtime": 1782993137.6311574,
+    "ast_hash": "61d755719135bf960af44af5d77b12e5",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_aliyun_cli.py": {
+    "mtime": 1782993137.6289794,
+    "ast_hash": "94e071be32ff92b3dd64f8f180440e3a",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/delete_video.py": {
+    "mtime": 1782993137.628369,
+    "ast_hash": "c2df857707a7973f53ceb374e22ccbc1",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/update_vagrant_box.py": {
+    "mtime": 1782993137.632086,
+    "ast_hash": "f691fa1a4cc2b7904b22e7a2c3bcdb82",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/generate_wrappers.py": {
+    "mtime": 1782993131.3056128,
+    "ast_hash": "94ea9f6bd487168a1dbc4efe71120948",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_vim.py": {
+    "mtime": 1782993137.6319456,
+    "ast_hash": "9e12ba509073a921b9620c841eb907d5",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/disable_firewall_selinux.py": {
+    "mtime": 1782993137.6286645,
+    "ast_hash": "dfafde141d28a962bf1f66bd48c1eb77",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_ffmpeg.py": {
+    "mtime": 1782993137.6297178,
+    "ast_hash": "4a8147f3780e9d63caccc4f0340292b9",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_mc.py": {
+    "mtime": 1782993137.6306877,
+    "ast_hash": "4b912be475c0a175297fd2b00dd6d7ae",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/config_ssh.py": {
+    "mtime": 1782993137.6279051,
+    "ast_hash": "13a689fc7d19ed6c3078887e06b15f2e",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/config_ruby_http.py": {
+    "mtime": 1782993137.6278546,
+    "ast_hash": "aaf49cdb8987c77d77e986482c321ccc",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_gcloud.py": {
+    "mtime": 1782993137.6298656,
+    "ast_hash": "b29e334f04a95d756a04416220a2ba42",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/config_rpm_repo.py": {
+    "mtime": 1782993137.6278086,
+    "ast_hash": "d03d82efb252bd1dfc6444f1b2d13446",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/check_system_baseline.py": {
+    "mtime": 1782993137.6267717,
+    "ast_hash": "71a29077b4580094ce10efd8f1c212fc",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_docker.py": {
+    "mtime": 1782993137.6296113,
+    "ast_hash": "279bf98ee40f5890f60b19ed81967924",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/crane_copy.py": {
+    "mtime": 1782993137.6282012,
+    "ast_hash": "126e695688ede202ec105d39e443c3f5",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/krun_common.py": {
+    "mtime": 1782992919.6617916,
+    "ast_hash": "7e5f3a1093f9c11c50eea099865070ce",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_filebeat.py": {
+    "mtime": 1782993137.6297653,
+    "ast_hash": "2881e3b984efc624cb37331ae8ab8ca0",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_maven.py": {
+    "mtime": 1782993137.6306236,
+    "ast_hash": "4a7cdf4e3fee1400b2b7fc6009af12dd",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_ansible.py": {
+    "mtime": 1782993137.6290934,
+    "ast_hash": "fa7efebbfa1ad34455676a585cca5f98",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/deploy_sshkey.py": {
+    "mtime": 1782993137.628501,
+    "ast_hash": "cd21cbba8db990c8d756c78b46285e59",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_node_exporter.py": {
+    "mtime": 1782993137.6308243,
+    "ast_hash": "89b109c01709754e7374968cd143178a",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/config_timezone.py": {
+    "mtime": 1782993137.628048,
+    "ast_hash": "a075f76ce3161f768bac0315fda0a3f6",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_spacevim.py": {
+    "mtime": 1782993137.631699,
+    "ast_hash": "73c95b7da837ac602415c71d8cec8e4e",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_rbenv.py": {
+    "mtime": 1782993137.6312225,
+    "ast_hash": "67e4d1e61f791f0f006b47b906962d1f",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_percona_toolkit.py": {
+    "mtime": 1782993137.6310723,
+    "ast_hash": "882a2b5308396f38c3dbfba18d58186a",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/deploy_node_exporter.py": {
+    "mtime": 1782993137.628431,
+    "ast_hash": "6b579a449df7cb8334459231899301ed",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/config_rakefile.py": {
+    "mtime": 1782993137.6276329,
+    "ast_hash": "9ca75c09d1138433d20c2c98a161df0b",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_helm.py": {
+    "mtime": 1782993137.6301515,
+    "ast_hash": "d4478e01d59d06b23ab98ddb72555b5e",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_cpanm.py": {
+    "mtime": 1782993137.6293914,
+    "ast_hash": "ee98cbc30983e8af840be1e107d6b728",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_geoipupdate.py": {
+    "mtime": 1782993137.629912,
+    "ast_hash": "fd3a07f54485af9028f67833b53a6cf8",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/install_vagrant_virtualbox.py": {
+    "mtime": 1782993137.6318932,
+    "ast_hash": "aeefc2d1988df18ab735a39df5717c81",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/handlers/config.py": {
+    "mtime": 1782992978.1897247,
+    "ast_hash": "4d170483401a27bec53b13c908fd62da",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/handlers/__init__.py": {
+    "mtime": 1782992927.6402423,
+    "ast_hash": "ddfd71816a1d402553a236999bc2d1bc",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/handlers/ops.py": {
+    "mtime": 1782992999.9022715,
+    "ast_hash": "cf9f87ccf4eaac6cd681a8a3c834d295",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/py/handlers/install.py": {
+    "mtime": 1782993006.6260047,
+    "ast_hash": "ff60d15e0dd131cd627060a3ef9228d5",
     "semantic_hash": ""
   }
 }

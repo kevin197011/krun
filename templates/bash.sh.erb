@@ -10,6 +10,8 @@ set -o pipefail
 
 # curl exec:
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/<%= @action %>-<%= @name %>.sh | bash
+#
+# idempotent: check state before each change; safe to re-run
 
 # vars
 
@@ -40,6 +42,7 @@ krun::<%= @action %>::<%= @name %>::mac() {
 
 # common code
 krun::<%= @action %>::<%= @name %>::common() {
+    # ponytail: guard each mutation — skip when already applied
     echo "${FUNCNAME}"
 }
 
