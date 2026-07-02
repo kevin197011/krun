@@ -21,11 +21,12 @@ MANIFEST_DIR = 'meta'
 MANIFEST_PATH = File.join(MANIFEST_DIR, 'lib-manifest.json')
 
 namespace :lib do
-  desc 'Generate meta/lib-manifest.json from lib/ contents'
+  desc 'Generate meta/lib-manifest.json from lib/sh and lib/py'
   task :manifest do
-    files = Dir['lib/*'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
+    sh_files = Dir['lib/sh/*'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
+    py_files = Dir['lib/py/*'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
     FileUtils.mkdir_p(MANIFEST_DIR)
-    File.write(MANIFEST_PATH, JSON.pretty_generate({ 'files' => files }))
-    puts "Wrote #{MANIFEST_PATH} (#{files.size} files)"
+    File.write(MANIFEST_PATH, JSON.pretty_generate({ 'sh' => sh_files, 'py' => py_files }))
+    puts "Wrote #{MANIFEST_PATH} (sh: #{sh_files.size}, py: #{py_files.size})"
   end
 end

@@ -6,27 +6,36 @@ ___  /____________  ________
 __  //_/_  ___/  / / /_  __ \
 _  ,<  _  /   / /_/ /_  / / /
 /_/|_| /_/    \__,_/ /_/ /_/
-       Shell Script Runner
+       Ops Script Runner
 ```
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/kevin197011/krun)
-[![Scripts](https://img.shields.io/badge/scripts-66+-green.svg)](https://github.com/kevin197011/krun/tree/main/lib)
+[![Version](https://img.shields.io/badge/version-2.1-blue.svg)](https://github.com/kevin197011/krun)
+[![Scripts](https://img.shields.io/badge/scripts-80+-green.svg)](https://github.com/kevin197011/krun/tree/main/lib)
 
 ## 项目简介
 
-Krun 是一个面向运维工程师的 Shell 脚本工具集，提供了 **66+ 个**系统初始化、安全加固、服务部署、性能优化等常用运维脚本。支持 CentOS/RHEL、Debian/Ubuntu、macOS 等多个平台，可通过 curl 命令直接执行，简化运维工作流程。
+Krun 是一个面向运维工程师的脚本工具集，提供 **Shell** 与 **Python** 两类运维脚本，覆盖系统初始化、安全加固、服务部署、性能优化等场景。支持 CentOS/RHEL、Debian/Ubuntu、macOS 等多个平台，可通过 curl 直接执行。
+
+### 目录结构
+
+```
+lib/
+├── sh/     # Bash 脚本（curl | bash）
+└── py/     # Python 脚本（curl | python3）
+```
 
 ### 核心特性
 
-- 🚀 **一键安装**: 支持 66+ 个常用软件和工具的自动化安装
+- 🚀 **一键安装**: 80+ 运维脚本，按语言分目录管理
 - 🔧 **系统配置**: 完善的系统初始化和安全加固脚本
 - 🌐 **多平台支持**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS
 - 📦 **模块化设计**: 每个脚本独立运行，可单独使用或组合使用
 - 🔒 **安全可靠**: MIT 许可证，所有脚本开源可审查
 - 🎯 **远程执行**: 支持 curl 直接执行，无需克隆仓库
 - ⚡ **自动依赖**: 安装脚本自动检测并安装所需依赖（Python3、curl 等）
-- 🐚 **Shell 脚本**: 所有脚本使用 Bash，简单可靠
+- 🐚 **Shell 脚本**: `lib/sh/*.sh`，通过 bash 执行
+- 🐍 **Python 脚本**: `lib/py/*.py`，通过 python3 执行
 
 ## 主要功能
 
@@ -73,22 +82,22 @@ krun install-ffmpeg.sh
 - 自动检测平台并安装所需依赖（Python3、curl）
 - 自动配置 PATH 环境变量
 - 安装目录：`~/.krun/bin/krun`
-- krun 工具用于管理 shell 脚本，所有脚本通过 bash 执行
+- krun 工具管理 `lib/sh` 与 `lib/py` 下的脚本，本地开发时优先读取仓库内文件
 
 ### 方式二：直接执行脚本
 
 ```bash
 # Docker 安装
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-docker.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-docker.sh | bash
 
 # FFmpeg 安装
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-ffmpeg.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-ffmpeg.sh | bash
 
 # Rocky Linux 仓库配置（修复 IPv6 问题）
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-rocky-repo.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config-rocky-repo.sh | bash
 
 # 系统初始化与性能优化
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/init-system.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/init-system.sh | bash
 ```
 
 ### 方式三：本地使用
@@ -104,14 +113,16 @@ source ~/.bashrc  # 或 source ~/.zshrc
 krun list
 
 # 方式 3.2: 直接执行脚本
-./lib/install-docker.sh
-./lib/init-system.sh
+./lib/sh/install-docker.sh
+./lib/sh/init-system.sh
 
 # 方式 3.3: 使用本地 krun 工具
 ./bin/krun install-git.sh
 ```
 
-## 脚本列表（66+ 个）
+## 脚本列表（80+ 个）
+
+脚本按语言存放在 `lib/sh/` 与 `lib/py/`，清单见 `meta/lib-manifest.json`。
 
 ### 📋 系统配置类（17个）
 - `config-system-baseline.sh` - 系统安全基线配置
@@ -232,7 +243,7 @@ krun install-oh_my_zsh.sh
 
 ```bash
 # 修复 Rocky Linux 9 的 IPv6 源导致的包管理器问题
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-rocky-repo.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config-rocky-repo.sh | bash
 ```
 
 ### Kubernetes 环境搭建
@@ -248,7 +259,7 @@ krun install-k9s.sh
 
 ```bash
 # 自动格式化并挂载数据盘到 /data
-data_disk="/dev/sdb" mount_point="/data" bash lib/config-disk-data.sh
+data_disk="/dev/sdb" mount_point="/data" bash lib/sh/config-disk-data.sh
 ```
 
 ## 注意事项
@@ -264,7 +275,7 @@ data_disk="/dev/sdb" mount_point="/data" bash lib/config-disk-data.sh
 
 ### 脚本标准格式
 
-所有脚本使用 Bash，遵循统一格式（参考 `lib/hello-world.sh`）：
+Shell 脚本遵循统一格式（参考 `lib/sh/hello-world.sh`），Python 脚本参考 `lib/py/hello-world.py`：
 
 - 使用 `set -o errexit`, `set -o nounset`, `set -o pipefail`
 - 函数命名：`krun::category::scriptname::function`
@@ -275,7 +286,9 @@ data_disk="/dev/sdb" mount_point="/data" bash lib/config-disk-data.sh
 
 ```bash
 # 参考模板创建
-cp lib/hello-world.sh lib/install-myapp.sh
+cp lib/sh/hello-world.sh lib/sh/install-myapp.sh
+# 或
+cp templates/python.py.erb lib/py/my-task.py
 # 修改函数名和实现逻辑
 ```
 
@@ -306,7 +319,7 @@ source ~/.bashrc  # 或 source ~/.zshrc
 krun list
 
 # 或直接查看 lib 目录
-ls -l lib/*.sh
+ls -l lib/sh/*.sh lib/py/*.py
 ```
 
 ### Q: 脚本执行失败怎么办？
@@ -348,7 +361,7 @@ rm -rf ~/.krun
 **项目地址**: https://github.com/kevin197011/krun
 **作者**: [kevin197011](https://github.com/kevin197011)
 **更新时间**: 2025-12-04
-**脚本数量**: 66+
+**脚本数量**: 80+
 **支持平台**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS
 
 **Star ⭐ 支持项目发展！**

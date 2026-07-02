@@ -4,278 +4,290 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-import sys
-import os
-import subprocess
-import tempfile
-import json
-import re
 import argparse
-from urllib.request import Request, urlopen
+import json
+import os
+import re
 import ssl
+import subprocess
+import sys
+import tempfile
+from urllib.request import Request, urlopen
 
 
 class Krun:
-    """Shell script runner"""
+    """Script runner for shell and Python utilities."""
 
-    # ASCII art banner
     BANNER = r"""______
 ___  /____________  ________
-__  //_/_  ___/  / / /_  __ \\
+__  //_/_  ___/  / / /_  __ \
 _  ,<  _  /   / /_/ /_  / / /
 /_/|_| /_/    \__,_/ /_/ /_/
-       Shell Script Runner
+     Ops Script Runner
 
-🚀 Krun Shell Script Collection"""
+🚀 Krun Script Collection"""
+
+    SHELL_EXTS = {'.sh', '.bash', '.zsh'}
+    PYTHON_EXTS = {'.py'}
 
     def __init__(self):
-        """Initialize Krun instance"""
         self.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
         self.base_url = "https://raw.githubusercontent.com/kevin197011/krun/main"
         self.ssl_context = ssl._create_unverified_context()
+        self.repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
     def command_exists(self, command):
-        """Check if command exists in system"""
         try:
-            subprocess.run([command, '--version'],
-                          stdout=subprocess.DEVNULL,
-                          stderr=subprocess.DEVNULL)
+            subprocess.run(
+                [command, '--version'],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
             return True
-        except (OSError, subprocess.CalledProcessError):
+        except OSError:
             return False
 
     def get_extension(self, filename):
-        """Get file extension"""
         return os.path.splitext(filename)[1].lower()
 
-    def get_interpreter(self, filename, content=None):
-        """Get interpreter for shell script"""
+    def script_lang(self, filename):
         ext = self.get_extension(filename)
-        
-        # Shell scripts use bash
-        if ext in ['.sh', '.bash', '.zsh'] or ext == '':
-            return 'bash' if self.command_exists('bash') else None
-        
-        # Try shebang detection for bash/zsh
-        if content and content.startswith('#!'):
-            shebang = content.split('\n')[0][2:].strip()
-            for cmd in ['bash', 'zsh', 'sh']:
-                if cmd in shebang and self.command_exists(cmd):
-                    return cmd
-        
+        if ext in self.SHELL_EXTS or ext == '':
+            return 'sh'
+        if ext in self.PYTHON_EXTS:
+            return 'py'
         return None
 
-    def download_script(self, script_name):
-        """Download script content from GitHub"""
-        url = f"{self.base_url}/lib/{script_name}"
+    def resolve_script_path(self, script_name):
+        if '/' in script_name:
+            return f"lib/{script_name.lstrip('/')}"
+
+        lang = self.script_lang(script_name)
+        if lang == 'py':
+            return f"lib/py/{script_name}"
+        return f"lib/sh/{script_name}"
+
+    def get_interpreter(self, filename, content=None):
+        ext = self.get_extension(filename)
+
+        if ext in self.SHELL_EXTS or ext == '':
+            return 'bash' if self.command_exists('bash') else None
+
+        if ext in self.PYTHON_EXTS:
+            if self.command_exists('python3'):
+                return 'python3'
+            if self.command_exists('python'):
+                return 'python'
+            return None
+
+        if content and content.startswith('#!'):
+            shebang = content.split('\n', 1)[0][2:].strip()
+            for cmd in ['python3', 'python', 'bash', 'zsh', 'sh']:
+                if cmd in shebang and self.command_exists(cmd):
+                    return cmd
+
+        return None
+
+    def fetch_url(self, url):
         req = Request(url)
         req.add_header("User-Agent", self.user_agent)
         return urlopen(req, context=self.ssl_context).read().decode("utf-8")
 
-    def get_script_list(self):
-        """Get list of available scripts"""
-        url = f"{self.base_url}/meta/lib-manifest.json"
-        req = Request(url)
-        req.add_header("User-Agent", self.user_agent)
-        data = json.loads(urlopen(req, context=self.ssl_context).read().decode("utf-8"))
-        # 支持新格式 {"files": [...]} 和兼容旧格式 [...]
-        if isinstance(data, dict) and "files" in data:
-            return data["files"]
-        return data if isinstance(data, list) else []
+    def local_script_path(self, script_name):
+        rel = self.resolve_script_path(script_name)
+        path = os.path.join(self.repo_root, rel)
+        return path if os.path.isfile(path) else None
 
-    def group_scripts(self, scripts):
-        """Return all scripts as shell scripts"""
-        # Only filter shell scripts
-        shell_scripts = [s for s in scripts if self.get_extension(s) in ['.sh', '.bash', '.zsh'] or self.get_extension(s) == '']
-        return shell_scripts
+    def load_script(self, script_name):
+        local_path = self.local_script_path(script_name)
+        if local_path:
+            with open(local_path, encoding='utf-8') as handle:
+                return handle.read(), local_path
+
+        url = f"{self.base_url}/{self.resolve_script_path(script_name)}"
+        return self.fetch_url(url), url
+
+    def parse_manifest(self, data):
+        if isinstance(data, dict):
+            if 'sh' in data or 'py' in data:
+                return data.get('sh', []), data.get('py', [])
+            if 'files' in data:
+                files = data['files']
+                sh = [f for f in files if self.script_lang(f) == 'sh']
+                py = [f for f in files if self.script_lang(f) == 'py']
+                return sh, py
+        if isinstance(data, list):
+            sh = [f for f in data if self.script_lang(f) == 'sh']
+            py = [f for f in data if self.script_lang(f) == 'py']
+            return sh, py
+        return [], []
+
+    def get_script_list(self):
+        local_manifest = os.path.join(self.repo_root, 'meta', 'lib-manifest.json')
+        if os.path.isfile(local_manifest):
+            with open(local_manifest, encoding='utf-8') as handle:
+                return self.parse_manifest(json.load(handle))
+
+        url = f"{self.base_url}/meta/lib-manifest.json"
+        return self.parse_manifest(json.loads(self.fetch_url(url)))
+
+    def all_scripts(self):
+        sh_scripts, py_scripts = self.get_script_list()
+        return [('sh', name) for name in sh_scripts] + [('py', name) for name in py_scripts]
 
     def execute_script(self, script_name):
-        """Execute a script"""
+        tmp_path = None
         try:
-            content = self.download_script(script_name)
+            content, source = self.load_script(script_name)
             interpreter = self.get_interpreter(script_name, content)
-
             if not interpreter:
-                print(f"Error: Cannot determine interpreter for {script_name}")
+                print(f"✗ no interpreter for {script_name}")
                 return
 
-            # Create temporary file
-            with tempfile.NamedTemporaryFile(mode='w', suffix=self.get_extension(script_name), delete=False) as tmp_file:
+            suffix = self.get_extension(script_name) or '.sh'
+            with tempfile.NamedTemporaryFile(mode='w', suffix=suffix, delete=False) as tmp_file:
                 tmp_file.write(content)
                 tmp_path = tmp_file.name
 
-            # Make executable and run
             os.chmod(tmp_path, 0o755)
-            print(f"Executing {script_name} with {interpreter}...")
-            subprocess.run([interpreter, tmp_path])
-
+            print(f"running {script_name} ({interpreter}) [{source}]")
+            subprocess.run([interpreter, tmp_path], check=False)
         except KeyboardInterrupt:
-            print("\nScript execution interrupted by user")
-        except Exception as e:
-            print(f"Error executing script: {e}")
+            print("\ninterrupted")
+        except Exception as exc:
+            print(f"✗ error: {exc}")
         finally:
-            # Cleanup
-            try:
-                os.remove(tmp_path)
-            except:
-                pass
+            if tmp_path:
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
 
     def debug_script(self, script_name):
-        """Show debug information for script"""
         try:
-            content = self.download_script(script_name)
+            content, source = self.load_script(script_name)
             interpreter = self.get_interpreter(script_name, content)
-
-            print("=== Script Debug Information ===")
-            print(f"Filename: {script_name}")
-            print(f"Extension: {self.get_extension(script_name)}")
-            print(f"Interpreter: {interpreter}")
-            print("\n=== Script Content ===")
+            print("=== debug ===")
+            print(f"name: {script_name}")
+            print(f"path: {self.resolve_script_path(script_name)}")
+            print(f"source: {source}")
+            print(f"interpreter: {interpreter}")
+            print("\n=== content ===")
             print(content)
-
-        except Exception as e:
-            print(f"Error: {e}")
+        except Exception as exc:
+            print(f"✗ error: {exc}")
 
     def show_list(self):
-        """Show list of available scripts"""
         print(self.BANNER)
         print("=" * 50)
 
-        scripts = self.get_script_list()
-        shell_scripts = self.group_scripts(scripts)
-
-        print(f"\n📊 Total Scripts: {len(shell_scripts)}")
+        sh_scripts, py_scripts = self.get_script_list()
+        all_items = self.all_scripts()
+        print(f"\n📊 total: {len(all_items)} (sh: {len(sh_scripts)}, py: {len(py_scripts)})")
         print()
 
         num = 1
-        print("🐚 Shell Scripts")
-        print("─" * 40)
-        for script in shell_scripts:
-            print(f"    [{num:2}] {script}")
-            num += 1
-        print()
+        if sh_scripts:
+            print("🐚 shell scripts (lib/sh/)")
+            print("─" * 40)
+            for script in sh_scripts:
+                print(f"    [{num:2}] {script}")
+                num += 1
+            print()
 
-        print("💡 Usage: krun <number> or krun <script_name>")
-        print("🔍 Debug: krun <number> --debug")
+        if py_scripts:
+            print("🐍 python scripts (lib/py/)")
+            print("─" * 40)
+            for script in py_scripts:
+                print(f"    [{num:2}] {script}")
+                num += 1
+            print()
+
+        print("💡 usage: krun <number> | krun <script_name> | krun sh/foo.sh | krun py/bar.py")
 
     def show_status(self):
-        """Show system status"""
-        print("Krun ready!")
-        if self.command_exists('bash'):
-            print("✓ bash is available")
-        else:
-            print("✗ bash is not available")
+        print("krun ready")
+        print("✓ bash" if self.command_exists('bash') else "✗ bash")
+        print("✓ python3" if self.command_exists('python3') else "✗ python3")
 
     def show_languages(self):
-        """Show supported languages"""
         print(self.BANNER)
-        print("\nSupported format:")
-        print("  ✓ Shell scripts (.sh, .bash, .zsh)")
-        print("\nInterpreter: bash")
+        print("\nsupported:")
+        print("  ✓ shell  lib/sh/*.sh   interpreter: bash")
+        print("  ✓ python lib/py/*.py   interpreter: python3")
 
     def show_help(self):
-        """Show help message"""
         print(self.BANNER)
-        print("\nUsage:")
-        print("  krun list                    - List all shell scripts")
-        print("  krun <number>                - Execute script by number")
-        print("  krun <script_name>           - Execute script by name")
-        print("  krun <number|script> --debug - Show debug info")
-        print("  krun status                  - Show system status")
-        print("  krun languages               - Show supported format")
-        print("  krun version                 - Show version")
-        print("  krun help                    - Show this help")
-        print("\nExamples:")
-        print("  krun 1                       - Execute first script")
-        print("  krun hello-world.sh          - Execute hello-world.sh")
-        print("  krun 5 --debug               - Debug script #5")
+        print("\nusage:")
+        print("  krun list                      list scripts")
+        print("  krun <number>                  run by index")
+        print("  krun <script.sh|script.py>     run by name")
+        print("  krun sh/foo.sh | py/bar.py     run by path")
+        print("  krun <target> --debug          show script content")
+        print("  krun status | languages | help")
 
     def show_version(self):
-        """Show version information"""
         print(self.BANNER)
-        print("\nv2.0")
+        print("\nv2.1")
         print("Copyright (c) 2023 kk")
         print("MIT License")
 
     def run_by_number(self, number, debug=False):
-        """Run script by number"""
-        scripts = self.get_script_list()
+        items = self.all_scripts()
         try:
-            script_name = scripts[int(number) - 1]
-            if debug:
-                self.debug_script(script_name)
-            else:
-                self.execute_script(script_name)
-        except IndexError:
-            print(f"Error: Script #{number} not found")
+            _, script_name = items[int(number) - 1]
+        except (IndexError, ValueError):
+            print(f"✗ script #{number} not found")
+            return
+
+        if debug:
+            self.debug_script(script_name)
+        else:
+            self.execute_script(script_name)
 
     def run_by_name(self, script_name, debug=False):
-        """Run script by name"""
         if debug:
             self.debug_script(script_name)
         else:
             self.execute_script(script_name)
 
     def is_script_name(self, name):
-        """Check if name looks like a shell script file"""
-        return re.match(r".*\.(sh|bash|zsh)$", name, re.IGNORECASE)
+        return bool(re.match(r".*\.(sh|bash|zsh|py)$", name, re.IGNORECASE))
 
     def run(self, args):
-        """Main entry point"""
-        parser = argparse.ArgumentParser(
-            description="Shell script runner",
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            epilog="""
-Examples:
-  krun list                   List all available shell scripts
-  krun 1                      Execute first script
-  krun hello-world.sh         Execute hello-world.sh
-  krun 5 --debug              Show debug info for script #5
-  krun status                 Show system status
-  krun languages              Show supported format
-  krun version                Show version information
-            """
-        )
+        parser = argparse.ArgumentParser(description="Krun script runner")
+        parser.add_argument('command', nargs='?', help='command or script name')
+        parser.add_argument('--debug', action='store_true', help='show script debug info')
+        parser.add_argument('--version', action='version', version='krun v2.1')
+        parsed = parser.parse_args(args)
 
-        parser.add_argument('command', nargs='?', help='Command or script to run')
-        parser.add_argument('--debug', action='store_true', help='Show debug information')
-        parser.add_argument('--version', action='version', version='krun v2.0')
-
-        # Parse arguments
-        parsed_args = parser.parse_args(args)
-
-        # Handle commands
-        if not parsed_args.command:
+        if not parsed.command:
             self.show_help()
             return
 
-        command = parsed_args.command
-
-        if command == "list":
+        command = parsed.command
+        if command == 'list':
             self.show_list()
-        elif command == "help":
+        elif command == 'help':
             self.show_help()
-        elif command == "status":
+        elif command == 'status':
             self.show_status()
-        elif command == "version":
+        elif command == 'version':
             self.show_version()
-        elif command == "languages":
+        elif command == 'languages':
             self.show_languages()
         elif command.isdigit():
-            # Execute by number
-            self.run_by_number(command, parsed_args.debug)
-        elif self.is_script_name(command):
-            # Execute by script name
-            self.run_by_name(command, parsed_args.debug)
+            self.run_by_number(command, parsed.debug)
+        elif self.is_script_name(command) or command.startswith(('sh/', 'py/')):
+            self.run_by_name(command, parsed.debug)
         else:
-            print(f"Error: Unknown command '{command}'")
+            print(f"✗ unknown command: {command}")
             self.show_help()
 
 
 def main():
-    """Main function"""
-    krun = Krun()
-    krun.run(sys.argv[1:])
+    Krun().run(sys.argv[1:])
 
 
 if __name__ == "__main__":

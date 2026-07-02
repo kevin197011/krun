@@ -1,16 +1,16 @@
 # Graph Report - krun  (2026-07-02)
 
 ## Corpus Check
-- 87 files · ~45,369 words
+- 89 files · ~47,074 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 799 nodes · 1305 edges · 94 communities (91 shown, 3 thin omitted)
+- 1510 nodes · 2533 edges · 175 communities (171 shown, 4 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `11085545`
+- Built from commit: `bbeddee0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -105,23 +105,103 @@
 - [[_COMMUNITY_Community 87|Community 87]]
 - [[_COMMUNITY_Community 88|Community 88]]
 - [[_COMMUNITY_Community 93|Community 93]]
+- [[_COMMUNITY_Community 94|Community 94]]
+- [[_COMMUNITY_Community 95|Community 95]]
+- [[_COMMUNITY_Community 96|Community 96]]
+- [[_COMMUNITY_Community 97|Community 97]]
+- [[_COMMUNITY_Community 98|Community 98]]
+- [[_COMMUNITY_Community 99|Community 99]]
+- [[_COMMUNITY_Community 100|Community 100]]
+- [[_COMMUNITY_Community 101|Community 101]]
+- [[_COMMUNITY_Community 102|Community 102]]
+- [[_COMMUNITY_Community 103|Community 103]]
+- [[_COMMUNITY_Community 104|Community 104]]
+- [[_COMMUNITY_Community 105|Community 105]]
+- [[_COMMUNITY_Community 106|Community 106]]
+- [[_COMMUNITY_Community 107|Community 107]]
+- [[_COMMUNITY_Community 108|Community 108]]
+- [[_COMMUNITY_Community 109|Community 109]]
+- [[_COMMUNITY_Community 110|Community 110]]
+- [[_COMMUNITY_Community 111|Community 111]]
+- [[_COMMUNITY_Community 112|Community 112]]
+- [[_COMMUNITY_Community 113|Community 113]]
+- [[_COMMUNITY_Community 114|Community 114]]
+- [[_COMMUNITY_Community 115|Community 115]]
+- [[_COMMUNITY_Community 116|Community 116]]
+- [[_COMMUNITY_Community 117|Community 117]]
+- [[_COMMUNITY_Community 118|Community 118]]
+- [[_COMMUNITY_Community 119|Community 119]]
+- [[_COMMUNITY_Community 120|Community 120]]
+- [[_COMMUNITY_Community 121|Community 121]]
+- [[_COMMUNITY_Community 122|Community 122]]
+- [[_COMMUNITY_Community 123|Community 123]]
+- [[_COMMUNITY_Community 124|Community 124]]
+- [[_COMMUNITY_Community 125|Community 125]]
+- [[_COMMUNITY_Community 126|Community 126]]
+- [[_COMMUNITY_Community 127|Community 127]]
+- [[_COMMUNITY_Community 128|Community 128]]
+- [[_COMMUNITY_Community 129|Community 129]]
+- [[_COMMUNITY_Community 130|Community 130]]
+- [[_COMMUNITY_Community 131|Community 131]]
+- [[_COMMUNITY_Community 132|Community 132]]
+- [[_COMMUNITY_Community 133|Community 133]]
+- [[_COMMUNITY_Community 134|Community 134]]
+- [[_COMMUNITY_Community 135|Community 135]]
+- [[_COMMUNITY_Community 136|Community 136]]
+- [[_COMMUNITY_Community 137|Community 137]]
+- [[_COMMUNITY_Community 138|Community 138]]
+- [[_COMMUNITY_Community 139|Community 139]]
+- [[_COMMUNITY_Community 140|Community 140]]
+- [[_COMMUNITY_Community 141|Community 141]]
+- [[_COMMUNITY_Community 142|Community 142]]
+- [[_COMMUNITY_Community 143|Community 143]]
+- [[_COMMUNITY_Community 144|Community 144]]
+- [[_COMMUNITY_Community 145|Community 145]]
+- [[_COMMUNITY_Community 146|Community 146]]
+- [[_COMMUNITY_Community 147|Community 147]]
+- [[_COMMUNITY_Community 148|Community 148]]
+- [[_COMMUNITY_Community 149|Community 149]]
+- [[_COMMUNITY_Community 150|Community 150]]
+- [[_COMMUNITY_Community 151|Community 151]]
+- [[_COMMUNITY_Community 152|Community 152]]
+- [[_COMMUNITY_Community 153|Community 153]]
+- [[_COMMUNITY_Community 154|Community 154]]
+- [[_COMMUNITY_Community 155|Community 155]]
+- [[_COMMUNITY_Community 156|Community 156]]
+- [[_COMMUNITY_Community 157|Community 157]]
+- [[_COMMUNITY_Community 158|Community 158]]
+- [[_COMMUNITY_Community 159|Community 159]]
+- [[_COMMUNITY_Community 160|Community 160]]
+- [[_COMMUNITY_Community 161|Community 161]]
+- [[_COMMUNITY_Community 162|Community 162]]
+- [[_COMMUNITY_Community 163|Community 163]]
+- [[_COMMUNITY_Community 164|Community 164]]
+- [[_COMMUNITY_Community 165|Community 165]]
+- [[_COMMUNITY_Community 166|Community 166]]
+- [[_COMMUNITY_Community 167|Community 167]]
+- [[_COMMUNITY_Community 168|Community 168]]
+- [[_COMMUNITY_Community 169|Community 169]]
+- [[_COMMUNITY_Community 170|Community 170]]
+- [[_COMMUNITY_Community 171|Community 171]]
+- [[_COMMUNITY_Community 172|Community 172]]
+- [[_COMMUNITY_Community 174|Community 174]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `krun::config::system::common()` - 19 edges
-2. `krun::check::system_troubleshoot::common()` - 18 edges
-3. `krun::init::system::common()` - 17 edges
-4. `krun::disk::analyze_cleanup::run_clean()` - 15 edges
-5. `krun::check::system_troubleshoot::title()` - 14 edges
-6. `Krun - 运维自动化脚本工具集` - 14 edges
-7. `krun::check::system_troubleshoot::cmd()` - 13 edges
-8. `krun::install::helm::common()` - 9 edges
-9. `krun::disk::analyze_cleanup::has()` - 9 edges
-10. `krun::disk::analyze_cleanup::run_cmd()` - 9 edges
+1. `SystemInit` - 30 edges
+2. `krun::config::system::common()` - 19 edges
+3. `krun::check::system_troubleshoot::common()` - 18 edges
+4. `krun::check::system_troubleshoot::common()` - 18 edges
+5. `krun::init::system::common()` - 17 edges
+6. `krun::init::system::common()` - 17 edges
+7. `Krun - 运维自动化脚本工具集` - 15 edges
+8. `krun::disk::analyze_cleanup::run_clean()` - 15 edges
+9. `krun::check::system_troubleshoot::title()` - 14 edges
+10. `krun::check::system_troubleshoot::title()` - 14 edges
 
 ## Surprising Connections (you probably didn't know these)
 - None detected - all connections are within the same source files.
 
-## Communities (94 total, 3 thin omitted)
+## Communities (175 total, 4 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.16
@@ -184,12 +264,12 @@ Cohesion: 0.38
 Nodes (8): krun::install::centos(), krun::install::debian(), krun::install::install_binary(), krun::install::install_deps_centos(), krun::install::install_deps_debian(), krun::install::install_deps_mac(), krun::install::install_from_package(), krun::install::mac()
 
 ### Community 15 - "Community 15"
-Cohesion: 0.20
-Nodes (10): code:bash (# 重新运行安装脚本即可（会自动下载最新版本）), code:bash (# 使用 krun 工具查看脚本列表), code:bash (# 删除安装目录), code:bash (# 是的，install.sh 会自动检测并安装所需依赖：), Q: 如何卸载 krun？, Q: 如何更新 krun 工具？, Q: 如何查看所有可用脚本？, Q: 安装脚本会自动安装依赖吗？ (+2 more)
+Cohesion: 0.24
+Nodes (11): code:bash (# 参考模板创建), code:bash (# 重新运行安装脚本即可（会自动下载最新版本）), code:bash (# 使用 krun 工具查看脚本列表), code:bash (# 删除安装目录), code:bash (# 是的，install.sh 会自动检测并安装所需依赖：), Q: 如何卸载 krun？, Q: 如何更新 krun 工具？, Q: 如何查看所有可用脚本？ (+3 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.20
-Nodes (9): code:block1 (______), Krun - 运维自动化脚本工具集, 支持平台, 核心特性, 注意事项, 相关资源, 许可证, 贡献指南 (+1 more)
+Cohesion: 0.25
+Nodes (7): code:block1 (______), Krun - 运维自动化脚本工具集, 支持平台, 注意事项, 相关资源, 许可证, 贡献指南
 
 ### Community 17 - "Community 17"
 Cohesion: 0.36
@@ -204,8 +284,8 @@ Cohesion: 0.33
 Nodes (7): krun::update::vagrant_box::centos(), krun::update::vagrant_box::check_vagrant(), krun::update::vagrant_box::common(), krun::update::vagrant_box::debian(), krun::update::vagrant_box::mac(), krun::update::vagrant_box::show_status(), krun::update::vagrant_box::update_box()
 
 ### Community 20 - "Community 20"
-Cohesion: 0.22
-Nodes (9): code:bash (# 1. 安装 krun 工具), code:bash (# 修复 Rocky Linux 9 的 IPv6 源导致的包管理器问题), code:bash (krun install-docker.sh), code:bash (# 自动格式化并挂载数据盘到 /data), Kubernetes 环境搭建, Rocky Linux 9 修复 IPv6 源问题, 使用示例, 新服务器初始化 (+1 more)
+Cohesion: 0.31
+Nodes (9): code:bash (# 克隆仓库), code:bash (# 1. 安装 krun 工具), code:bash (# 修复 Rocky Linux 9 的 IPv6 源导致的包管理器问题), code:bash (krun install-docker.sh), Kubernetes 环境搭建, Rocky Linux 9 修复 IPv6 源问题, 使用示例, 新服务器初始化 (+1 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.33
@@ -228,8 +308,8 @@ Cohesion: 0.39
 Nodes (7): krun::install::tinyproxy::centos(), krun::install::tinyproxy::common(), krun::install::tinyproxy::configure(), krun::install::tinyproxy::create_config(), krun::install::tinyproxy::debian(), krun::install::tinyproxy::mac(), krun::install::tinyproxy::manage_service()
 
 ### Community 26 - "Community 26"
-Cohesion: 0.25
-Nodes (8): 🔄 Git 工具类（2个）, 📝 其他工具（3个）, 🚀 开发环境安装类（20个）, 📋 系统配置类（17个）, 脚本列表（66+ 个）, 🔧 运维工具安装类（15个）, 🛠️ 运维脚本类（8个）, 🎛️ 面板和管理工具（2个）
+Cohesion: 0.39
+Nodes (9): 🔄 Git 工具类（2个）, 📝 其他工具（3个）, 🚀 开发环境安装类（20个）, 📋 系统配置类（17个）, 脚本列表（66+ 个）, 脚本列表（80+ 个）, 🔧 运维工具安装类（15个）, 🛠️ 运维脚本类（8个） (+1 more)
 
 ### Community 27 - "Community 27"
 Cohesion: 0.43
@@ -252,8 +332,8 @@ Cohesion: 0.46
 Nodes (6): krun::install::vagrant-virtualbox::centos(), krun::install::vagrant-virtualbox::common(), krun::install::vagrant-virtualbox::debian(), krun::install::vagrant-virtualbox::install_boxes(), krun::install::vagrant-virtualbox::mac(), krun::install::vagrant-virtualbox::verify_installation()
 
 ### Community 32 - "Community 32"
-Cohesion: 0.29
-Nodes (7): code:bash (# 一键安装（自动检测平台并安装依赖）), code:bash (# Docker 安装), code:bash (# 克隆仓库), 快速开始, 方式一：安装 Krun 工具（推荐）, 方式三：本地使用, 方式二：直接执行脚本
+Cohesion: 0.24
+Nodes (10): code:block2 (lib/), code:bash (# 一键安装（自动检测平台并安装依赖）), code:bash (# Docker 安装), 快速开始, 方式一：安装 Krun 工具（推荐）, 方式三：本地使用, 方式二：直接执行脚本, 核心特性 (+2 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.48
@@ -461,33 +541,351 @@ Nodes (4): 主要功能, 服务部署, 系统配置, 运维工具
 
 ### Community 85 - "Community 85"
 Cohesion: 0.50
-Nodes (4): code:bash (# 参考模板创建), 创建新脚本, 开发者指南, 脚本标准格式
+Nodes (4): code:bash (# 自动格式化并挂载数据盘到 /data), 创建新脚本, 开发者指南, 脚本标准格式
 
 ### Community 86 - "Community 86"
 Cohesion: 0.13
 Nodes (29): krun::config::system::backup_configs(), krun::config::system::centos(), krun::config::system::check_debian_version(), krun::config::system::check_rhel_version(), krun::config::system::common(), krun::config::system::configure_bbr(), krun::config::system::configure_cpufreq(), krun::config::system::configure_filesystem() (+21 more)
 
+### Community 88 - "Community 88"
+Cohesion: 0.50
+Nodes (3): files, py, sh
+
 ### Community 93 - "Community 93"
 Cohesion: 0.14
 Nodes (26): krun::init::system::backup_configs(), krun::init::system::centos(), krun::init::system::check_debian_version(), krun::init::system::check_rhel_version(), krun::init::system::common(), krun::init::system::configure_cpufreq(), krun::init::system::configure_filesystem(), krun::init::system::configure_io() (+18 more)
 
+### Community 94 - "Community 94"
+Cohesion: 0.19
+Nodes (27): krun::check::system_troubleshoot::centos(), krun::check::system_troubleshoot::cmd(), krun::check::system_troubleshoot::common(), krun::check::system_troubleshoot::debian(), krun::check::system_troubleshoot::has(), krun::check::system_troubleshoot::hr(), krun::check::system_troubleshoot::mac(), krun::check::system_troubleshoot::now() (+19 more)
+
+### Community 95 - "Community 95"
+Cohesion: 0.17
+Nodes (28): krun::install::helm::centos(), krun::install::helm::common(), krun::install::helm::configure_proxy(), krun::install::helm::debian(), krun::install::helm::download_file(), krun::install::helm::ensure_in_path(), krun::install::helm::get_github_latest_tag(), krun::install::helm::get_latest_version() (+20 more)
+
+### Community 96 - "Community 96"
+Cohesion: 0.14
+Nodes (26): krun::init::system::backup_configs(), krun::init::system::centos(), krun::init::system::check_debian_version(), krun::init::system::check_rhel_version(), krun::init::system::common(), krun::init::system::configure_cpufreq(), krun::init::system::configure_filesystem(), krun::init::system::configure_io() (+18 more)
+
+### Community 97 - "Community 97"
+Cohesion: 0.23
+Nodes (25): krun::disk::analyze_cleanup::add_freed(), krun::disk::analyze_cleanup::analyze_targets(), krun::disk::analyze_cleanup::cleanup_docker(), krun::disk::analyze_cleanup::cleanup_journal(), krun::disk::analyze_cleanup::cleanup_old_kernels(), krun::disk::analyze_cleanup::cleanup_package_cache(), krun::disk::analyze_cleanup::cleanup_pip_cache(), krun::disk::analyze_cleanup::cleanup_rotated_logs() (+17 more)
+
+### Community 98 - "Community 98"
+Cohesion: 0.23
+Nodes (16): krun::install::ansible::centos(), krun::install::ansible::common(), krun::install::ansible::debian(), krun::install::ansible::debian_ubuntu_codename(), krun::install::ansible::enable_epel(), krun::install::ansible::ensure_pip(), krun::install::ansible::ensure_user_local_bin_in_path(), krun::install::ansible::install_argcomplete() (+8 more)
+
+### Community 99 - "Community 99"
+Cohesion: 0.27
+Nodes (12): krun::install::blackbox_exporter::centos(), krun::install::blackbox_exporter::common(), krun::install::blackbox_exporter::configure_proxy(), krun::install::blackbox_exporter::create_service(), krun::install::blackbox_exporter::debian(), krun::install::blackbox_exporter::get_latest_version(), krun::install::blackbox_exporter::get_system_info(), krun::install::blackbox_exporter::mac() (+4 more)
+
+### Community 100 - "Community 100"
+Cohesion: 0.36
+Nodes (11): krun::install::k9s::centos(), krun::install::k9s::debian(), krun::install::k9s::download_file(), krun::install::k9s::get_latest_version(), krun::install::k9s::install_from_package(), krun::install::k9s::install_from_tarball(), krun::install::k9s::mac(), krun::install::k9s::map_arch() (+3 more)
+
+### Community 101 - "Community 101"
+Cohesion: 0.27
+Nodes (8): krun::config::acme::install(), krun::config::acme::install_cert(), krun::config::acme::issue(), krun::config::acme::list(), krun::config::acme::renew(), krun::config::acme::revoke(), krun::config::acme::run(), krun::config::acme::usage()
+
+### Community 102 - "Community 102"
+Cohesion: 0.29
+Nodes (9): krun::install::jdk8::centos(), krun::install::jdk8::common(), krun::install::jdk8::debian(), krun::install::jdk8::download_tar(), krun::install::jdk8::export_session_env(), krun::install::jdk8::read_wgetrc_proxy(), krun::install::jdk8::resolve_proxy(), krun::install::jdk8::resolve_tar() (+1 more)
+
+### Community 103 - "Community 103"
+Cohesion: 0.31
+Nodes (9): krun::check::ip_quality::centos(), krun::check::ip_quality::common(), krun::check::ip_quality::debian(), krun::check::ip_quality::evaluate(), krun::check::ip_quality::mac(), krun::check::ip_quality::ping_test(), krun::check::ip_quality::progress(), krun::check::ip_quality::test_node() (+1 more)
+
+### Community 104 - "Community 104"
+Cohesion: 0.33
+Nodes (9): krun::config::git::centos(), krun::config::git::common(), krun::config::git::configure_aliases(), krun::config::git::configure_global_settings(), krun::config::git::configure_ssh_key(), krun::config::git::configure_user(), krun::config::git::debian(), krun::config::git::display_summary() (+1 more)
+
+### Community 105 - "Community 105"
+Cohesion: 0.42
+Nodes (9): krun::install::filebeat::centos(), krun::install::filebeat::config(), krun::install::filebeat::debian(), krun::install::filebeat::detect_log_type(), krun::install::filebeat::extract_project_module(), krun::install::filebeat::get_node_ip(), krun::install::filebeat::mac(), krun::install::filebeat::start() (+1 more)
+
+### Community 106 - "Community 106"
+Cohesion: 0.42
+Nodes (9): krun::install::git::binary_install(), krun::install::git::centos(), krun::install::git::common(), krun::install::git::configure_git(), krun::install::git::debian(), krun::install::git::get_latest_version(), krun::install::git::get_system_info(), krun::install::git::mac() (+1 more)
+
+### Community 107 - "Community 107"
+Cohesion: 0.31
+Nodes (9): krun::install::node_exporter::centos(), krun::install::node_exporter::common(), krun::install::node_exporter::create_service(), krun::install::node_exporter::debian(), krun::install::node_exporter::get_latest_version(), krun::install::node_exporter::get_system_info(), krun::install::node_exporter::mac(), krun::install::node_exporter::manual_install() (+1 more)
+
+### Community 108 - "Community 108"
+Cohesion: 0.36
+Nodes (8): krun::install::rclone::centos(), krun::install::rclone::common(), krun::install::rclone::create_config(), krun::install::rclone::create_service(), krun::install::rclone::debian(), krun::install::rclone::get_latest_version(), krun::install::rclone::get_system_info(), krun::install::rclone::mac()
+
+### Community 109 - "Community 109"
+Cohesion: 0.36
+Nodes (8): krun::install::redis::centos(), krun::install::redis::common(), krun::install::redis::configure_redis(), krun::install::redis::debian(), krun::install::redis::mac(), krun::install::redis::manage_service(), krun::install::redis::manual_install(), krun::install::redis::test_redis()
+
+### Community 110 - "Community 110"
+Cohesion: 0.33
+Nodes (7): krun::update::vagrant_box::centos(), krun::update::vagrant_box::check_vagrant(), krun::update::vagrant_box::common(), krun::update::vagrant_box::debian(), krun::update::vagrant_box::mac(), krun::update::vagrant_box::show_status(), krun::update::vagrant_box::update_box()
+
+### Community 111 - "Community 111"
+Cohesion: 0.33
+Nodes (5): krun::config::centos7_repo::centos(), krun::config::centos7_repo::install_endpoint_repo(), krun::config::centos7_repo::prune_legacy_repos(), krun::config::centos7_repo::refresh_yum_cache(), krun::config::centos7_repo::write_devops_repo()
+
+### Community 112 - "Community 112"
+Cohesion: 0.44
+Nodes (7): krun::install::asdf::centos(), krun::install::asdf::common(), krun::install::asdf::configure_shell(), krun::install::asdf::debian(), krun::install::asdf::get_latest_version(), krun::install::asdf::mac(), krun::install::asdf::verify_installation()
+
+### Community 113 - "Community 113"
+Cohesion: 0.39
+Nodes (7): krun::install::crane::centos(), krun::install::crane::common(), krun::install::crane::debian(), krun::install::crane::get_latest_version(), krun::install::crane::get_system_info(), krun::install::crane::mac(), krun::install::crane::sudo()
+
+### Community 114 - "Community 114"
+Cohesion: 0.44
+Nodes (7): krun::install::rbenv::centos(), krun::install::rbenv::common(), krun::install::rbenv::configure_shell(), krun::install::rbenv::debian(), krun::install::rbenv::get_latest_version(), krun::install::rbenv::mac(), krun::install::rbenv::verify_installation()
+
+### Community 115 - "Community 115"
+Cohesion: 0.39
+Nodes (7): krun::install::tinyproxy::centos(), krun::install::tinyproxy::common(), krun::install::tinyproxy::configure(), krun::install::tinyproxy::create_config(), krun::install::tinyproxy::debian(), krun::install::tinyproxy::mac(), krun::install::tinyproxy::manage_service()
+
+### Community 116 - "Community 116"
+Cohesion: 0.43
+Nodes (6): krun::install::docker::centos(), krun::install::docker::common(), krun::install::docker::common_mac(), krun::install::docker::configure_service(), krun::install::docker::debian(), krun::install::docker::mac()
+
+### Community 117 - "Community 117"
+Cohesion: 0.46
+Nodes (6): krun::install::golang::centos(), krun::install::golang::common(), krun::install::golang::debian(), krun::install::golang::mac(), krun::install::golang::manual_install(), krun::install::golang::verify_installation()
+
+### Community 118 - "Community 118"
+Cohesion: 0.43
+Nodes (6): krun::install::oh_my_zsh::centos(), krun::install::oh_my_zsh::common(), krun::install::oh_my_zsh::configure_zshrc(), krun::install::oh_my_zsh::debian(), krun::install::oh_my_zsh::install_plugins(), krun::install::oh_my_zsh::mac()
+
+### Community 119 - "Community 119"
+Cohesion: 0.50
+Nodes (6): krun::install::openjdk::centos(), krun::install::openjdk::common(), krun::install::openjdk::configure_java_home(), krun::install::openjdk::debian(), krun::install::openjdk::mac(), krun::install::openjdk::manual_install()
+
+### Community 120 - "Community 120"
+Cohesion: 0.46
+Nodes (6): krun::install::vagrant-virtualbox::centos(), krun::install::vagrant-virtualbox::common(), krun::install::vagrant-virtualbox::debian(), krun::install::vagrant-virtualbox::install_boxes(), krun::install::vagrant-virtualbox::mac(), krun::install::vagrant-virtualbox::verify_installation()
+
+### Community 121 - "Community 121"
+Cohesion: 0.48
+Nodes (5): krun::apply::asdf::centos(), krun::apply::asdf::common(), krun::apply::asdf::debian(), krun::apply::asdf::install_common_tools(), krun::apply::asdf::mac()
+
+### Community 122 - "Community 122"
+Cohesion: 0.48
+Nodes (5): krun::check::system_baseline::centos(), krun::check::system_baseline::check(), krun::check::system_baseline::common(), krun::check::system_baseline::debian(), krun::check::system_baseline::mac()
+
+### Community 123 - "Community 123"
+Cohesion: 0.48
+Nodes (5): krun::config::rakefile::centos(), krun::config::rakefile::common(), krun::config::rakefile::debian(), krun::config::rakefile::install_gems(), krun::config::rakefile::mac()
+
+### Community 124 - "Community 124"
+Cohesion: 0.57
+Nodes (5): krun::config::ruby_http::centos(), krun::config::ruby_http::common(), krun::config::ruby_http::debian(), krun::config::ruby_http::ensure_gems(), krun::config::ruby_http::mac()
+
+### Community 125 - "Community 125"
+Cohesion: 0.48
+Nodes (5): krun::config::ssh_authorized_keys::append_key_for_user(), krun::config::ssh_authorized_keys::centos(), krun::config::ssh_authorized_keys::common(), krun::config::ssh_authorized_keys::debian(), krun::config::ssh_authorized_keys::mac()
+
+### Community 126 - "Community 126"
+Cohesion: 0.52
+Nodes (5): krun::install::awscli::centos(), krun::install::awscli::common(), krun::install::awscli::debian(), krun::install::awscli::mac(), krun::install::awscli::verify_installation()
+
+### Community 127 - "Community 127"
+Cohesion: 0.52
+Nodes (5): krun::install::elixir::centos(), krun::install::elixir::common(), krun::install::elixir::debian(), krun::install::elixir::mac(), krun::install::elixir::verify_installation()
+
+### Community 128 - "Community 128"
+Cohesion: 0.57
+Nodes (5): krun::install::ffmpeg::centos(), krun::install::ffmpeg::common(), krun::install::ffmpeg::debian(), krun::install::ffmpeg::mac(), krun::install::ffmpeg::static_install()
+
+### Community 129 - "Community 129"
+Cohesion: 0.52
+Nodes (5): krun::install::gcloud::centos(), krun::install::gcloud::common(), krun::install::gcloud::debian(), krun::install::gcloud::mac(), krun::install::gcloud::verify_installation()
+
+### Community 130 - "Community 130"
+Cohesion: 0.48
+Nodes (5): krun::install::python3::centos(), krun::install::python3::common(), krun::install::python3::debian(), krun::install::python3::mac(), krun::install::python3::verify_installation()
+
+### Community 131 - "Community 131"
+Cohesion: 0.48
+Nodes (5): krun::install::ruby::centos(), krun::install::ruby::common(), krun::install::ruby::debian(), krun::install::ruby::mac(), krun::install::ruby::verify_installation()
+
+### Community 132 - "Community 132"
+Cohesion: 0.53
+Nodes (4): krun::config::cursor::centos(), krun::config::cursor::common(), krun::config::cursor::debian(), krun::config::cursor::mac()
+
+### Community 133 - "Community 133"
+Cohesion: 0.47
+Nodes (3): krun::config::disk-data::centos(), krun::config::disk-data::common(), krun::config::disk-data::debian()
+
+### Community 134 - "Community 134"
+Cohesion: 0.53
+Nodes (4): krun::config::elasticsearch::centos(), krun::config::elasticsearch::common(), krun::config::elasticsearch::debian(), krun::config::elasticsearch::mac()
+
+### Community 135 - "Community 135"
+Cohesion: 0.47
+Nodes (3): krun::config::fstab::centos(), krun::config::fstab::common(), krun::config::fstab::debian()
+
+### Community 136 - "Community 136"
+Cohesion: 0.53
+Nodes (4): krun::config::locales::centos(), krun::config::locales::common(), krun::config::locales::debian(), krun::config::locales::mac()
+
+### Community 137 - "Community 137"
+Cohesion: 0.53
+Nodes (4): krun::config::proxy::centos(), krun::config::proxy::common(), krun::config::proxy::debian(), krun::config::proxy::mac()
+
+### Community 139 - "Community 139"
+Cohesion: 0.53
+Nodes (4): krun::config::ssh::centos(), krun::config::ssh::common(), krun::config::ssh::debian(), krun::config::ssh::mac()
+
+### Community 140 - "Community 140"
+Cohesion: 0.47
+Nodes (3): krun::config::system_baseline::centos(), krun::config::system_baseline::common(), krun::config::system_baseline::debian()
+
+### Community 141 - "Community 141"
+Cohesion: 0.53
+Nodes (4): krun::config::timezone::centos(), krun::config::timezone::common(), krun::config::timezone::debian(), krun::config::timezone::mac()
+
+### Community 142 - "Community 142"
+Cohesion: 0.53
+Nodes (4): krun::config::vagrant-ssh::centos(), krun::config::vagrant-ssh::common(), krun::config::vagrant-ssh::debian(), krun::config::vagrant-ssh::mac()
+
+### Community 143 - "Community 143"
+Cohesion: 0.47
+Nodes (3): krun::config::vm::centos(), krun::config::vm::common(), krun::config::vm::debian()
+
+### Community 144 - "Community 144"
+Cohesion: 0.53
+Nodes (4): krun::crane::copy::centos(), krun::crane::copy::common(), krun::crane::copy::debian(), krun::crane::copy::mac()
+
+### Community 145 - "Community 145"
+Cohesion: 0.53
+Nodes (4): krun::delete::video::centos(), krun::delete::video::common(), krun::delete::video::debian(), krun::delete::video::mac()
+
+### Community 146 - "Community 146"
+Cohesion: 0.53
+Nodes (4): krun::deploy::sshkey::centos(), krun::deploy::sshkey::common(), krun::deploy::sshkey::debian(), krun::deploy::sshkey::mac()
+
+### Community 147 - "Community 147"
+Cohesion: 0.47
+Nodes (3): krun::disable::firewall_selinux::centos(), krun::disable::firewall_selinux::common(), krun::disable::firewall_selinux::debian()
+
+### Community 148 - "Community 148"
+Cohesion: 0.53
+Nodes (4): krun::hello::world::centos(), krun::hello::world::common(), krun::hello::world::debian(), krun::hello::world::mac()
+
+### Community 149 - "Community 149"
+Cohesion: 0.47
+Nodes (3): krun::install::1panel::centos(), krun::install::1panel::common(), krun::install::1panel::debian()
+
+### Community 150 - "Community 150"
+Cohesion: 0.53
+Nodes (4): krun::install::aapanel::centos(), krun::install::aapanel::common(), krun::install::aapanel::debian(), krun::install::aapanel::mac()
+
+### Community 151 - "Community 151"
+Cohesion: 0.53
+Nodes (4): krun::install::aliyun-cli::centos(), krun::install::aliyun-cli::common(), krun::install::aliyun-cli::debian(), krun::install::aliyun-cli::mac()
+
+### Community 152 - "Community 152"
+Cohesion: 0.53
+Nodes (4): krun::install::base_packages::centos(), krun::install::base_packages::common(), krun::install::base_packages::debian(), krun::install::base_packages::mac()
+
+### Community 153 - "Community 153"
+Cohesion: 0.47
+Nodes (3): krun::install::cpanm::centos(), krun::install::cpanm::debian(), krun::install::cpanm::sudo()
+
+### Community 154 - "Community 154"
+Cohesion: 0.53
+Nodes (4): krun::install::cursor_cli::centos(), krun::install::cursor_cli::common(), krun::install::cursor_cli::debian(), krun::install::cursor_cli::mac()
+
+### Community 155 - "Community 155"
+Cohesion: 0.53
+Nodes (4): krun::install::devbox::centos(), krun::install::devbox::common(), krun::install::devbox::debian(), krun::install::devbox::mac()
+
+### Community 156 - "Community 156"
+Cohesion: 0.47
+Nodes (3): krun::install::fonts_nerd::centos(), krun::install::fonts_nerd::debian(), krun::install::fonts_nerd::install_linux()
+
+### Community 157 - "Community 157"
+Cohesion: 0.53
+Nodes (4): krun::install::geoipupdate::centos(), krun::install::geoipupdate::common(), krun::install::geoipupdate::debian(), krun::install::geoipupdate::mac()
+
+### Community 158 - "Community 158"
+Cohesion: 0.47
+Nodes (3): krun::install::kind::centos(), krun::install::kind::common(), krun::install::kind::debian()
+
+### Community 159 - "Community 159"
+Cohesion: 0.53
+Nodes (4): krun::install::lsyncd::centos(), krun::install::lsyncd::common(), krun::install::lsyncd::debian(), krun::install::lsyncd::mac()
+
+### Community 160 - "Community 160"
+Cohesion: 0.53
+Nodes (4): krun::install::maven::centos(), krun::install::maven::common(), krun::install::maven::debian(), krun::install::maven::mac()
+
+### Community 161 - "Community 161"
+Cohesion: 0.53
+Nodes (4): krun::install::mc::centos(), krun::install::mc::common(), krun::install::mc::debian(), krun::install::mc::mac()
+
+### Community 162 - "Community 162"
+Cohesion: 0.53
+Nodes (4): krun::install::nginx::centos(), krun::install::nginx::common(), krun::install::nginx::debian(), krun::install::nginx::mac()
+
+### Community 163 - "Community 163"
+Cohesion: 0.53
+Nodes (4): krun::install::percona_toolkit::centos(), krun::install::percona_toolkit::common(), krun::install::percona_toolkit::debian(), krun::install::percona_toolkit::mac()
+
+### Community 164 - "Community 164"
+Cohesion: 0.53
+Nodes (4): krun::install::puppet_bolt::centos(), krun::install::puppet_bolt::common(), krun::install::puppet_bolt::debian(), krun::install::puppet_bolt::mac()
+
+### Community 165 - "Community 165"
+Cohesion: 0.53
+Nodes (4): krun::install::salt_master::centos(), krun::install::salt_master::common(), krun::install::salt_master::debian(), krun::install::salt_master::mac()
+
+### Community 166 - "Community 166"
+Cohesion: 0.53
+Nodes (4): krun::install::salt_minion::centos(), krun::install::salt_minion::common(), krun::install::salt_minion::debian(), krun::install::salt_minion::mac()
+
+### Community 167 - "Community 167"
+Cohesion: 0.53
+Nodes (4): krun::install::spacevim::centos(), krun::install::spacevim::common(), krun::install::spacevim::debian(), krun::install::spacevim::mac()
+
+### Community 168 - "Community 168"
+Cohesion: 0.53
+Nodes (4): krun::install::vim::centos(), krun::install::vim::common(), krun::install::vim::debian(), krun::install::vim::mac()
+
+### Community 169 - "Community 169"
+Cohesion: 0.53
+Nodes (4): krun::install::zsh::centos(), krun::install::zsh::common(), krun::install::zsh::debian(), krun::install::zsh::mac()
+
+### Community 170 - "Community 170"
+Cohesion: 0.53
+Nodes (4): krun::reset::git-history::centos(), krun::reset::git-history::common(), krun::reset::git-history::debian(), krun::reset::git-history::mac()
+
+### Community 171 - "Community 171"
+Cohesion: 0.60
+Nodes (3): krun::deploy::node_exporter::centos(), krun::deploy::node_exporter::common(), krun::deploy::node_exporter::debian()
+
+### Community 174 - "Community 174"
+Cohesion: 0.17
+Nodes (6): has_cmd(), main(), read_os_release(), run(), SystemInit, write_text()
+
 ## Knowledge Gaps
-- **33 isolated node(s):** `files`, `TEST_NODES`, `code:block1 (______)`, `核心特性`, `系统配置` (+28 more)
+- **18 isolated node(s):** `sh`, `py`, `TEST_NODES`, `code:block1 (______)`, `核心特性` (+13 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Krun - 运维自动化脚本工具集` connect `Community 16` to `Community 32`, `Community 15`, `Community 84`, `Community 85`, `Community 20`, `Community 26`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **Why does `常见问题` connect `Community 15` to `Community 16`?**
+  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **Why does `快速开始` connect `Community 32` to `Community 16`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **Why does `使用示例` connect `Community 20` to `Community 16`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
-- **What connects `files`, `TEST_NODES`, `code:block1 (______)` to the rest of the system?**
-  _33 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `sh`, `py`, `TEST_NODES` to the rest of the system?**
+  _18 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 86` be split into smaller, more focused modules?**
   _Cohesion score 0.12688172043010754 - nodes in this community are weakly interconnected._
 - **Should `Community 93` be split into smaller, more focused modules?**
+  _Cohesion score 0.13756613756613756 - nodes in this community are weakly interconnected._
+- **Should `Community 96` be split into smaller, more focused modules?**
   _Cohesion score 0.13756613756613756 - nodes in this community are weakly interconnected._

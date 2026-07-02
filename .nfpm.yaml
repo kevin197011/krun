@@ -9,9 +9,9 @@ section: utils
 priority: standard
 maintainer: kk <kevin197011@outlook.com>
 description: |
-  Krun - Shell Script Runner
-  A collection of 66+ shell scripts for system administration, 
-  security hardening, service deployment, and performance optimization.
+  Krun - Ops Script Runner
+  Shell and Python scripts for system administration,
+  security hardening, service deployment, and performance tuning.
 vendor: kk
 homepage: https://github.com/kevin197011/krun
 license: MIT

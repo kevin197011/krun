@@ -1,5 +1,5 @@
 {
-  "files": [
+  "sh": [
     "analyze-disk-cleanup.sh",
     "apply-asdf.sh",
     "check-ip-quality.sh",
@@ -79,5 +79,9 @@
     "install-zsh.sh",
     "reset-git-history.sh",
     "update-vagrant_box.sh"
+  ],
+  "py": [
+    "hello-world.py",
+    "init-system.py"
   ]
 }

@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+# Copyright (c) <%= @year %> kk
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/<%= @action %>-<%= @name %>.py | python3
+
+
+def main() -> None:
+    print("<%= @action %>-<%= @name %>")
+
+
+if __name__ == "__main__":
+    main()
