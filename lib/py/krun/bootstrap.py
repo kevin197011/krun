@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cache krun package for curl-piped script execution."""
+"""Stage-2 bootstrap: download/sync full krun package into cache."""
 
 from __future__ import annotations
 
@@ -20,6 +20,8 @@ VERSION_FILE = "krun/VERSION"
 FILES = [
     "krun/__init__.py",
     VERSION_FILE,
+    "krun/prefetch.py",
+    "krun/entry.py",
     "krun/bootstrap.py",
     "krun/common.py",
     "krun/registry.py",
@@ -30,49 +32,6 @@ FILES = [
     "krun/handlers/network.py",
     "krun/handlers/system.py",
 ]
-
-# Inlined in scripts/*.py — curl | python3 has no local krun package.
-LOADER = """
-import os, sys, urllib.request
-from pathlib import Path
-
-def _krun_fetch_version(base):
-    try:
-        req = urllib.request.Request(f"{base}/krun/VERSION", headers={"User-Agent": "krun/2.1"})
-        return urllib.request.urlopen(req, timeout=30).read().decode().strip()
-    except OSError:
-        return ""
-
-def _krun_bootstrap_path():
-    base = os.environ.get("KRUN_PY_BASE", "https://raw.githubusercontent.com/kevin197011/krun/main/lib/py")
-    cache = Path(os.environ.get("KRUN_PY_CACHE", Path.home() / ".cache/krun/py"))
-    try:
-        here = Path(__file__).resolve().parent
-        for root in (here, here.parent):
-            if (root / "krun" / "bootstrap.py").is_file():
-                if str(root) not in sys.path:
-                    sys.path.insert(0, str(root))
-                return
-    except NameError:
-        pass
-    cache.mkdir(parents=True, exist_ok=True)
-    remote_ver = _krun_fetch_version(base)
-    ver_path = cache / "krun" / "VERSION"
-    cached_ver = ver_path.read_text(encoding="utf-8").strip() if ver_path.is_file() else ""
-    stale = bool(os.environ.get("KRUN_REFRESH")) or (remote_ver and remote_ver != cached_ver)
-    if stale and (cache / "krun").is_dir():
-        import shutil
-        shutil.rmtree(cache / "krun", ignore_errors=True)
-    dest = cache / "krun" / "bootstrap.py"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    if not dest.is_file() or stale:
-        req = urllib.request.Request(f"{base}/krun/bootstrap.py", headers={"User-Agent": "krun/2.1"})
-        dest.write_bytes(urllib.request.urlopen(req, timeout=120).read())
-    if str(cache) not in sys.path:
-        sys.path.insert(0, str(cache))
-
-_krun_bootstrap_path()
-""".strip()
 
 
 def _fetch(url: str, dest: Path) -> None:
@@ -101,8 +60,7 @@ def _cache_stale() -> bool:
     remote = _remote_version()
     if not remote:
         return False
-    cached = _read_version(CACHE / VERSION_FILE)
-    return remote != cached
+    return remote != _read_version(CACHE / VERSION_FILE)
 
 
 def setup() -> None:
@@ -118,19 +76,20 @@ def setup() -> None:
         return
 
     CACHE.mkdir(parents=True, exist_ok=True)
-    if _cache_stale() and (CACHE / "krun").is_dir():
+    stale = _cache_stale()
+    if stale and (CACHE / "krun").is_dir():
         shutil.rmtree(CACHE / "krun", ignore_errors=True)
 
     for rel in FILES:
         dest = CACHE / rel
-        if dest.is_file() and not _cache_stale():
+        if dest.is_file() and not stale:
             continue
-        url = f"{BASE}/{rel}"
         try:
-            _fetch(url, dest)
+            _fetch(f"{BASE}/{rel}", dest)
         except OSError as exc:
-            print(f"✗ bootstrap failed: {url} ({exc})")
+            print(f"✗ bootstrap failed: {BASE}/{rel} ({exc})")
             raise SystemExit(1) from exc
+
     path = str(CACHE)
     if path not in sys.path:
         sys.path.insert(0, path)

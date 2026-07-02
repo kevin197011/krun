@@ -348,9 +348,11 @@ data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/scripts/config_disk
 
 | 模块 | 路径 | 职责 |
 |------|------|------|
-| 入口 | `lib/py/scripts/*.py` | 薄 wrapper，`curl \| python3` 可执行 |
-| 引导 | `krun/bootstrap.py` | 远程执行时下载/缓存核心库 |
-| 注册 | `krun/registry.py` | `脚本名 → handler` 映射表 |
+| 入口 | `lib/py/scripts/*.py` | 生成 stub：curl 头 + `SCRIPT` 常量（勿手改） |
+| 预加载 | `krun/prefetch.py` | Stage 1：curl 管道时预置 `sys.path` |
+| 缓存 | `krun/bootstrap.py` | Stage 2：下载/同步 `~/.cache/krun/py/krun/` |
+| 调度 | `krun/entry.py` | Stage 3：`main(script)` 统一入口 |
+| 注册 | `krun/registry.py` | Stage 4：`脚本名 → handler` |
 | 公共 | `krun/common.py` | `platform()`、`install_packages()`、`run()` |
 | 安装 | `krun/handlers/install.py` | Docker、Helm、包管理器等 |
 | 配置 | `krun/handlers/config.py` | SSH、磁盘、软件源、时区等 |

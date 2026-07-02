@@ -4,23 +4,17 @@
 # curl exec:
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/install_golang.py | sudo python3
 # idempotent: safe to re-run
+"""krun script: install_golang"""
 
 import os, sys, urllib.request
 from pathlib import Path
 
-def _krun_fetch_version(base):
-    try:
-        req = urllib.request.Request(f"{base}/krun/VERSION", headers={"User-Agent": "krun/2.1"})
-        return urllib.request.urlopen(req, timeout=30).read().decode().strip()
-    except OSError:
-        return ""
-
-def _krun_bootstrap_path():
+def _krun_prefetch():
     base = os.environ.get("KRUN_PY_BASE", "https://raw.githubusercontent.com/kevin197011/krun/main/lib/py")
     cache = Path(os.environ.get("KRUN_PY_CACHE", Path.home() / ".cache/krun/py"))
     try:
         here = Path(__file__).resolve().parent
-        for root in (here, here.parent):
+        for root in (here.parent, here):
             if (root / "krun" / "bootstrap.py").is_file():
                 if str(root) not in sys.path:
                     sys.path.insert(0, str(root))
@@ -28,7 +22,11 @@ def _krun_bootstrap_path():
     except NameError:
         pass
     cache.mkdir(parents=True, exist_ok=True)
-    remote_ver = _krun_fetch_version(base)
+    try:
+        req = urllib.request.Request(f"{base}/krun/VERSION", headers={"User-Agent": "krun/2.1"})
+        remote_ver = urllib.request.urlopen(req, timeout=30).read().decode().strip()
+    except OSError:
+        remote_ver = ""
     ver_path = cache / "krun" / "VERSION"
     cached_ver = ver_path.read_text(encoding="utf-8").strip() if ver_path.is_file() else ""
     stale = bool(os.environ.get("KRUN_REFRESH")) or (remote_ver and remote_ver != cached_ver)
@@ -43,11 +41,10 @@ def _krun_bootstrap_path():
     if str(cache) not in sys.path:
         sys.path.insert(0, str(cache))
 
-_krun_bootstrap_path()
+_krun_prefetch()
 
-from krun import bootstrap
-bootstrap.setup()
-from krun.registry import run_script
+SCRIPT = "install_golang"
 
 if __name__ == "__main__":
-    run_script("install_golang")
+    from krun.entry import main
+    main(SCRIPT)
