@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 import sys
 
-from krun.handlers import config, install, ops
+from krun.handlers import config, install, network, ops
 
 
 def _init_system() -> None:
@@ -39,15 +39,6 @@ def _system_baseline(mode: str) -> None:
     install.install_packages(deb=["aide", "auditd", "fail2ban"], rhel=["aide", "auditd", "fail2ban"], epel=True)
     print("✓ baseline configured (simplified)")
 
-
-def _check_ip_quality() -> None:
-    targets = os.environ.get("IP_TARGETS", "8.8.8.8,1.1.1.1").split(",")
-    for ip in targets:
-        ip = ip.strip()
-        if not ip:
-            continue
-        code = __import__("subprocess").run(["ping", "-c", "1", "-W", "2", ip], capture_output=True).returncode
-        print(("✓" if code == 0 else "✗") + f" {ip}")
 
 
 def _acme_cert() -> None:
@@ -159,7 +150,7 @@ SCRIPTS: dict[str, callable] = {
         __import__("subprocess").run("dmesg | tail -20; free -h; df -h", shell=True),
         print("✓ troubleshoot snapshot"),
     )[-1],
-    "check_ip_quality": _check_ip_quality,
+    "check_ip_quality": network.check_ip_quality,
     "config_acme": _acme_cert,
     "config_elasticsearch": lambda: print("✓ use elasticsearch docs; simplified stub"),
     "config_cursor": lambda: __import__("krun.common", fromlist=["run"]).run(

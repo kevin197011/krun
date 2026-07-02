@@ -24,6 +24,7 @@ FILES = [
     "krun/handlers/install.py",
     "krun/handlers/config.py",
     "krun/handlers/ops.py",
+    "krun/handlers/network.py",
     "krun/handlers/system.py",
 ]
 

@@ -20,13 +20,138 @@ Krun 是一个面向运维工程师的脚本工具集，提供 **Shell** 与 **P
 ### 目录结构
 
 ```
-lib/
-├── sh/              # Bash（仅 install-python3.sh）
-└── py/
-    ├── krun/        # 核心库（bootstrap、registry、handlers）
-    ├── scripts/     # 可执行入口（curl | python3）
-    └── generate_wrappers.py
+krun/
+├── bin/krun                 # CLI 运行器
+├── meta/lib-manifest.json   # 脚本清单
+├── lib/
+│   ├── sh/
+│   │   └── install-python3.sh   # 唯一 Shell 脚本（安装 Python3 依赖）
+│   └── py/
+│       ├── krun/                # 核心库（不直接 curl）
+│       │   ├── bootstrap.py     # 远程执行时拉取依赖
+│       │   ├── common.py        # 平台检测、装包、run()
+│       │   ├── registry.py      # 脚本名 → handler
+│       │   └── handlers/        # 业务逻辑
+│       │       ├── install.py
+│       │       ├── config.py
+│       │       ├── ops.py
+│       │       └── system.py
+│       ├── scripts/             # 可执行入口（79 个薄 wrapper）
+│       └── generate_wrappers.py # rake lib:py:generate
+└── install.sh               # 安装 krun CLI
 ```
+
+### 项目架构
+
+```mermaid
+flowchart TB
+    subgraph User["用户"]
+        CLI["krun install_docker.py"]
+        CURL["curl .../scripts/xxx.py | python3"]
+    end
+
+    subgraph Runner["运行层"]
+        KRUN["bin/krun"]
+        PY3["python3"]
+    end
+
+    subgraph Entry["入口层 lib/py/scripts/"]
+        WRAP["install_docker.py 等薄 wrapper"]
+    end
+
+    subgraph Core["核心库 lib/py/krun/"]
+        BOOT["bootstrap.py"]
+        REG["registry.py"]
+        COM["common.py"]
+        subgraph Handlers["handlers/"]
+            INS["install.py"]
+            CFG["config.py"]
+            OPS["ops.py"]
+            SYS["system.py"]
+        end
+    end
+
+    subgraph Remote["远程执行缓存"]
+        CACHE["~/.cache/krun/py/krun/"]
+    end
+
+    CLI --> KRUN
+    CURL --> PY3
+    KRUN --> WRAP
+    PY3 --> WRAP
+    WRAP --> BOOT
+    BOOT -->|本地开发| REG
+    BOOT -->|curl 管道| CACHE
+    CACHE --> REG
+    REG --> Handlers
+    Handlers --> COM
+```
+
+### 调用流程
+
+**方式 A：krun CLI（本地优先，无本地则拉 GitHub）**
+
+```mermaid
+sequenceDiagram
+    actor U as 用户
+    participant K as bin/krun
+    participant M as meta/lib-manifest.json
+    participant S as lib/py/scripts/xxx.py
+    participant B as krun/bootstrap
+    participant R as krun/registry
+    participant H as krun/handlers
+
+    U->>K: krun install_docker.py
+    K->>M: 解析脚本名（兼容 install-docker.sh）
+    alt 本地仓库存在
+        K->>S: 读取 lib/py/scripts/
+    else 远程下载
+        K->>S: raw.githubusercontent.com/.../scripts/
+    end
+    K->>S: python3（PYTHONPATH=lib/py）
+    S->>B: bootstrap.setup()
+    B->>R: 加载 registry
+    S->>R: run_script("install_docker")
+    R->>H: install.install_docker()
+    H-->>U: ✓ 完成
+```
+
+**方式 B：curl 管道（无需克隆仓库）**
+
+```mermaid
+sequenceDiagram
+    actor U as 用户
+    participant S as scripts/xxx.py（stdin）
+    participant B as krun/bootstrap
+    participant GH as GitHub raw
+    participant C as ~/.cache/krun/py
+    participant R as krun/registry
+    participant H as krun/handlers
+
+    U->>S: curl | sudo python3
+    Note over S: 无 __file__，无法 import 本地模块
+    S->>B: 内联 prefetch → 下载 bootstrap
+    B->>GH: GET krun/bootstrap.py
+    GH->>C: 写入缓存
+    B->>GH: 下载 krun/common registry handlers/*
+    B->>C: 缓存完整 krun 包
+    B->>R: sys.path 指向缓存
+    S->>R: run_script(name)
+    R->>H: 执行 handler
+    H-->>U: ✓ 完成
+```
+
+**开发者新增脚本**
+
+```mermaid
+flowchart LR
+    A["handlers/ 写逻辑"] --> B["registry.py 注册"]
+    B --> C["rake lib:py:generate"]
+    C --> D["scripts/ 生成入口"]
+    D --> E["rake lib:manifest"]
+    E --> F["krun list 可见"]
+```
+
 
 ### 核心特性
 
@@ -86,7 +211,8 @@ krun install-python3.sh     # 唯一保留的 shell 脚本
 - 自动检测平台并安装所需依赖（Python3、curl）
 - 自动配置 PATH 环境变量
 - 安装目录：`~/.krun/bin/krun`
-- krun 工具管理 `lib/py` 下的 Python 脚本；`lib/sh` 仅保留 `install-python3.sh`
+- krun 工具管理 `lib/py/scripts/` 下的 Python 脚本；`lib/sh/` 仅保留 `install-python3.sh`
+- 本地开发时 `krun` 优先读仓库内文件，再回退 GitHub raw
 
 ### 方式二：直接执行脚本
 
@@ -218,23 +344,29 @@ data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/scripts/config_disk
 
 ## 开发者指南
 
-### 脚本标准格式
+### Python 模块职责
 
-Python 脚本分两层：`lib/py/krun/` 为核心库，`lib/py/scripts/` 为入口。逻辑写在 `krun/handlers/`，在 `krun/registry.py` 注册后执行 `rake lib:py:generate` 生成入口。详见 `lib/py/README.md`。
+| 模块 | 路径 | 职责 |
+|------|------|------|
+| 入口 | `lib/py/scripts/*.py` | 薄 wrapper，`curl \| python3` 可执行 |
+| 引导 | `krun/bootstrap.py` | 远程执行时下载/缓存核心库 |
+| 注册 | `krun/registry.py` | `脚本名 → handler` 映射表 |
+| 公共 | `krun/common.py` | `platform()`、`install_packages()`、`run()` |
+| 安装 | `krun/handlers/install.py` | Docker、Helm、包管理器等 |
+| 配置 | `krun/handlers/config.py` | SSH、磁盘、软件源、时区等 |
+| 运维 | `krun/handlers/ops.py` | 磁盘清理、crane、部署等 |
+| 网络 | `krun/handlers/network.py` | `check_ip_quality` 公网质量检测 |
+| 初始化 | `krun/handlers/system.py` | `init_system` 系统调优 |
 
-| 路径 | 用途 |
-|------|------|
-| `krun/common.py` | 平台检测、装包、run() |
-| `krun/registry.py` | 脚本名 → handler |
-| `krun/handlers/` | install / config / ops / system |
-| `scripts/*.py` | curl 可执行的薄入口 |
+更细的目录说明见 [`lib/py/README.md`](lib/py/README.md)。
 
 ### 创建新脚本
 
 ```bash
-# 1. 在 krun/handlers/ 添加逻辑，krun/registry.py 注册名称
-# 2. 生成入口 wrapper
-rake lib:py:generate
+# 1. 在 krun/handlers/ 添加逻辑
+# 2. 在 krun/registry.py 的 SCRIPTS 注册名称
+# 3. 生成入口并更新清单
+rake lib:py:generate   # → lib/py/scripts/ + meta/lib-manifest.json
 ```
 
 ## 贡献指南
@@ -250,6 +382,12 @@ rake lib:py:generate
 7. 创建 Pull Request
 
 ## 常见问题
+
+### Q: curl 执行报 ModuleNotFoundError？
+远程 `curl | python3` 首次运行会从 GitHub 下载 `krun/` 核心库到 `~/.cache/krun/py/`。确保：
+1. 使用 `lib/py/scripts/` 路径（非旧的 `lib/py/xxx.py`）
+2. 网络可访问 `raw.githubusercontent.com`
+3. 强制刷新缓存：`KRUN_REFRESH=1 curl ... | sudo python3`
 
 ### Q: 如何更新 krun 工具？
 ```bash
@@ -305,7 +443,7 @@ rm -rf ~/.krun
 
 **项目地址**: https://github.com/kevin197011/krun
 **作者**: [kevin197011](https://github.com/kevin197011)
-**更新时间**: 2025-12-04
+**更新时间**: 2026-07-02
 **脚本数量**: 80+
 **支持平台**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS
 

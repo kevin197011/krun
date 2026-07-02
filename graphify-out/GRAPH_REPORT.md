@@ -1,16 +1,16 @@
 # Graph Report - krun  (2026-07-02)
 
 ## Corpus Check
-- 99 files · ~18,113 words
+- 100 files · ~19,598 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1971 nodes · 3080 edges · 335 communities (326 shown, 9 thin omitted)
+- 1993 nodes · 3120 edges · 335 communities (327 shown, 8 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 90 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `38d341cd`
+- Built from commit: `95df1230`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -183,6 +183,7 @@
 - [[_COMMUNITY_Community 174|Community 174]]
 - [[_COMMUNITY_Community 249|Community 249]]
 - [[_COMMUNITY_Community 250|Community 250]]
+- [[_COMMUNITY_Community 251|Community 251]]
 - [[_COMMUNITY_Community 252|Community 252]]
 - [[_COMMUNITY_Community 253|Community 253]]
 - [[_COMMUNITY_Community 254|Community 254]]
@@ -211,7 +212,7 @@
 - `config_rpm_repo()` --calls--> `require_root()`  [INFERRED]
   lib/py/krun/handlers/config.py → lib/py/krun/common.py
 
-## Communities (335 total, 9 thin omitted)
+## Communities (335 total, 8 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.16
@@ -275,10 +276,10 @@ Nodes (8): krun::install::centos(), krun::install::debian(), krun::install::inst
 
 ### Community 15 - "Community 15"
 Cohesion: 0.05
-Nodes (56): code:block1 (______), code:bash (# 自动格式化并挂载数据盘到 /data), code:bash (# 1. 在 krun/handlers/ 添加逻辑，krun/registry.py 注册名称), code:bash (# 重新运行安装脚本即可（会自动下载最新版本）), code:bash (# 使用 krun 工具查看脚本列表), code:bash (# 删除安装目录), code:bash (# 是的，install.sh 会自动检测并安装所需依赖：), code:block2 (lib/) (+48 more)
+Nodes (64): code:block1 (______), code:bash (krun list), code:bash (# 1. 安装 krun 工具), code:bash (# 修复 Rocky Linux 9 的 IPv6 源导致的包管理器问题), code:bash (krun install_docker.py), code:bash (# 自动格式化并挂载数据盘到 /data), code:bash (# 1. 在 krun/handlers/ 添加逻辑), code:bash (# 重新运行安装脚本即可（会自动下载最新版本）) (+56 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.09
+Cohesion: 0.07
 Nodes (62): config_disk_data(), config_fstab_guide(), config_git_global(), config_locale(), config_proxy(), config_rpm_repo(), config_ssh_harden(), config_ssh_keys() (+54 more)
 
 ### Community 17 - "Community 17"
@@ -861,25 +862,33 @@ Nodes (9): ensure_line(), has_cmd(), main(), read_os_release(), run(), service_e
 Cohesion: 0.17
 Nodes (6): has_cmd(), main(), read_os_release(), run(), SystemInit, write_text()
 
+### Community 251 - "Community 251"
+Cohesion: 0.31
+Nodes (9): check_ip_quality(), _grade_latency(), NodeResult, _parse_targets(), _ping_avg(), _print_report(), Network quality checks against public service nodes., IP_TARGETS=地区:IP:描述,... 覆盖默认节点；仅 IP 则用自定义标签。 (+1 more)
+
+### Community 253 - "Community 253"
+Cohesion: 0.33
+Nodes (6): code:block1 (lib/py/), code:mermaid (flowchart LR), lib/py layout, lib/py 目录说明, 结构, 调用关系
+
 ## Knowledge Gaps
-- **19 isolated node(s):** `sh`, `py`, `code:block1 (______)`, `核心特性`, `系统配置` (+14 more)
+- **24 isolated node(s):** `sh`, `py`, `code:block1 (______)`, `核心特性`, `系统配置` (+19 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `_prometheus_exporter()` connect `Community 16` to `Community 250`?**
-  _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **Are the 17 inferred relationships involving `run()` (e.g. with `config_rpm_repo()` and `config_timezone()`) actually correct?**
   _`run()` has 17 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `sh`, `py`, `Krun Python core: bootstrap, registry, handlers.` to the rest of the system?**
-  _20 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _27 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 15` be split into smaller, more focused modules?**
-  _Cohesion score 0.05263157894736842 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05048076923076923 - nodes in this community are weakly interconnected._
 - **Should `Community 16` be split into smaller, more focused modules?**
-  _Cohesion score 0.08568075117370892 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07183544303797468 - nodes in this community are weakly interconnected._
 - **Should `Community 86` be split into smaller, more focused modules?**
   _Cohesion score 0.12688172043010754 - nodes in this community are weakly interconnected._
 - **Should `Community 93` be split into smaller, more focused modules?**
   _Cohesion score 0.13756613756613756 - nodes in this community are weakly interconnected._
+- **Should `Community 96` be split into smaller, more focused modules?**
+  _Cohesion score 0.13763440860215054 - nodes in this community are weakly interconnected._
