@@ -21,8 +21,11 @@ Krun 是一个面向运维工程师的脚本工具集，提供 **Shell** 与 **P
 
 ```
 lib/
-├── sh/     # Bash 脚本（curl | bash）
-└── py/     # Python 脚本（curl | python3）
+├── sh/              # Bash（仅 install-python3.sh）
+└── py/
+    ├── krun/        # 核心库（bootstrap、registry、handlers）
+    ├── scripts/     # 可执行入口（curl | python3）
+    └── generate_wrappers.py
 ```
 
 ### 核心特性
@@ -35,7 +38,7 @@ lib/
 - 🎯 **远程执行**: 支持 curl 直接执行，无需克隆仓库
 - ⚡ **自动依赖**: 安装脚本自动检测并安装所需依赖（Python3、curl 等）
 - 🐚 **Shell 脚本**: `lib/sh/*.sh`，通过 bash 执行
-- 🐍 **Python 脚本**: `lib/py/*.py`，通过 python3 执行
+- 🐍 **Python 脚本**: `lib/py/scripts/*.py`，通过 python3 执行
 
 ## 主要功能
 
@@ -89,16 +92,16 @@ krun install-python3.sh     # 唯一保留的 shell 脚本
 
 ```bash
 # Docker 安装
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/install_docker.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/install_docker.py | sudo python3
 
 # FFmpeg 安装
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/install_ffmpeg.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/install_ffmpeg.py | sudo python3
 
 # Rocky Linux 仓库配置
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/config_rocky_repo.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/config_rocky_repo.py | sudo python3
 
 # 系统初始化与性能优化
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/init_system.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/init_system.py | sudo python3
 
 # Python3 依赖安装（唯一 shell 脚本）
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-python3.sh | bash
@@ -117,8 +120,8 @@ source ~/.bashrc  # 或 source ~/.zshrc
 krun list
 
 # 方式 3.2: 直接执行脚本
-./lib/py/install_docker.py
-./lib/py/init_system.py
+./lib/py/scripts/install_docker.py
+./lib/py/scripts/init_system.py
 
 # 方式 3.3: 使用本地 krun 工具
 ./bin/krun install_git.py
@@ -185,7 +188,7 @@ krun install_oh_my_zsh.py
 
 ```bash
 # 修复 Rocky Linux 9 的 IPv6 源导致的包管理器问题
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/config_rocky_repo.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/config_rocky_repo.py | sudo python3
 ```
 
 ### Kubernetes 环境搭建
@@ -201,7 +204,7 @@ krun install_k9s.py
 
 ```bash
 # 自动格式化并挂载数据盘到 /data
-data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/config_disk_data.py
+data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/scripts/config_disk_data.py
 ```
 
 ## 注意事项
@@ -217,18 +220,19 @@ data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/config_disk_data.py
 
 ### 脚本标准格式
 
-Python 脚本统一通过 `registry.py` 注册 handler，入口文件由 `rake lib:py:generate` 生成。参考 `lib/py/hello_world.py` 和 `handlers/` 目录：
+Python 脚本分两层：`lib/py/krun/` 为核心库，`lib/py/scripts/` 为入口。逻辑写在 `krun/handlers/`，在 `krun/registry.py` 注册后执行 `rake lib:py:generate` 生成入口。详见 `lib/py/README.md`。
 
-- `krun_common.py` — 平台检测、包管理、文件写入等公共逻辑
-- `handlers/install.py` — 安装类
-- `handlers/config.py` — 配置类
-- `handlers/ops.py` — 运维类
-- `init_system.py` — 系统初始化（独立大脚本）
+| 路径 | 用途 |
+|------|------|
+| `krun/common.py` | 平台检测、装包、run() |
+| `krun/registry.py` | 脚本名 → handler |
+| `krun/handlers/` | install / config / ops / system |
+| `scripts/*.py` | curl 可执行的薄入口 |
 
 ### 创建新脚本
 
 ```bash
-# 1. 在 handlers/ 添加逻辑，registry.py 注册名称
+# 1. 在 krun/handlers/ 添加逻辑，krun/registry.py 注册名称
 # 2. 生成入口 wrapper
 rake lib:py:generate
 ```
@@ -260,8 +264,7 @@ source ~/.bashrc  # 或 source ~/.zshrc
 krun list
 
 # 或直接查看 lib 目录
-ls -l lib/sh/*.sh lib/py/*.py
-# 内部模块（非入口）: krun_common.py registry.py bootstrap.py handlers/
+ls -l lib/sh/*.sh lib/py/scripts/*.py
 ```
 
 ### Q: 脚本执行失败怎么办？

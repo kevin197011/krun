@@ -1,16 +1,16 @@
 # Graph Report - krun  (2026-07-02)
 
 ## Corpus Check
-- 97 files · ~16,942 words
+- 99 files · ~18,113 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1776 nodes · 2883 edges · 250 communities (245 shown, 5 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 57 edges (avg confidence: 0.8)
+- 1971 nodes · 3080 edges · 335 communities (326 shown, 9 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 90 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `42f60a1e`
+- Built from commit: `38d341cd`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -182,32 +182,36 @@
 - [[_COMMUNITY_Community 172|Community 172]]
 - [[_COMMUNITY_Community 174|Community 174]]
 - [[_COMMUNITY_Community 249|Community 249]]
+- [[_COMMUNITY_Community 250|Community 250]]
+- [[_COMMUNITY_Community 252|Community 252]]
+- [[_COMMUNITY_Community 253|Community 253]]
+- [[_COMMUNITY_Community 254|Community 254]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `SystemInit` - 30 edges
+1. `SystemInit` - 31 edges
 2. `SystemInit` - 30 edges
 3. `run()` - 24 edges
 4. `krun::config::system::common()` - 19 edges
 5. `krun::check::system_troubleshoot::common()` - 18 edges
 6. `krun::check::system_troubleshoot::common()` - 18 edges
 7. `require_root()` - 17 edges
-8. `krun::init::system::common()` - 17 edges
+8. `require_root()` - 17 edges
 9. `krun::init::system::common()` - 17 edges
-10. `Krun - 运维自动化脚本工具集` - 16 edges
+10. `krun::init::system::common()` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `install_docker()` --calls--> `read_os_release()`  [INFERRED]
-  lib/py/handlers/install.py → lib/py/krun_common.py
-- `config_git_global()` --calls--> `run()`  [INFERRED]
-  lib/py/handlers/config.py → lib/py/krun_common.py
-- `reset_git_history()` --calls--> `run()`  [INFERRED]
-  lib/py/handlers/config.py → lib/py/krun_common.py
-- `install_oh_my_zsh()` --calls--> `run()`  [INFERRED]
-  lib/py/handlers/install.py → lib/py/krun_common.py
-- `install_zsh()` --calls--> `install_packages()`  [INFERRED]
-  lib/py/handlers/install.py → lib/py/krun_common.py
+  lib/py/krun/handlers/install.py → lib/py/krun_common.py
+- `_init_system()` --calls--> `main()`  [INFERRED]
+  lib/py/registry.py → lib/py/generate_wrappers.py
+- `_prometheus_exporter()` --calls--> `write_if_changed()`  [INFERRED]
+  lib/py/krun/registry.py → lib/py/krun/common.py
+- `_prometheus_exporter()` --calls--> `service_enable()`  [INFERRED]
+  lib/py/krun/registry.py → lib/py/krun/common.py
+- `config_rpm_repo()` --calls--> `require_root()`  [INFERRED]
+  lib/py/krun/handlers/config.py → lib/py/krun/common.py
 
-## Communities (250 total, 5 thin omitted)
+## Communities (335 total, 9 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.16
@@ -271,11 +275,11 @@ Nodes (8): krun::install::centos(), krun::install::debian(), krun::install::inst
 
 ### Community 15 - "Community 15"
 Cohesion: 0.05
-Nodes (56): code:block1 (______), code:bash (# 自动格式化并挂载数据盘到 /data), code:bash (# 1. 在 handlers/ 添加逻辑，registry.py 注册名称), code:bash (# 重新运行安装脚本即可（会自动下载最新版本）), code:bash (# 使用 krun 工具查看脚本列表), code:bash (# 删除安装目录), code:bash (# 是的，install.sh 会自动检测并安装所需依赖：), code:block2 (lib/) (+48 more)
+Nodes (56): code:block1 (______), code:bash (# 自动格式化并挂载数据盘到 /data), code:bash (# 1. 在 krun/handlers/ 添加逻辑，krun/registry.py 注册名称), code:bash (# 重新运行安装脚本即可（会自动下载最新版本）), code:bash (# 使用 krun 工具查看脚本列表), code:bash (# 删除安装目录), code:bash (# 是的，install.sh 会自动检测并安装所需依赖：), code:block2 (lib/) (+48 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.07
-Nodes (45): config_disk_data(), config_fstab_guide(), config_git_global(), config_locale(), config_rpm_repo(), config_ssh_harden(), config_ssh_keys(), config_timezone() (+37 more)
+Cohesion: 0.09
+Nodes (62): config_disk_data(), config_fstab_guide(), config_git_global(), config_locale(), config_proxy(), config_rpm_repo(), config_ssh_harden(), config_ssh_keys() (+54 more)
 
 ### Community 17 - "Community 17"
 Cohesion: 0.36
@@ -858,24 +862,24 @@ Cohesion: 0.17
 Nodes (6): has_cmd(), main(), read_os_release(), run(), SystemInit, write_text()
 
 ## Knowledge Gaps
-- **18 isolated node(s):** `sh`, `py`, `code:block1 (______)`, `核心特性`, `系统配置` (+13 more)
+- **19 isolated node(s):** `sh`, `py`, `code:block1 (______)`, `核心特性`, `系统配置` (+14 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
+- **Why does `_prometheus_exporter()` connect `Community 16` to `Community 250`?**
+  _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **Are the 17 inferred relationships involving `run()` (e.g. with `config_rpm_repo()` and `config_timezone()`) actually correct?**
   _`run()` has 17 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `sh`, `py`, `Ops: disk cleanup, crane, deploy, media.` to the rest of the system?**
+- **What connects `sh`, `py`, `Krun Python core: bootstrap, registry, handlers.` to the rest of the system?**
   _20 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 15` be split into smaller, more focused modules?**
   _Cohesion score 0.05263157894736842 - nodes in this community are weakly interconnected._
 - **Should `Community 16` be split into smaller, more focused modules?**
-  _Cohesion score 0.0670762928827445 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08568075117370892 - nodes in this community are weakly interconnected._
 - **Should `Community 86` be split into smaller, more focused modules?**
   _Cohesion score 0.12688172043010754 - nodes in this community are weakly interconnected._
 - **Should `Community 93` be split into smaller, more focused modules?**
   _Cohesion score 0.13756613756613756 - nodes in this community are weakly interconnected._
-- **Should `Community 96` be split into smaller, more focused modules?**
-  _Cohesion score 0.13763440860215054 - nodes in this community are weakly interconnected._

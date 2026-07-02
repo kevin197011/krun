@@ -61,30 +61,35 @@ _  ,<  _  /   / /_/ /_  / / /
 
     def resolve_script_path(self, script_name):
         if '/' in script_name:
-            return f"lib/{script_name.lstrip('/')}"
+            rel = script_name.lstrip('/')
+            if rel.startswith('scripts/'):
+                return f'lib/py/{rel}'
+            return f'lib/{rel}'
 
         legacy = script_name.replace('.sh', '').replace('.py', '').replace('-', '_')
-        py_path = os.path.join(self.repo_root, 'lib', 'py', f'{legacy}.py')
+        py_new = os.path.join(self.repo_root, 'lib', 'py', 'scripts', f'{legacy}.py')
+        py_old = os.path.join(self.repo_root, 'lib', 'py', f'{legacy}.py')
         sh_path = os.path.join(self.repo_root, 'lib', 'sh', script_name if script_name.endswith('.sh') else f'{legacy.replace("_", "-")}.sh')
 
-        # migrated scripts: prefer local py, then remote py via manifest
-        if os.path.isfile(py_path):
-            return f"lib/py/{legacy}.py"
+        if os.path.isfile(py_new):
+            return f'lib/py/scripts/{legacy}.py'
+        if os.path.isfile(py_old):
+            return f'lib/py/{legacy}.py'
         _, py_scripts = self.get_script_list()
         if f'{legacy}.py' in py_scripts:
-            return f"lib/py/{legacy}.py"
+            return f'lib/py/scripts/{legacy}.py'
 
         if os.path.isfile(sh_path):
-            return f"lib/sh/{os.path.basename(sh_path)}"
+            return f'lib/sh/{os.path.basename(sh_path)}'
         sh_scripts, _ = self.get_script_list()
         for name in sh_scripts:
             if name.removesuffix('.sh').replace('-', '_') == legacy:
-                return f"lib/sh/{name}"
+                return f'lib/sh/{name}'
 
         lang = self.script_lang(script_name)
         if lang == 'py' or script_name.endswith('.py'):
-            return f"lib/py/{legacy}.py"
-        return f"lib/sh/{script_name if script_name.endswith('.sh') else legacy.replace('_', '-') + '.sh'}"
+            return f'lib/py/scripts/{legacy}.py'
+        return f'lib/sh/{script_name if script_name.endswith(".sh") else legacy.replace("_", "-") + ".sh"}'
 
     def get_interpreter(self, filename, content=None):
         ext = self.get_extension(filename)
@@ -230,7 +235,7 @@ _  ,<  _  /   / /_/ /_  / / /
             print()
 
         if py_scripts:
-            print("🐍 python scripts (lib/py/)")
+            print("🐍 python scripts (lib/py/scripts/)")
             print("─" * 40)
             for script in py_scripts:
                 print(f"    [{num:2}] {script}")
@@ -248,7 +253,7 @@ _  ,<  _  /   / /_/ /_  / / /
         print(self.BANNER)
         print("\nsupported:")
         print("  ✓ shell  lib/sh/*.sh   interpreter: bash")
-        print("  ✓ python lib/py/*.py   interpreter: python3")
+        print("  ✓ python lib/py/scripts/*.py   interpreter: python3")
 
     def show_help(self):
         print(self.BANNER)
