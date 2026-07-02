@@ -1,16 +1,16 @@
 # Graph Report - krun  (2026-07-02)
 
 ## Corpus Check
-- 88 files · ~45,778 words
+- 87 files · ~45,369 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 740 nodes · 1168 edges · 93 communities (90 shown, 3 thin omitted)
+- 799 nodes · 1305 edges · 94 communities (91 shown, 3 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e74e4756`
+- Built from commit: `11085545`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -101,29 +101,31 @@
 - [[_COMMUNITY_Community 83|Community 83]]
 - [[_COMMUNITY_Community 84|Community 84]]
 - [[_COMMUNITY_Community 85|Community 85]]
+- [[_COMMUNITY_Community 86|Community 86]]
 - [[_COMMUNITY_Community 87|Community 87]]
 - [[_COMMUNITY_Community 88|Community 88]]
+- [[_COMMUNITY_Community 93|Community 93]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `krun::check::system_troubleshoot::common()` - 18 edges
-2. `krun::check::system_troubleshoot::title()` - 14 edges
-3. `Krun - 运维自动化脚本工具集` - 14 edges
-4. `krun::check::system_troubleshoot::cmd()` - 13 edges
-5. `krun::disk::analyze_cleanup::run_clean()` - 12 edges
-6. `krun::install::helm::common()` - 9 edges
-7. `krun::disk::analyze_cleanup::has()` - 9 edges
-8. `krun::disk::analyze_cleanup::common()` - 9 edges
-9. `krun::config::git::common()` - 9 edges
-10. `krun::install::git::binary_install()` - 9 edges
+1. `krun::config::system::common()` - 19 edges
+2. `krun::check::system_troubleshoot::common()` - 18 edges
+3. `krun::init::system::common()` - 17 edges
+4. `krun::disk::analyze_cleanup::run_clean()` - 15 edges
+5. `krun::check::system_troubleshoot::title()` - 14 edges
+6. `Krun - 运维自动化脚本工具集` - 14 edges
+7. `krun::check::system_troubleshoot::cmd()` - 13 edges
+8. `krun::install::helm::common()` - 9 edges
+9. `krun::disk::analyze_cleanup::has()` - 9 edges
+10. `krun::disk::analyze_cleanup::run_cmd()` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
 - None detected - all connections are within the same source files.
 
-## Communities (93 total, 3 thin omitted)
+## Communities (94 total, 3 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.15
-Nodes (32): krun::disk::analyze_cleanup::add_freed(), krun::disk::analyze_cleanup::analyze_targets(), krun::disk::analyze_cleanup::centos(), krun::disk::analyze_cleanup::cleanup_action(), krun::disk::analyze_cleanup::cleanup_docker(), krun::disk::analyze_cleanup::cleanup_journal(), krun::disk::analyze_cleanup::cleanup_old_kernels(), krun::disk::analyze_cleanup::cleanup_package_cache() (+24 more)
+Cohesion: 0.16
+Nodes (37): krun::disk::analyze_cleanup::add_freed(), krun::disk::analyze_cleanup::analyze_targets(), krun::disk::analyze_cleanup::centos(), krun::disk::analyze_cleanup::cleanup_action(), krun::disk::analyze_cleanup::cleanup_docker(), krun::disk::analyze_cleanup::cleanup_journal(), krun::disk::analyze_cleanup::cleanup_old_kernels(), krun::disk::analyze_cleanup::cleanup_package_cache() (+29 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.19
@@ -461,6 +463,14 @@ Nodes (4): 主要功能, 服务部署, 系统配置, 运维工具
 Cohesion: 0.50
 Nodes (4): code:bash (# 参考模板创建), 创建新脚本, 开发者指南, 脚本标准格式
 
+### Community 86 - "Community 86"
+Cohesion: 0.13
+Nodes (29): krun::config::system::backup_configs(), krun::config::system::centos(), krun::config::system::check_debian_version(), krun::config::system::check_rhel_version(), krun::config::system::common(), krun::config::system::configure_bbr(), krun::config::system::configure_cpufreq(), krun::config::system::configure_filesystem() (+21 more)
+
+### Community 93 - "Community 93"
+Cohesion: 0.14
+Nodes (26): krun::init::system::backup_configs(), krun::init::system::centos(), krun::init::system::check_debian_version(), krun::init::system::check_rhel_version(), krun::init::system::common(), krun::init::system::configure_cpufreq(), krun::init::system::configure_filesystem(), krun::init::system::configure_io() (+18 more)
+
 ## Knowledge Gaps
 - **33 isolated node(s):** `files`, `TEST_NODES`, `code:block1 (______)`, `核心特性`, `系统配置` (+28 more)
   These have ≤1 connection - possible missing edges or undocumented components.
@@ -472,10 +482,12 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `Krun - 运维自动化脚本工具集` connect `Community 16` to `Community 32`, `Community 15`, `Community 84`, `Community 85`, `Community 20`, `Community 26`?**
   _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **Why does `常见问题` connect `Community 15` to `Community 16`?**
-  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+  _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **Why does `使用示例` connect `Community 20` to `Community 16`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `files`, `TEST_NODES`, `code:block1 (______)` to the rest of the system?**
   _33 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.1495798319327731 - nodes in this community are weakly interconnected._
+- **Should `Community 86` be split into smaller, more focused modules?**
+  _Cohesion score 0.12688172043010754 - nodes in this community are weakly interconnected._
+- **Should `Community 93` be split into smaller, more focused modules?**
+  _Cohesion score 0.13756613756613756 - nodes in this community are weakly interconnected._

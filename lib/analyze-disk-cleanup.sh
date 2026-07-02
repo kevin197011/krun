@@ -11,24 +11,23 @@ set -o pipefail
 # curl exec:
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/analyze-disk-cleanup.sh | sudo bash
 #
-# 一键智能磁盘分析 + 安全清理（可重复执行，默认仅做安全项）
+# Disk usage analysis and safe cleanup (idempotent, safe items only by default)
 #
-# MODE=analyze   仅分析，不清理
-# MODE=clean     执行安全清理（先输出简要分析）
-# MODE=auto      先分析，分区使用率 >= DISK_WARN_PERCENT 时自动安全清理（默认）
-#
-# DISK_TARGET_PATH=/data     重点分析指定目录（默认：使用率过高的挂载点）
-# DISK_WARN_PERCENT=80       告警阈值（%）
-# DISK_CRIT_PERCENT=90       严重阈值（%）
-# CLEAN_DRY_RUN=1            预演：只显示将清理的内容，不实际删除
-# CLEAN_JOURNAL_DAYS=7       journal 保留天数
-# CLEAN_LOG_DAYS=30          压缩/轮转日志保留天数
-# CLEAN_TMP_DAYS=7           /tmp 文件保留天数
-# TOP_N=15                   目录占用 Top N
-# MIN_FILE_SIZE_MB=100       大文件报告阈值（MB）
-# DOCKER_PRUNE=0             1=执行 docker system prune -f
-# CLEAN_KERNELS=0            1=清理旧内核（yum/dnf/apt）
-# OUT=                        报告输出路径（默认 /tmp/krun-disk-*.log）
+# MODE=analyze          report only
+# MODE=clean            analyze then clean
+# MODE=auto             analyze; clean if usage >= DISK_WARN_PERCENT (default)
+# DISK_TARGET_PATH=     focus path (default: stressed mounts or /)
+# DISK_WARN_PERCENT=80  warn threshold (%)
+# DISK_CRIT_PERCENT=90  critical threshold (%)
+# CLEAN_DRY_RUN=1       preview only, no deletes
+# CLEAN_JOURNAL_DAYS=7
+# CLEAN_LOG_DAYS=30
+# CLEAN_TMP_DAYS=7
+# TOP_N=15
+# MIN_FILE_SIZE_MB=100
+# DOCKER_PRUNE=0        set 1 to run docker system prune -f
+# CLEAN_KERNELS=0       set 1 to remove old kernels
+# OUT=                  report path (default /tmp/krun-disk-*.log)
 
 # vars
 MODE=${MODE:-auto}
@@ -44,41 +43,24 @@ MIN_FILE_SIZE_MB=${MIN_FILE_SIZE_MB:-100}
 DOCKER_PRUNE=${DOCKER_PRUNE:-0}
 CLEAN_KERNELS=${CLEAN_KERNELS:-0}
 OUT=${OUT:-}
-
 FREED_BYTES=0
+stressed_mounts=()
 
 # run code
 krun::disk::analyze_cleanup::run() {
-    local platform='debian'
-    [[ "$(uname -s 2>/dev/null || true)" == "Darwin" ]] && platform='mac'
-    command -v yum >/dev/null 2>&1 && platform='centos'
-    command -v dnf >/dev/null 2>&1 && platform='centos'
-    eval "${FUNCNAME/::run/::${platform}}"
-}
-
-krun::disk::analyze_cleanup::centos() { krun::disk::analyze_cleanup::common; }
-krun::disk::analyze_cleanup::debian() { krun::disk::analyze_cleanup::common; }
-krun::disk::analyze_cleanup::mac() { krun::disk::analyze_cleanup::common; }
-
-krun::disk::analyze_cleanup::now() {
-    date '+%Y-%m-%d %H:%M:%S' 2>/dev/null || date
-}
-
-krun::disk::analyze_cleanup::hr() {
-    echo "----------------------------------------"
-}
-
-krun::disk::analyze_cleanup::title() {
-    echo ""
-    echo "### $1"
-    krun::disk::analyze_cleanup::hr
+    krun::disk::analyze_cleanup::main "$@"
 }
 
 krun::disk::analyze_cleanup::has() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# 目录字节数（失败返回 0）
+krun::disk::analyze_cleanup::section() {
+    echo ""
+    echo "### $1"
+    echo "----------------------------------------"
+}
+
 krun::disk::analyze_cleanup::dir_bytes() {
     local path="$1"
     [[ -e "$path" ]] || {
@@ -97,68 +79,71 @@ krun::disk::analyze_cleanup::human_bytes() {
     if krun::disk::analyze_cleanup::has numfmt; then
         numfmt --to=iec-i --suffix=B "$bytes" 2>/dev/null && return 0
     fi
-    awk -v b="$bytes" '
-        function fmt(x,u) { return sprintf("%.1f%s", x, u) }
-        BEGIN {
-            if (b >= 1099511627776) print fmt(b/1099511627776,"TiB")
-            else if (b >= 1073741824) print fmt(b/1073741824,"GiB")
-            else if (b >= 1048576) print fmt(b/1048576,"MiB")
-            else if (b >= 1024) print fmt(b/1024,"KiB")
-            else print b"B"
-        }'
-}
-
-krun::disk::analyze_cleanup::mount_use_percent() {
-    local target="$1"
-    df -P "$target" 2>/dev/null | awk 'NR==2 {gsub(/%/,"",$5); print $5}' || echo 0
+    awk -v b="$bytes" 'BEGIN {
+        if (b >= 1099511627776) printf "%.1fTiB", b/1099511627776
+        else if (b >= 1073741824) printf "%.1fGiB", b/1073741824
+        else if (b >= 1048576) printf "%.1fMiB", b/1048576
+        else if (b >= 1024) printf "%.1fKiB", b/1024
+        else print b"B"
+    }'
 }
 
 krun::disk::analyze_cleanup::add_freed() {
-    local before="$1" after="$2"
-    local delta=$((before - after))
+    local delta=$(($1 - $2))
     [[ "$delta" -gt 0 ]] && FREED_BYTES=$((FREED_BYTES + delta))
+}
+
+krun::disk::analyze_cleanup::collect_stressed_mounts() {
+    stressed_mounts=()
+    local line mount pct
+    while IFS= read -r line; do
+        mount=$(awk '{print $NF}' <<<"$line")
+        pct=$(awk '{gsub(/%/,"",$5); print $5}' <<<"$line")
+        [[ "$mount" =~ ^/ ]] && [[ "$pct" =~ ^[0-9]+$ ]] && [[ "$pct" -ge "$DISK_WARN_PERCENT" ]] &&
+            stressed_mounts+=("$mount:$pct")
+    done < <(df -P -h 2>/dev/null | awk 'NR>1')
+}
+
+krun::disk::analyze_cleanup::run_shell() {
+    echo ""
+    echo "## $1"
+    echo "\$ $2"
+    set +o errexit
+    bash -c "$2" 2>&1 || true
+    set -o errexit
 }
 
 krun::disk::analyze_cleanup::run_cmd() {
     local label="$1"
-    local cmd="$2"
+    shift
     echo ""
     echo "## $label"
-    echo "\$ $cmd"
+    if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
+        echo "[DRY-RUN] $*"
+        return 0
+    fi
     set +o errexit
-    bash -c "$cmd" 2>&1 || true
+    "$@" 2>&1
+    local status=$?
     set -o errexit
+    [[ "$status" -eq 0 ]] && echo "✓ $label" || echo "⚠ $label failed (exit $status)"
+    return "$status"
 }
 
 krun::disk::analyze_cleanup::section_overview() {
-    krun::disk::analyze_cleanup::title "磁盘总览"
-    krun::disk::analyze_cleanup::run_cmd "df -h" "df -h"
-    krun::disk::analyze_cleanup::run_cmd "inode" "df -hi 2>/dev/null || true"
-    if krun::disk::analyze_cleanup::has lsblk; then
-        krun::disk::analyze_cleanup::run_cmd "lsblk" "lsblk 2>/dev/null || true"
-    fi
-}
-
-krun::disk::analyze_cleanup::collect_stressed_mounts() {
-    local line mount pct use
-    stressed_mounts=()
-    while IFS= read -r line; do
-        mount=$(echo "$line" | awk '{print $NF}')
-        pct=$(echo "$line" | awk '{gsub(/%/,"",$5); print $5}')
-        [[ "$mount" =~ ^/ ]] || continue
-        [[ "$pct" =~ ^[0-9]+$ ]] || continue
-        if [[ "$pct" -ge "$DISK_WARN_PERCENT" ]]; then
-            stressed_mounts+=("$mount:$pct")
-        fi
-    done < <(df -P -h 2>/dev/null | awk 'NR>1')
+    krun::disk::analyze_cleanup::section "disk overview"
+    krun::disk::analyze_cleanup::run_shell "df -h" "df -h"
+    krun::disk::analyze_cleanup::run_shell "inodes" "df -hi 2>/dev/null || true"
+    krun::disk::analyze_cleanup::has lsblk &&
+        krun::disk::analyze_cleanup::run_shell "lsblk" "lsblk 2>/dev/null || true"
 }
 
 krun::disk::analyze_cleanup::section_stressed_mounts() {
-    krun::disk::analyze_cleanup::title "高占用分区 (>= ${DISK_WARN_PERCENT}%)"
+    krun::disk::analyze_cleanup::section "stressed mounts (>= ${DISK_WARN_PERCENT}%)"
     krun::disk::analyze_cleanup::collect_stressed_mounts
 
     if [[ "${#stressed_mounts[@]}" -eq 0 ]]; then
-        echo "✓ 未发现使用率 >= ${DISK_WARN_PERCENT}% 的分区"
+        echo "✓ no mount above ${DISK_WARN_PERCENT}%"
         return 0
     fi
 
@@ -168,78 +153,60 @@ krun::disk::analyze_cleanup::section_stressed_mounts() {
         pct="${item##*:}"
         level="WARN"
         [[ "$pct" -ge "$DISK_CRIT_PERCENT" ]] && level="CRIT"
-        echo "[$level] ${mount} 使用率 ${pct}%"
+        echo "[$level] $mount ${pct}%"
     done
 }
 
 krun::disk::analyze_cleanup::section_dir_top() {
     local target="$1"
-    krun::disk::analyze_cleanup::title "目录占用 Top ${TOP_N}: ${target}"
-
-    if [[ ! -d "$target" ]]; then
-        echo "✗ 目录不存在: ${target}"
+    krun::disk::analyze_cleanup::section "top ${TOP_N} dirs: ${target}"
+    [[ -d "$target" ]] || {
+        echo "✗ not found: $target"
         return 0
-    fi
-
-    krun::disk::analyze_cleanup::run_cmd "du top" \
+    }
+    krun::disk::analyze_cleanup::run_shell "du" \
         "du -xh --max-depth=1 '${target}' 2>/dev/null | sort -hr | head -n $((TOP_N + 1)) || du -sh '${target}'/* 2>/dev/null | sort -hr | head -n ${TOP_N} || true"
-}
-
-krun::disk::analyze_cleanup::section_known_hogs() {
-    krun::disk::analyze_cleanup::title "常见占用源"
-
-    local path bytes label
-    local -a checks=(
-        "/var/log:系统日志"
-        "/var/cache:软件包/应用缓存"
-        "/tmp:临时文件"
-        "/var/tmp:临时文件"
-        "/var/crash:崩溃转储"
-    )
-
-    for label in "${checks[@]}"; do
-        path="${label%%:*}"
-        label="${label##*:}"
-        [[ -e "$path" ]] || continue
-        bytes=$(krun::disk::analyze_cleanup::dir_bytes "$path")
-        echo "${label} (${path}): $(krun::disk::analyze_cleanup::human_bytes "$bytes")"
-    done
-
-    if krun::disk::analyze_cleanup::has journalctl; then
-        echo ""
-        echo "## systemd journal"
-        journalctl --disk-usage 2>/dev/null || true
-    fi
-
-    if krun::disk::analyze_cleanup::has docker && [[ -d /var/lib/docker ]]; then
-        bytes=$(krun::disk::analyze_cleanup::dir_bytes /var/lib/docker)
-        echo "Docker (/var/lib/docker): $(krun::disk::analyze_cleanup::human_bytes "$bytes")"
-        docker system df 2>/dev/null || true
-    fi
 }
 
 krun::disk::analyze_cleanup::section_large_files() {
     local target="$1"
-    krun::disk::analyze_cleanup::title "大文件 (>= ${MIN_FILE_SIZE_MB}MB): ${target}"
-
-    if [[ ! -d "$target" ]]; then
-        echo "✗ 目录不存在: ${target}"
+    krun::disk::analyze_cleanup::section "large files (>= ${MIN_FILE_SIZE_MB}MB): ${target}"
+    [[ -d "$target" ]] || {
+        echo "✗ not found: $target"
         return 0
-    fi
-
-    krun::disk::analyze_cleanup::run_cmd "find large files" \
+    }
+    krun::disk::analyze_cleanup::run_shell "find" \
         "find '${target}' -xdev -type f -size +${MIN_FILE_SIZE_MB}M -printf '%s %p\n' 2>/dev/null | sort -nr | head -n ${TOP_N} | awk '{printf \"%.1fM %s\\n\", \$1/1048576, \$2}' || find '${target}' -type f -size +${MIN_FILE_SIZE_MB}M -exec ls -lh {} + 2>/dev/null | sort -k5 -hr | head -n ${TOP_N} || true"
+}
+
+krun::disk::analyze_cleanup::section_known_hogs() {
+    krun::disk::analyze_cleanup::section "common space consumers"
+    local path bytes
+    for path in /var/log /var/cache /tmp /var/tmp /var/crash; do
+        [[ -e "$path" ]] || continue
+        bytes=$(krun::disk::analyze_cleanup::dir_bytes "$path")
+        echo "$path: $(krun::disk::analyze_cleanup::human_bytes "$bytes")"
+    done
+    if krun::disk::analyze_cleanup::has journalctl; then
+        echo ""
+        echo "## journal"
+        journalctl --disk-usage 2>/dev/null || true
+    fi
+    if krun::disk::analyze_cleanup::has docker && [[ -d /var/lib/docker ]]; then
+        bytes=$(krun::disk::analyze_cleanup::dir_bytes /var/lib/docker)
+        echo "docker (/var/lib/docker): $(krun::disk::analyze_cleanup::human_bytes "$bytes")"
+        docker system df 2>/dev/null || true
+    fi
 }
 
 krun::disk::analyze_cleanup::analyze_targets() {
     local -a targets=()
-
     if [[ -n "$DISK_TARGET_PATH" ]]; then
         targets+=("$DISK_TARGET_PATH")
     else
         krun::disk::analyze_cleanup::collect_stressed_mounts
-        local item mount
         if [[ "${#stressed_mounts[@]}" -gt 0 ]]; then
+            local item
             for item in "${stressed_mounts[@]}"; do
                 targets+=("${item%%:*}")
             done
@@ -247,7 +214,6 @@ krun::disk::analyze_cleanup::analyze_targets() {
             targets+=("/")
         fi
     fi
-
     local t
     for t in "${targets[@]}"; do
         krun::disk::analyze_cleanup::section_dir_top "$t"
@@ -255,145 +221,86 @@ krun::disk::analyze_cleanup::analyze_targets() {
     done
 }
 
-krun::disk::analyze_cleanup::needs_cleanup() {
-    krun::disk::analyze_cleanup::collect_stressed_mounts
-    [[ "${#stressed_mounts[@]}" -gt 0 ]]
-}
-
-krun::disk::analyze_cleanup::cleanup_action() {
-    local label="$1"
-    local before after
-    shift
-    local -a cmd=("$@")
-
-    echo ""
-    echo "## ${label}"
-    if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
-        echo "[DRY-RUN] ${cmd[*]}"
-        return 0
-    fi
-
-    before=0
-    after=0
-    case "$label" in
-        *journal*)
-            before=$(krun::disk::analyze_cleanup::dir_bytes /var/log/journal 2>/dev/null || echo 0)
-            ;;
-        *yum*|*dnf*|*apt*)
-            before=$(krun::disk::analyze_cleanup::dir_bytes /var/cache 2>/dev/null || echo 0)
-            ;;
-        *tmp*)
-            before=$(krun::disk::analyze_cleanup::dir_bytes /tmp 2>/dev/null || echo 0)
-            ;;
-    esac
-
-    set +o errexit
-    "${cmd[@]}" 2>&1
-    local status=$?
-    set -o errexit
-    [[ "$status" -eq 0 ]] && echo "✓ ${label}" || echo "⚠ ${label} 部分失败 (exit ${status})"
-
-    case "$label" in
-        *journal*)
-            after=$(krun::disk::analyze_cleanup::dir_bytes /var/log/journal 2>/dev/null || echo 0)
-            krun::disk::analyze_cleanup::add_freed "$before" "$after"
-            ;;
-        *yum*|*dnf*|*apt*)
-            after=$(krun::disk::analyze_cleanup::dir_bytes /var/cache 2>/dev/null || echo 0)
-            krun::disk::analyze_cleanup::add_freed "$before" "$after"
-            ;;
-        *tmp*)
-            after=$(krun::disk::analyze_cleanup::dir_bytes /tmp 2>/dev/null || echo 0)
-            krun::disk::analyze_cleanup::add_freed "$before" "$after"
-            ;;
-    esac
-}
-
 krun::disk::analyze_cleanup::cleanup_journal() {
     krun::disk::analyze_cleanup::has journalctl || return 0
-    krun::disk::analyze_cleanup::cleanup_action \
-        "journal 清理 (保留 ${CLEAN_JOURNAL_DAYS} 天)" \
+    local before after
+    before=$(krun::disk::analyze_cleanup::dir_bytes /var/log/journal)
+    krun::disk::analyze_cleanup::run_cmd "journal (keep ${CLEAN_JOURNAL_DAYS}d)" \
         journalctl --vacuum-time="${CLEAN_JOURNAL_DAYS}d"
+    after=$(krun::disk::analyze_cleanup::dir_bytes /var/log/journal)
+    krun::disk::analyze_cleanup::add_freed "$before" "$after"
 }
 
 krun::disk::analyze_cleanup::cleanup_rotated_logs() {
-    local path count=0
-    for path in /var/log; do
-        [[ -d "$path" ]] || continue
-        echo ""
-        echo "## 轮转/过期日志 (${path}, >${CLEAN_LOG_DAYS} 天)"
-        if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
-            find "$path" -type f \( -name '*.gz' -o -name '*.xz' -o -name '*.1' -o -name '*.old' \) \
-                -mtime +"${CLEAN_LOG_DAYS}" -print 2>/dev/null | head -n 50
-            echo "[DRY-RUN] find ... -delete"
-            continue
-        fi
-        count=$(find "$path" -type f \( -name '*.gz' -o -name '*.xz' -o -name '*.1' -o -name '*.old' \) \
-            -mtime +"${CLEAN_LOG_DAYS}" -print -delete 2>/dev/null | wc -l | tr -d ' ')
-        echo "✓ 已删除 ${count} 个过期日志文件"
-    done
+    local path=/var/log count=0
+    [[ -d "$path" ]] || return 0
+    echo ""
+    echo "## rotated logs (>${CLEAN_LOG_DAYS}d) in $path"
+    if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
+        find "$path" -type f \( -name '*.gz' -o -name '*.xz' -o -name '*.1' -o -name '*.old' \) \
+            -mtime +"${CLEAN_LOG_DAYS}" -print 2>/dev/null | head -n 50
+        echo "[DRY-RUN] find ... -delete"
+        return 0
+    fi
+    count=$(find "$path" -type f \( -name '*.gz' -o -name '*.xz' -o -name '*.1' -o -name '*.old' \) \
+        -mtime +"${CLEAN_LOG_DAYS}" -print -delete 2>/dev/null | wc -l | tr -d ' ')
+    echo "✓ removed $count stale log files"
 }
 
 krun::disk::analyze_cleanup::cleanup_package_cache() {
+    local before after
+    before=$(krun::disk::analyze_cleanup::dir_bytes /var/cache)
     if krun::disk::analyze_cleanup::has dnf; then
-        krun::disk::analyze_cleanup::cleanup_action "dnf 缓存" dnf clean all
+        krun::disk::analyze_cleanup::run_cmd "dnf cache" dnf clean all
     elif krun::disk::analyze_cleanup::has yum; then
-        krun::disk::analyze_cleanup::cleanup_action "yum 缓存" yum clean all
+        krun::disk::analyze_cleanup::run_cmd "yum cache" yum clean all
     fi
     if krun::disk::analyze_cleanup::has apt-get; then
-        krun::disk::analyze_cleanup::cleanup_action "apt 缓存" apt-get clean
-        krun::disk::analyze_cleanup::cleanup_action "apt 自动清理" apt-get autoclean -y
+        krun::disk::analyze_cleanup::run_cmd "apt cache" apt-get clean
+        krun::disk::analyze_cleanup::run_cmd "apt autoclean" apt-get autoclean -y
     fi
+    after=$(krun::disk::analyze_cleanup::dir_bytes /var/cache)
+    krun::disk::analyze_cleanup::add_freed "$before" "$after"
 }
 
-krun::disk::analyze_cleanup::cleanup_tmp() {
-    [[ -d /tmp ]] || return 0
+krun::disk::analyze_cleanup::cleanup_stale_tmp() {
+    local dir="$1"
+    [[ -d "$dir" ]] || return 0
     echo ""
-    echo "## /tmp 过期文件 (>${CLEAN_TMP_DAYS} 天未访问)"
+    echo "## stale files in $dir (>${CLEAN_TMP_DAYS}d)"
     if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
-        find /tmp -mindepth 1 -maxdepth 1 -type f -atime +"${CLEAN_TMP_DAYS}" -print 2>/dev/null | head -n 30
-        echo "[DRY-RUN] find /tmp ... -type f -atime +${CLEAN_TMP_DAYS} -delete"
+        find "$dir" -mindepth 1 -maxdepth 1 -type f -atime +"${CLEAN_TMP_DAYS}" -print 2>/dev/null | head -n 30
+        echo "[DRY-RUN] find $dir ... -delete"
         return 0
     fi
-    local count
-    count=$(find /tmp -mindepth 1 -maxdepth 1 -type f -atime +"${CLEAN_TMP_DAYS}" -print -delete 2>/dev/null | wc -l | tr -d ' ')
-    echo "✓ 已删除 ${count} 个 /tmp 过期文件"
-}
-
-krun::disk::analyze_cleanup::cleanup_var_tmp() {
-    [[ -d /var/tmp ]] || return 0
-    echo ""
-    echo "## /var/tmp 过期文件 (>${CLEAN_TMP_DAYS} 天未访问)"
-    if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
-        find /var/tmp -mindepth 1 -maxdepth 1 -type f -atime +"${CLEAN_TMP_DAYS}" -print 2>/dev/null | head -n 30
-        echo "[DRY-RUN] find /var/tmp ... -delete"
-        return 0
-    fi
-    local count
-    count=$(find /var/tmp -mindepth 1 -maxdepth 1 -type f -atime +"${CLEAN_TMP_DAYS}" -print -delete 2>/dev/null | wc -l | tr -d ' ')
-    echo "✓ 已删除 ${count} 个 /var/tmp 过期文件"
+    local before after count
+    before=$(krun::disk::analyze_cleanup::dir_bytes "$dir")
+    count=$(find "$dir" -mindepth 1 -maxdepth 1 -type f -atime +"${CLEAN_TMP_DAYS}" -print -delete 2>/dev/null | wc -l | tr -d ' ')
+    after=$(krun::disk::analyze_cleanup::dir_bytes "$dir")
+    krun::disk::analyze_cleanup::add_freed "$before" "$after"
+    echo "✓ removed $count stale files from $dir"
 }
 
 krun::disk::analyze_cleanup::cleanup_pip_cache() {
-    krun::disk::analyze_cleanup::has pip3 || krun::disk::analyze_cleanup::has pip || return 0
-    local pip_cmd=pip3
-    krun::disk::analyze_cleanup::has pip3 || pip_cmd=pip
-    krun::disk::analyze_cleanup::cleanup_action "pip 缓存" "$pip_cmd" cache purge
+    local pip_cmd=
+    krun::disk::analyze_cleanup::has pip3 && pip_cmd=pip3
+    krun::disk::analyze_cleanup::has pip && pip_cmd=pip
+    [[ -n "$pip_cmd" ]] || return 0
+    krun::disk::analyze_cleanup::run_cmd "pip cache" "$pip_cmd" cache purge
 }
 
 krun::disk::analyze_cleanup::cleanup_docker() {
     [[ "$DOCKER_PRUNE" == "1" ]] || return 0
     krun::disk::analyze_cleanup::has docker || return 0
-    krun::disk::analyze_cleanup::cleanup_action "Docker 未使用资源" docker system prune -f
+    krun::disk::analyze_cleanup::run_cmd "docker prune" docker system prune -f
 }
 
 krun::disk::analyze_cleanup::cleanup_old_kernels() {
     [[ "$CLEAN_KERNELS" == "1" ]] || return 0
     if krun::disk::analyze_cleanup::has package-cleanup; then
-        krun::disk::analyze_cleanup::cleanup_action "旧内核 (package-cleanup)" \
-            package-cleanup --oldkernels --count=1 -y
+        krun::disk::analyze_cleanup::run_cmd "old kernels" package-cleanup --oldkernels --count=1 -y
     elif krun::disk::analyze_cleanup::has apt-get; then
-        krun::disk::analyze_cleanup::cleanup_action "旧内核 (autoremove)" apt-get autoremove -y
+        krun::disk::analyze_cleanup::run_cmd "old kernels" apt-get autoremove -y
     fi
 }
 
@@ -405,78 +312,69 @@ krun::disk::analyze_cleanup::run_analyze() {
 }
 
 krun::disk::analyze_cleanup::run_clean() {
-    krun::disk::analyze_cleanup::title "安全清理"
-    [[ "$CLEAN_DRY_RUN" == "1" ]] && echo ">>> DRY-RUN 模式：仅预演，不实际删除"
-    echo "清理项: journal / 轮转日志 / 包管理器缓存 / tmp / pip"
-    echo "可选: DOCKER_PRUNE=1 CLEAN_KERNELS=1"
+    krun::disk::analyze_cleanup::section "safe cleanup"
+    [[ "$CLEAN_DRY_RUN" == "1" ]] && echo ">>> DRY-RUN: no files will be deleted"
+    echo "items: journal, rotated logs, package cache, tmp, pip"
+    echo "optional: DOCKER_PRUNE=1 CLEAN_KERNELS=1"
 
     krun::disk::analyze_cleanup::cleanup_journal
     krun::disk::analyze_cleanup::cleanup_rotated_logs
     krun::disk::analyze_cleanup::cleanup_package_cache
-    krun::disk::analyze_cleanup::cleanup_tmp
-    krun::disk::analyze_cleanup::cleanup_var_tmp
+    krun::disk::analyze_cleanup::cleanup_stale_tmp /tmp
+    krun::disk::analyze_cleanup::cleanup_stale_tmp /var/tmp
     krun::disk::analyze_cleanup::cleanup_pip_cache
     krun::disk::analyze_cleanup::cleanup_docker
     krun::disk::analyze_cleanup::cleanup_old_kernels
 
-    krun::disk::analyze_cleanup::title "清理后磁盘"
+    krun::disk::analyze_cleanup::section "disk after cleanup"
     df -h
     echo ""
-    echo "估算释放: $(krun::disk::analyze_cleanup::human_bytes "$FREED_BYTES")"
+    echo "estimated freed: $(krun::disk::analyze_cleanup::human_bytes "$FREED_BYTES")"
 }
 
-krun::disk::analyze_cleanup::write_header() {
-    echo "Krun Disk Analyze / Cleanup"
-    echo "Time: $(krun::disk::analyze_cleanup::now)"
-    echo "Host: $(hostname 2>/dev/null || echo unknown)"
-    echo "Mode: ${MODE}"
-    echo "DISK_WARN_PERCENT: ${DISK_WARN_PERCENT}%"
-    echo "DISK_TARGET_PATH: ${DISK_TARGET_PATH:-<auto>}"
-    echo "CLEAN_DRY_RUN: ${CLEAN_DRY_RUN}"
-    echo "Report: ${OUT}"
-    krun::disk::analyze_cleanup::hr
-}
-
-krun::disk::analyze_cleanup::common() {
+krun::disk::analyze_cleanup::main() {
     if [[ -z "$OUT" ]]; then
-        local ts
-        ts="$(date '+%Y%m%d-%H%M%S' 2>/dev/null || date)"
-        OUT="/tmp/krun-disk-${ts}.log"
+        OUT="/tmp/krun-disk-$(date '+%Y%m%d-%H%M%S' 2>/dev/null || date +%s).log"
     fi
 
-    stressed_mounts=()
-
     {
-        krun::disk::analyze_cleanup::write_header
+        echo "Krun disk analyze / cleanup"
+        echo "time: $(date '+%Y-%m-%d %H:%M:%S' 2>/dev/null || date)"
+        echo "host: $(hostname 2>/dev/null || echo unknown)"
+        echo "mode: $MODE"
+        echo "warn: ${DISK_WARN_PERCENT}%  target: ${DISK_TARGET_PATH:-<auto>}  dry-run: $CLEAN_DRY_RUN"
+        echo "report: $OUT"
+        echo "----------------------------------------"
 
         case "$MODE" in
-            analyze)
-                krun::disk::analyze_cleanup::run_analyze
-                ;;
-            clean)
-                krun::disk::analyze_cleanup::run_analyze
+        analyze)
+            krun::disk::analyze_cleanup::run_analyze
+            ;;
+        clean)
+            krun::disk::analyze_cleanup::run_analyze
+            krun::disk::analyze_cleanup::run_clean
+            ;;
+        auto)
+            krun::disk::analyze_cleanup::run_analyze
+            krun::disk::analyze_cleanup::collect_stressed_mounts
+            if [[ "${#stressed_mounts[@]}" -gt 0 ]]; then
+                echo ""
+                echo ">>> stressed mounts detected, running safe cleanup..."
                 krun::disk::analyze_cleanup::run_clean
-                ;;
-            auto)
-                krun::disk::analyze_cleanup::run_analyze
-                if krun::disk::analyze_cleanup::needs_cleanup; then
-                    echo ""
-                    echo ">>> 检测到高占用分区，开始安全清理..."
-                    krun::disk::analyze_cleanup::run_clean
-                else
-                    echo ""
-                    echo "✓ 磁盘使用率正常 (< ${DISK_WARN_PERCENT}%)，跳过自动清理"
-                    echo "  强制清理: MODE=clean bash $0"
-                fi
-                ;;
-            *)
-                echo "✗ 无效 MODE=${MODE}，可选: analyze | clean | auto"
-                exit 1
-                ;;
+            else
+                echo ""
+                echo "✓ disk usage OK (< ${DISK_WARN_PERCENT}%), skip cleanup"
+                echo "  force cleanup: MODE=clean $0"
+            fi
+            ;;
+        *)
+            echo "✗ invalid MODE=$MODE (analyze | clean | auto)"
+            exit 1
+            ;;
         esac
 
-        krun::disk::analyze_cleanup::hr
-        echo "Done. Report: ${OUT}"
+        echo "----------------------------------------"
+        echo "done. report: $OUT"
     } | tee "$OUT"
 }
 

@@ -64,7 +64,7 @@ krun list
 
 # 执行脚本（自动下载并执行）
 krun install-docker.sh
-krun config-system.sh
+krun init-system.sh
 krun install-ffmpeg.sh
 ```
 
@@ -87,8 +87,8 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/install-f
 # Rocky Linux 仓库配置（修复 IPv6 问题）
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/config-rocky-repo.sh | bash
 
-# 系统性能优化
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/optimize-system-performance.sh | bash
+# 系统初始化与性能优化
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/init-system.sh | bash
 ```
 
 ### 方式三：本地使用
@@ -105,7 +105,7 @@ krun list
 
 # 方式 3.2: 直接执行脚本
 ./lib/install-docker.sh
-./lib/config-system.sh
+./lib/init-system.sh
 
 # 方式 3.3: 使用本地 krun 工具
 ./bin/krun install-git.sh
@@ -115,7 +115,7 @@ krun list
 
 ### 📋 系统配置类（17个）
 - `config-system-baseline.sh` - 系统安全基线配置
-- `config-system.sh` - 系统基础配置
+- `init-system.sh` - 新机器系统初始化（软件包、内核调优、limits）
 - `config-ssh.sh` - SSH 安全配置
 - `config-locales.sh` - 系统语言环境配置
 - `config-git.sh` - Git 全局配置
@@ -130,7 +130,6 @@ krun list
 - `config-centos7-repo.sh` - CentOS 7 软件源配置
 - `config-rocky-repo.sh` - Rocky Linux 软件源配置（修复 IPv6）
 - `disable-firewall-selinux.sh` - 关闭防火墙和 SELinux
-- `optimize-system-performance.sh` - 系统性能优化
 
 ### 🚀 开发环境安装类（20个）
 - `install-git.sh` - Git 版本控制工具
@@ -216,7 +215,7 @@ source ~/.bashrc
 krun disable-firewall-selinux.sh
 krun config-system-baseline.sh
 krun config-ssh.sh
-krun optimize-system-performance.sh
+krun init-system.sh
 
 # 3. 安装常用软件
 krun install-docker.sh

@@ -20,7 +20,6 @@
     "config-ssh-authorized-keys.sh",
     "config-ssh.sh",
     "config-system-baseline.sh",
-    "config-system.sh",
     "config-timezone.sh",
     "config-vagrant-ssh.sh",
     "config-vm.sh",
@@ -30,6 +29,7 @@
     "deploy-sshkey.sh",
     "disable-firewall-selinux.sh",
     "hello-world.sh",
+    "init-system.sh",
     "install-1panel.sh",
     "install-aapanel.sh",
     "install-aliyun-cli.sh",
@@ -77,7 +77,6 @@
     "install-vagrant-virtualbox.sh",
     "install-vim.sh",
     "install-zsh.sh",
-    "optimize-system-performance.sh",
     "reset-git-history.sh",
     "update-vagrant_box.sh"
   ]

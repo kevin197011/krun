@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/meta/lib-manifest.json": {
-    "mtime": 1782990793.9646733,
-    "ast_hash": "a9b5d98848049fbf5361b8844dfb39e7",
+    "mtime": 1782991707.4656932,
+    "ast_hash": "72d23a597ec449625bdc21e713c28d00",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/scripts/preremove.sh": {
@@ -44,19 +44,14 @@
     "ast_hash": "3511a2d6ffdba4b93e820584b52fc190",
     "semantic_hash": ""
   },
-  "/Users/kevin/projects/src/krun/lib/optimize-system-performance.sh": {
-    "mtime": 1782990793.9644785,
-    "ast_hash": "f6bc4bcf22d19ec3208246e7f084f413",
-    "semantic_hash": ""
-  },
   "/Users/kevin/projects/src/krun/lib/install-mc.sh": {
     "mtime": 1782990793.9627142,
     "ast_hash": "5b8975892ff876aee2b24ff96b471a5c",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/analyze-disk-cleanup.sh": {
-    "mtime": 1782990793.9584796,
-    "ast_hash": "050c78a81a1151be4ba5cf1afd589616",
+    "mtime": 1782991795.837227,
+    "ast_hash": "530adbfb5ac5fe5aea22bb8c4ca34e71",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/install-percona_toolkit.sh": {
@@ -65,18 +60,13 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/crane-copy.sh": {
-    "mtime": 1782990920.174326,
-    "ast_hash": "55ceef240e856f1cfc31ba4f4cc72a5e",
+    "mtime": 1782990983.3304024,
+    "ast_hash": "a907b757625728c79730ab71611cf475",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/install-vagrant-virtualbox.sh": {
     "mtime": 1782990793.9641314,
     "ast_hash": "64fa949d6b36b21a740e163a30be9acd",
-    "semantic_hash": ""
-  },
-  "/Users/kevin/projects/src/krun/lib/config-system.sh": {
-    "mtime": 1782990793.9599733,
-    "ast_hash": "0a0197aa318f2f4ea8ed0aa023dce511",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/install-salt-master.sh": {
@@ -125,7 +115,7 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/config-proxy.sh": {
-    "mtime": 1782990919.6718605,
+    "mtime": 1782990949.7349663,
     "ast_hash": "7862b768d6ff6444f96abe1ed0e11d81",
     "semantic_hash": ""
   },
@@ -140,7 +130,7 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/reset-git-history.sh": {
-    "mtime": 1782990922.1444647,
+    "mtime": 1782990949.7349432,
     "ast_hash": "68c5eb42963302a690c66def52fc75e1",
     "semantic_hash": ""
   },
@@ -160,8 +150,8 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/config-disk-data.sh": {
-    "mtime": 1782990918.542373,
-    "ast_hash": "e090b8794354a64964b9cb871e10e5cb",
+    "mtime": 1782991177.216921,
+    "ast_hash": "d3bc990d3e182416fb9f40dcaf91db4c",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/config-rocky-repo.sh": {
@@ -260,7 +250,7 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/install-filebeat.sh": {
-    "mtime": 1782990921.8519742,
+    "mtime": 1782990949.7427104,
     "ast_hash": "0f9cdc5294ae66532943a348903b170b",
     "semantic_hash": ""
   },
@@ -410,7 +400,7 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/install-cpanm.sh": {
-    "mtime": 1782990921.1390307,
+    "mtime": 1782990949.735065,
     "ast_hash": "b17fef6aef5f4cca3f0de5c2c457a998",
     "semantic_hash": ""
   },
@@ -420,7 +410,7 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/lib/config-cursor.sh": {
-    "mtime": 1782990920.6210203,
+    "mtime": 1782990949.734941,
     "ast_hash": "ce936add7477722a5342110a1335bd90",
     "semantic_hash": ""
   },
@@ -440,8 +430,8 @@
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/README.md": {
-    "mtime": 1782990793.9580145,
-    "ast_hash": "89bef231c4d7bd6da85b7451dfd9efe4",
+    "mtime": 1782991707.4656634,
+    "ast_hash": "f2e1d53ac223a169986a4449da4f6055",
     "semantic_hash": ""
   },
   "/Users/kevin/projects/src/krun/.rubocop.yml": {
@@ -452,6 +442,11 @@
   "/Users/kevin/projects/src/krun/.github/workflows/release.yml": {
     "mtime": 1782990793.95761,
     "ast_hash": "75b09f376ac78686e8e7eb1fde391e03",
+    "semantic_hash": ""
+  },
+  "/Users/kevin/projects/src/krun/lib/init-system.sh": {
+    "mtime": 1782991666.1495607,
+    "ast_hash": "be2df2354225a9c04fc5348a06063014",
     "semantic_hash": ""
   }
 }
