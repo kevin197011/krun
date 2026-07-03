@@ -27,10 +27,7 @@ TEMPLATE = '''#!/usr/bin/env python3
 SCRIPT = "{name}"
 
 if __name__ == "__main__":
-    from krun.bootstrap import setup
-    setup()
-    from krun.registry import run_script
-    run_script(SCRIPT)
+    _krun_run(SCRIPT)
 '''
 
 

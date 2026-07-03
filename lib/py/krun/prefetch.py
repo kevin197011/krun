@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import os
 import shutil
 import sys
@@ -26,7 +27,7 @@ def _fetch_version(base: str) -> str:
 
 
 def prefetch_path() -> None:
-    """Ensure sys.path contains lib/py (local) or ~/.cache/krun/py (remote)."""
+    """Download bootstrap.py and add cache root to sys.path."""
     try:
         here = Path(__file__).resolve().parent
         for root in (here.parent, here.parent.parent):
@@ -58,9 +59,41 @@ def prefetch_path() -> None:
         sys.path.insert(0, path)
 
 
-# Inlined into scripts/*.py — must run before `from krun...`
+def _load_bootstrap():
+    boot = CACHE / "krun" / "bootstrap.py"
+    if not boot.is_file():
+        print(f"✗ bootstrap missing: {boot}")
+        raise SystemExit(1)
+    spec = importlib.util.spec_from_file_location("krun_bootstrap", boot)
+    mod = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def run(script: str) -> None:
+    """Prefetch bootstrap, sync cache, dispatch script (safe for curl | python3)."""
+    prefetch_path()
+    try:
+        root = Path(__file__).resolve().parent.parent
+        if (root / "krun" / "registry.py").is_file():
+            from krun.bootstrap import setup
+            from krun.registry import run_script
+
+            setup()
+            run_script(script)
+            return
+    except NameError:
+        pass
+    _load_bootstrap().setup()
+    from krun.registry import run_script
+
+    run_script(script)
+
+
+# Inlined into scripts/*.py — no `from krun.*` until bootstrap.setup() finished
 INLINE = """
-import os, sys, urllib.request
+import os, sys, urllib.request, importlib.util
 from pathlib import Path
 
 def _krun_prefetch():
@@ -72,7 +105,7 @@ def _krun_prefetch():
             if (root / "krun" / "bootstrap.py").is_file():
                 if str(root) not in sys.path:
                     sys.path.insert(0, str(root))
-                return
+                return cache
     except NameError:
         pass
     cache.mkdir(parents=True, exist_ok=True)
@@ -94,6 +127,15 @@ def _krun_prefetch():
         dest.write_bytes(urllib.request.urlopen(req, timeout=120).read())
     if str(cache) not in sys.path:
         sys.path.insert(0, str(cache))
+    return cache
 
-_krun_prefetch()
+def _krun_run(script):
+    cache = _krun_prefetch()
+    boot = cache / "krun" / "bootstrap.py"
+    spec = importlib.util.spec_from_file_location("krun_bootstrap", boot)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.setup()
+    from krun.registry import run_script
+    run_script(script)
 """.strip()

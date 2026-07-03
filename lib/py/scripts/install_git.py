@@ -6,7 +6,7 @@
 # idempotent: safe to re-run
 """krun script: install_git"""
 
-import os, sys, urllib.request
+import os, sys, urllib.request, importlib.util
 from pathlib import Path
 
 def _krun_prefetch():
@@ -18,7 +18,7 @@ def _krun_prefetch():
             if (root / "krun" / "bootstrap.py").is_file():
                 if str(root) not in sys.path:
                     sys.path.insert(0, str(root))
-                return
+                return cache
     except NameError:
         pass
     cache.mkdir(parents=True, exist_ok=True)
@@ -40,13 +40,19 @@ def _krun_prefetch():
         dest.write_bytes(urllib.request.urlopen(req, timeout=120).read())
     if str(cache) not in sys.path:
         sys.path.insert(0, str(cache))
+    return cache
 
-_krun_prefetch()
+def _krun_run(script):
+    cache = _krun_prefetch()
+    boot = cache / "krun" / "bootstrap.py"
+    spec = importlib.util.spec_from_file_location("krun_bootstrap", boot)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.setup()
+    from krun.registry import run_script
+    run_script(script)
 
 SCRIPT = "install_git"
 
 if __name__ == "__main__":
-    from krun.bootstrap import setup
-    setup()
-    from krun.registry import run_script
-    run_script(SCRIPT)
+    _krun_run(SCRIPT)

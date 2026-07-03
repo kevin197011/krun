@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
-"""Stage-3 entry when krun is fully available (local dev). curl scripts call bootstrap.setup() directly."""
+"""Local entry when full krun package is on sys.path."""
 
 from __future__ import annotations
 
+from krun.prefetch import run
 
-def main(script: str) -> None:
-    from krun.bootstrap import setup
-    from krun.registry import run_script
-
-    setup()
-    run_script(script)
+main = run
