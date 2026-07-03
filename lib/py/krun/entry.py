@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stage-2/3 entry: bootstrap cache then dispatch to registry handler."""
+"""Stage-3 entry when krun is fully available (local dev). curl scripts call bootstrap.setup() directly."""
 
 from __future__ import annotations
 

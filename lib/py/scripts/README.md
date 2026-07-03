@@ -7,8 +7,8 @@ Each file is a thin stub:
 ```
 scripts/foo.py          # curl URL + SCRIPT name
     ↓ prefetch (inline) # stage 1: sys.path
-    ↓ krun.entry.main   # stage 2: bootstrap cache
-    ↓ krun.registry     # stage 3: dispatch handler
+    ↓ krun.bootstrap.setup  # stage 2: sync cache (must run before other krun imports)
+    ↓ krun.registry         # stage 3: dispatch handler
     ↓ krun/handlers/    # business logic
 ```
 

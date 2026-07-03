@@ -27,8 +27,10 @@ TEMPLATE = '''#!/usr/bin/env python3
 SCRIPT = "{name}"
 
 if __name__ == "__main__":
-    from krun.entry import main
-    main(SCRIPT)
+    from krun.bootstrap import setup
+    setup()
+    from krun.registry import run_script
+    run_script(SCRIPT)
 '''
 
 
