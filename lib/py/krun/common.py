@@ -49,8 +49,15 @@ def require_root() -> None:
         sys.exit(1)
 
 
-def run(cmd: list[str] | str, *, check: bool = False, env: dict[str, str] | None = None) -> int:
-    if isinstance(cmd, str):
+def run(
+    cmd: list[str] | str,
+    *,
+    check: bool = False,
+    env: dict[str, str] | None = None,
+    shell: bool | None = None,
+) -> int:
+    use_shell = isinstance(cmd, str) if shell is None else shell
+    if use_shell:
         return subprocess.run(cmd, shell=True, check=check, env=env).returncode
     return subprocess.run(cmd, check=check, env=env).returncode
 
