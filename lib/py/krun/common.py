@@ -34,6 +34,26 @@ def docker_running() -> bool:
     return False
 
 
+def docker_present() -> bool:
+    """Docker installed or running — used to avoid breaking container networking."""
+    if docker_running():
+        return True
+    if has_cmd("docker"):
+        return True
+    if Path("/usr/bin/docker").is_file() or Path("/usr/local/bin/docker").is_file():
+        return True
+    if has_cmd("systemctl"):
+        proc = subprocess.run(
+            ["systemctl", "list-unit-files", "docker.service"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if "docker.service" in proc.stdout:
+            return True
+    return False
+
+
 def platform() -> str:
     if sys.platform == "darwin":
         return "mac"

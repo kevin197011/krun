@@ -9,6 +9,7 @@ import subprocess
 from pathlib import Path
 
 from krun.common import (
+    docker_present,
     docker_running,
     ensure_line,
     platform,
@@ -116,8 +117,8 @@ def config_proxy() -> None:
 
 def disable_firewall() -> None:
     require_root()
-    if docker_running():
-        print("✓ docker running, skip disabling firewall")
+    if docker_present():
+        print("✓ docker present, skip disabling firewall")
         return
     if shutil.which("firewall-cmd"):
         run(["systemctl", "stop", "firewalld"])

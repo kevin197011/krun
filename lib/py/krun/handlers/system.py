@@ -27,6 +27,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from krun.common import docker_present
 from krun.handlers import config as krun_config
 from krun.handlers import install as krun_install
 
@@ -85,13 +86,17 @@ net.ipv4.conf.all.accept_source_route = 0
 net.ipv4.conf.default.accept_source_route = 0
 net.ipv4.conf.all.log_martians = 1
 net.ipv4.conf.default.log_martians = 1
-net.ipv4.conf.all.rp_filter = 1
-net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.all.rp_filter = 0
+net.ipv4.conf.default.rp_filter = 0
 net.ipv4.icmp_echo_ignore_broadcasts = 1
 net.ipv4.icmp_ignore_bogus_error_responses = 1
 net.ipv4.ip_forward = 1
 
-# filesystem
+# docker / container host
+fs.may_detach_mounts = 1
+vm.max_map_count = 262144
+kernel.keys.maxkeys = 2000000
+kernel.keys.root_maxkeys = 2000000
 fs.file-max = 2097152
 fs.nr_open = 1048576
 fs.inotify.max_user_watches = 524288
@@ -107,6 +112,18 @@ kernel.kptr_restrict = 2
 kernel.yama.ptrace_scope = 1
 kernel.unprivileged_bpf_disabled = 1
 """
+
+DOCKER_SYSCTL_CONF = """\
+# Docker bridge networking (requires br_netfilter)
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+
+# IPv6 container networks
+net.ipv6.conf.all.forwarding = 1
+net.ipv6.conf.default.forwarding = 1
+"""
+
+DOCKER_MODULES = "br_netfilter\n"
 
 LIMITS_CONF = """\
 * soft nofile 1048576
@@ -356,7 +373,10 @@ class SystemInit:
     def configure_sysctl(self) -> None:
         print("writing sysctl tuning")
         write_text(Path("/etc/sysctl.d/99-system.conf"), SYSCTL_CONF)
-        print("✓ sysctl config written")
+        write_text(Path("/etc/sysctl.d/99-docker.conf"), DOCKER_SYSCTL_CONF)
+        write_text(Path("/etc/modules-load.d/br_netfilter.conf"), DOCKER_MODULES)
+        run(["modprobe", "br_netfilter"], check=False)
+        print("✓ sysctl config written (system + docker)")
 
     def configure_limits(self) -> None:
         print("writing limits")
@@ -446,6 +466,9 @@ class SystemInit:
 
     def configure_selinux(self) -> None:
         if not self.disable_selinux:
+            return
+        if docker_present():
+            print("✓ docker present, keep SELinux enabled for container isolation")
             return
         config = Path("/etc/selinux/config")
         if not config.is_file():
@@ -537,6 +560,7 @@ class SystemInit:
             krun_install.install_node_exporter()
         self.disable_services()
         run(["sysctl", "-p", "/etc/sysctl.d/99-system.conf"])
+        run(["sysctl", "-p", "/etc/sysctl.d/99-docker.conf"], check=False)
         print("✓ system init and performance tuning done, reboot recommended")
 
     def run_rhel(self) -> None:
