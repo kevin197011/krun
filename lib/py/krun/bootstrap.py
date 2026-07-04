@@ -30,6 +30,7 @@ FILES = [
     "krun/handlers/config.py",
     "krun/handlers/ops.py",
     "krun/handlers/network.py",
+    "krun/handlers/jumpserver.py",
     "krun/handlers/system.py",
 ]
 
