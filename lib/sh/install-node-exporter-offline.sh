@@ -11,12 +11,12 @@ set -o pipefail
 # curl exec:
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-node-exporter-offline.sh | sudo bash
 #
-# 离线安装 node_exporter（需提前准备离线包）
+# Offline install node_exporter (requires pre-downloaded tarball)
 #   node_exporter-1.11.1.linux-amd64.tar.gz
 #
-# 用法:
+# Usage:
 #   sudo bash install-node-exporter-offline.sh
-#   sudo NODE_EXPORTER_TARBALL=/path/to/node_exporter-1.11.1.linux-amd64.tar.gz bash install-node-exporter-offline.sh
+#   sudo node_exporter_tarball=/path/to/node_exporter-1.11.1.linux-amd64.tar.gz bash install-node-exporter-offline.sh
 #
 # idempotent: safe to re-run
 
