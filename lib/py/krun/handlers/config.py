@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 from pathlib import Path
 
 from krun.common import (
+    docker_running,
     ensure_line,
     platform,
     read_os_release,
@@ -112,15 +114,22 @@ def config_proxy() -> None:
         print(f'export https_proxy="{url}"')
 
 
-def disable_firewall_selinux() -> None:
+def disable_firewall() -> None:
     require_root()
-    if __import__("shutil").which("firewall-cmd"):
+    if docker_running():
+        print("✓ docker running, skip disabling firewall")
+        return
+    if shutil.which("firewall-cmd"):
         run(["systemctl", "stop", "firewalld"])
         run(["systemctl", "disable", "firewalld"])
         print("✓ firewalld disabled")
-    if __import__("shutil").which("ufw"):
+    if shutil.which("ufw"):
         run(["ufw", "--force", "disable"])
         print("✓ ufw disabled")
+
+
+def disable_firewall_selinux() -> None:
+    disable_firewall()
     selinux = Path("/etc/selinux/config")
     if selinux.is_file() and not re.search(r"^SELINUX=disabled", selinux.read_text(), re.M):
         write_if_changed(selinux, re.sub(r"^SELINUX=.*", "SELINUX=disabled", selinux.read_text(), flags=re.M))

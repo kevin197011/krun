@@ -14,6 +14,7 @@
 # SYSTEM_TIMEZONE=Asia/Hong_Kong
 # SYSTEM_LOCALE=en_US.UTF-8
 # DISABLE_SELINUX=1
+# DISABLE_FIREWALL=1
 # SKIP_NODE_EXPORTER=1
 
 from __future__ import annotations
@@ -26,6 +27,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from krun.handlers import config as krun_config
 from krun.handlers import install as krun_install
 
 SYSCTL_CONF = """\
@@ -236,6 +238,7 @@ class SystemInit:
         self.timezone = os.environ.get("SYSTEM_TIMEZONE", "Asia/Hong_Kong")
         self.locale = os.environ.get("SYSTEM_LOCALE", "en_US.UTF-8")
         self.disable_selinux = os.environ.get("DISABLE_SELINUX", "1") == "1"
+        self.disable_firewall = os.environ.get("DISABLE_FIREWALL", "1") == "1"
         self.os_release = read_os_release()
         self.distro_id = self.os_release.get("ID", "")
         self.distro_version = self.os_release.get("VERSION_ID", "")
@@ -435,6 +438,12 @@ class SystemInit:
         write_text(Path("/etc/udev/rules.d/60-ioschedulers.rules"), UDEV_IOSCHED)
         print("✓ io scheduler configured")
 
+    def configure_firewall(self) -> None:
+        if not self.disable_firewall:
+            print("✓ firewall disable skipped (DISABLE_FIREWALL=0)")
+            return
+        krun_config.disable_firewall()
+
     def configure_selinux(self) -> None:
         if not self.disable_selinux:
             return
@@ -518,6 +527,7 @@ class SystemInit:
         self.configure_filesystem()
         self.configure_memory()
         self.configure_io()
+        self.configure_firewall()
         self.configure_selinux()
         self.configure_ntp()
         self.configure_tuned()

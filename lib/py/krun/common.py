@@ -20,6 +20,20 @@ def has_cmd(name: str) -> bool:
     return shutil.which(name) is not None
 
 
+def docker_running() -> bool:
+    if has_cmd("systemctl"):
+        proc = subprocess.run(
+            ["systemctl", "is-active", "--quiet", "docker"],
+            check=False,
+        )
+        if proc.returncode == 0:
+            return True
+    if has_cmd("docker"):
+        proc = subprocess.run(["docker", "info"], capture_output=True, check=False)
+        return proc.returncode == 0
+    return False
+
+
 def platform() -> str:
     if sys.platform == "darwin":
         return "mac"
