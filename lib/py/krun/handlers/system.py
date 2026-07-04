@@ -141,6 +141,7 @@ ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue
 VIMRC_LOCAL = """\
 set nocompatible
 set encoding=utf-8
+set paste
 set number
 set tabstop=4
 set shiftwidth=4
