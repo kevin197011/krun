@@ -154,6 +154,55 @@ def curl_pipe(url: str, shell: str = "bash") -> None:
     subprocess.run([shell, path], check=False)
 
 
+def _linux_arch() -> str:
+    machine = os.uname().machine.lower()
+    if machine in {"x86_64", "amd64"}:
+        return "amd64"
+    if machine in {"aarch64", "arm64"}:
+        return "arm64"
+    return machine
+
+
+def _pick_tarball_url(
+    repo: str, release: dict, binary: str, arch: str, asset_filter: str | None,
+) -> str | None:
+    hint = (asset_filter or binary).lower()
+    arch_l = arch.lower()
+    for asset in release.get("assets", []):
+        name = asset.get("name", "")
+        lower = name.lower()
+        if not lower.endswith(".tar.gz"):
+            continue
+        if "linux" not in lower:
+            continue
+        if arch_l not in lower:
+            continue
+        if hint not in lower:
+            continue
+        return asset["browser_download_url"]
+
+    tag = release.get("tag_name", "").lstrip("v")
+    if not tag:
+        return None
+    name = asset_filter or binary
+    for pattern in (
+        f"https://github.com/{repo}/releases/download/v{tag}/{name}-{tag}.linux-{arch}.tar.gz",
+        f"https://github.com/{repo}/releases/download/v{tag}/{name}_{tag}_Linux_{arch}.tar.gz",
+        f"https://github.com/{repo}/releases/download/v{tag}/{name}_Linux_{arch}.tar.gz",
+    ):
+        proc = subprocess.run(["curl", "-fsI", pattern], capture_output=True, check=False)
+        if proc.returncode == 0 and b" 200" in proc.stdout:
+            return pattern
+    return None
+
+
+def _download_url(url: str, dest: Path) -> bool:
+    if run_ok(["curl", "-fsSL", url, "-o", str(dest)]):
+        return True
+    mirror = f"https://ghproxy.com/{url}"
+    return run(["curl", "-fsSL", mirror, "-o", str(dest)]) == 0
+
+
 def github_binary(
     repo: str,
     binary: str,
@@ -168,19 +217,23 @@ def github_binary(
         sys.exit(1)
     import json
 
-    tag = json.loads(proc.stdout)["tag_name"].lstrip("v")
-    arch = "amd64" if os.uname().machine in {"x86_64", "amd64"} else os.uname().machine
-    os_name = "Linux"
-    name = asset_filter or binary
-    url = f"https://github.com/{repo}/releases/download/v{tag}/{name}_{tag}_{os_name}_{arch}.tar.gz"
+    release = json.loads(proc.stdout)
+    arch = _linux_arch()
+    url = _pick_tarball_url(repo, release, binary, arch, asset_filter)
+    if not url:
+        print(f"✗ no linux/{arch} tarball found for {repo} ({binary})")
+        sys.exit(1)
+
     archive = Path("/tmp/krun-dl.tar.gz")
-    if not run_ok(["curl", "-fsSL", url, "-o", str(archive)]):
-        url = f"https://ghproxy.com/{url}"
-        if run(["curl", "-fsSL", url, "-o", str(archive)]) != 0:
-            print(f"✗ cannot download {url}")
-            sys.exit(1)
+    if not _download_url(url, archive):
+        print(f"✗ cannot download {url}")
+        sys.exit(1)
+    if archive.read_bytes()[:2] != b"\x1f\x8b":
+        print(f"✗ downloaded file is not a valid tarball: {url}")
+        sys.exit(1)
 
     tmpdir = Path(tempfile.mkdtemp(prefix="krun-dl-"))
+    dest_path = Path(dest) / binary
     try:
         if run(["tar", "-xzf", str(archive), "-C", str(tmpdir)]) != 0:
             print(f"✗ cannot extract {archive}")
@@ -189,7 +242,6 @@ def github_binary(
         if not matches:
             print(f"✗ {binary} not found in release tarball")
             sys.exit(1)
-        dest_path = Path(dest) / binary
         dest_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(matches[0], dest_path)
         dest_path.chmod(0o755)
