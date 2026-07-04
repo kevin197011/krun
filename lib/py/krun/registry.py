@@ -49,8 +49,10 @@ def _acme_cert() -> None:
 
 
 def _prometheus_exporter(kind: str) -> None:
+    if kind == "node":
+        install.install_node_exporter()
+        return
     mapping = {
-        "node": ("prometheus/node_exporter", "node_exporter"),
         "blackbox": ("prometheus/blackbox_exporter", "blackbox_exporter"),
     }
     repo, binary = mapping[kind]
@@ -102,7 +104,7 @@ SCRIPTS: dict[str, callable] = {
     "install_helm": lambda: install.install_github_tool("helm"),
     "install_crane": lambda: install.install_github_tool("crane"),
     "install_rclone": lambda: install.install_github_tool("rclone"),
-    "install_node_exporter": lambda: _prometheus_exporter("node"),
+    "install_node_exporter": install.install_node_exporter,
     "install_blackbox_exporter": lambda: _prometheus_exporter("blackbox"),
     "install_awscli": install.install_awscli,
     "install_gcloud": lambda: install.install_cloud_cli("gcloud"),

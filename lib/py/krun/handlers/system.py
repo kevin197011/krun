@@ -14,6 +14,7 @@
 # SYSTEM_TIMEZONE=Asia/Hong_Kong
 # SYSTEM_LOCALE=en_US.UTF-8
 # DISABLE_SELINUX=1
+# SKIP_NODE_EXPORTER=1
 
 from __future__ import annotations
 
@@ -24,6 +25,8 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+
+from krun.handlers import install as krun_install
 
 SYSCTL_CONF = """\
 # memory
@@ -520,6 +523,8 @@ class SystemInit:
         self.configure_tuned()
         self.configure_cpufreq()
         self.configure_tools()
+        if os.environ.get("SKIP_NODE_EXPORTER") != "1":
+            krun_install.install_node_exporter()
         self.disable_services()
         run(["sysctl", "-p", "/etc/sysctl.d/99-system.conf"])
         print("✓ system init and performance tuning done, reboot recommended")

@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-import os
-import subprocess
+from pathlib import Path
 
 from krun.common import (
     curl_pipe,
@@ -17,6 +16,7 @@ from krun.common import (
     service_enable,
     has_cmd,
     pm_rhel,
+    write_if_changed,
 )
 
 # deb, rhel, brew, service, epel
@@ -170,3 +170,25 @@ def install_kssh() -> None:
         print("✗ kssh is macOS only")
         raise SystemExit(1)
     run("git clone https://github.com/kevin197011/kssh.git ~/.kssh && cd ~/.kssh && bundle install", shell=True)
+
+
+def install_node_exporter() -> None:
+    """Install latest node_exporter from GitHub releases and enable systemd."""
+    require_root()
+    binary = "node_exporter"
+    print("installing node_exporter (latest release)")
+    github_binary("prometheus/node_exporter", binary)
+    unit = f"""[Unit]
+Description=Prometheus Node Exporter
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/{binary}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+"""
+    write_if_changed(Path(f"/etc/systemd/system/{binary}.service"), unit)
+    service_enable(f"{binary}.service")
+    print("✓ node_exporter installed and enabled")
