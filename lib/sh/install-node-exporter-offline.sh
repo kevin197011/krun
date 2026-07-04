@@ -83,11 +83,11 @@ krun::install::node_exporter_offline::install_binary() {
     }
 
     tmpdir="$(mktemp -d)"
-    trap 'rm -rf "${tmpdir}"' RETURN
 
     tar -xzf "${tarball}" -C "${tmpdir}"
     binary="$(find "${tmpdir}" -type f -name node_exporter | head -1)"
     [[ -n "${binary}" ]] || {
+        rm -rf "${tmpdir}"
         echo "✗ node_exporter binary not found in ${tarball}"
         exit 1
     }
@@ -95,6 +95,7 @@ krun::install::node_exporter_offline::install_binary() {
     dest="${node_exporter_install_dir}/node_exporter"
     install -d "${node_exporter_install_dir}"
     install -m 755 "${binary}" "${dest}"
+    rm -rf "${tmpdir}"
     echo "✓ installed ${dest}"
     "${dest}" --version 2>/dev/null || true
 }
