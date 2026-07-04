@@ -173,11 +173,33 @@ def github_binary(
     os_name = "Linux"
     name = asset_filter or binary
     url = f"https://github.com/{repo}/releases/download/v{tag}/{name}_{tag}_{os_name}_{arch}.tar.gz"
-    if not run_ok(["curl", "-fsSL", url, "-o", "/tmp/krun-dl.tar.gz"]):
+    archive = Path("/tmp/krun-dl.tar.gz")
+    if not run_ok(["curl", "-fsSL", url, "-o", str(archive)]):
         url = f"https://ghproxy.com/{url}"
-        run(["curl", "-fsSL", url, "-o", "/tmp/krun-dl.tar.gz"])
-    run(f"tar -xzf /tmp/krun-dl.tar.gz -C /tmp && install -m755 /tmp/{binary} {dest}/{binary}", shell=True)
-    print(f"✓ installed {binary} to {dest}/{binary}")
+        if run(["curl", "-fsSL", url, "-o", str(archive)]) != 0:
+            print(f"✗ cannot download {url}")
+            sys.exit(1)
+
+    tmpdir = Path(tempfile.mkdtemp(prefix="krun-dl-"))
+    try:
+        if run(["tar", "-xzf", str(archive), "-C", str(tmpdir)]) != 0:
+            print(f"✗ cannot extract {archive}")
+            sys.exit(1)
+        matches = [p for p in tmpdir.rglob(binary) if p.is_file() and p.name == binary]
+        if not matches:
+            print(f"✗ {binary} not found in release tarball")
+            sys.exit(1)
+        dest_path = Path(dest) / binary
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(matches[0], dest_path)
+        dest_path.chmod(0o755)
+    finally:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+    if not dest_path.is_file():
+        print(f"✗ failed to install {binary}")
+        sys.exit(1)
+    print(f"✓ installed {binary} to {dest_path}")
 
 
 def script_header(name: str, *, sudo: bool = False) -> str:

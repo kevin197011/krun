@@ -190,5 +190,9 @@ Restart=always
 WantedBy=multi-user.target
 """
     write_if_changed(Path(f"/etc/systemd/system/{binary}.service"), unit)
+    dest = Path("/usr/local/bin") / binary
+    if not dest.is_file():
+        print(f"✗ {dest} missing after install")
+        raise SystemExit(1)
     service_enable(f"{binary}.service")
     print("✓ node_exporter installed and enabled")
