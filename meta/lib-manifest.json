@@ -1,5 +1,6 @@
 {
   "sh": [
+    "install-node-exporter-offline.sh",
     "install-python3.sh"
   ],
   "py": [
