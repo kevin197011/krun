@@ -2,9 +2,9 @@
 # Copyright (c) 2026 kk
 # MIT License
 # curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/fix_jumpserver_ssh_timeout.py | sudo python3
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/config_jumpserver_ssh_timeout.py | sudo python3
 # idempotent: safe to re-run
-"""krun script: fix_jumpserver_ssh_timeout"""
+"""krun script: config_jumpserver_ssh_timeout"""
 
 import os, sys, urllib.request, importlib.util
 from pathlib import Path
@@ -52,7 +52,7 @@ def _krun_run(script):
     from krun.registry import run_script
     run_script(script)
 
-SCRIPT = "fix_jumpserver_ssh_timeout"
+SCRIPT = "config_jumpserver_ssh_timeout"
 
 if __name__ == "__main__":
     _krun_run(SCRIPT)

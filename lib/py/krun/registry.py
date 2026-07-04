@@ -162,7 +162,7 @@ SCRIPTS: dict[str, callable] = {
     "crane_copy": ops.crane_copy,
     "deploy_node_exporter": ops.deploy_node_exporter,
     "delete_video": ops.delete_video,
-    "fix_jumpserver_ssh_timeout": jumpserver.fix_jumpserver_ssh_timeout,
+    "config_jumpserver_ssh_timeout": jumpserver.config_jumpserver_ssh_timeout,
     "update_vagrant_box": lambda: __import__("krun.common", fromlist=["run"]).run(["vagrant", "box", "update", "--all"]),
 }
 

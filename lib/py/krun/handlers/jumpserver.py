@@ -312,7 +312,7 @@ def _verify() -> None:
     _log("验证完成")
 
 
-def fix_jumpserver_ssh_timeout() -> None:
+def config_jumpserver_ssh_timeout() -> None:
     """Fix JumpServer SSH/Web terminal idle disconnect (~30 min default)."""
     require_root()
 
@@ -360,5 +360,5 @@ Nginx 代理超时:     {nginx_timeout} 秒
   1. 请重新建立 SSH/Web 连接后再测试（旧连接仍按旧规则）
   2. 若管理界面「系统设置 -> 安全设置」修改了闲置时间，会覆盖环境变量
   3. 调整参数后重新运行本脚本即可，例如:
-       SECURITY_MAX_IDLE_TIME=720 krun fix_jumpserver_ssh_timeout
+       SECURITY_MAX_IDLE_TIME=720 krun config_jumpserver_ssh_timeout
 """)
