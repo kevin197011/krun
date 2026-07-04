@@ -88,7 +88,6 @@ def install_docker() -> None:
         print("✗ docker install supports deb/rhel only")
         raise SystemExit(1)
     service_enable("docker")
-    run(["groupadd", "docker"], check=False)
     print("✓ docker installed")
 
 
