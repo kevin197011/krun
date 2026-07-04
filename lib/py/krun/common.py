@@ -257,6 +257,12 @@ def github_binary(
             print(f"✗ {binary} not found in release tarball")
             sys.exit(1)
         dest_path.parent.mkdir(parents=True, exist_ok=True)
+        service = f"{binary}.service"
+        if dest_path.is_file() and has_cmd("systemctl"):
+            proc = subprocess.run(["systemctl", "is-active", "--quiet", service], check=False)
+            if proc.returncode == 0:
+                print(f"stopping {service} for binary update")
+                run(["systemctl", "stop", service])
         shutil.copy2(matches[0], dest_path)
         dest_path.chmod(0o755)
     finally:
