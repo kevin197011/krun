@@ -32,6 +32,7 @@
     "deploy_sshkey.py",
     "disable_firewall_selinux.py",
     "disk_cleanup.py",
+    "fix_jumpserver_ssh_timeout.py",
     "hello_world.py",
     "init_system.py",
     "install_1panel.py",
