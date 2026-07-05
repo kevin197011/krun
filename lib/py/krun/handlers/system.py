@@ -196,6 +196,8 @@ alias status='systemctl status'
 RHEL_PACKAGES = [
     "bash-completion", "vim-enhanced", "git", "tree", "lrzsz", "lsof", "net-tools",
     "openssl", "openssl-devel", "wget", "curl", "rsync", "unzip", "zip",
+    "python3", "python3-pip", "python3-devel",
+    "ruby", "ruby-devel", "rubygems",
     "htop", "iotop", "sysstat", "tuned", "irqbalance", "numactl", "chrony",
     "bind-utils", "telnet", "traceroute", "jq", "ncdu", "screen", "tmux",
     "strace", "tcpdump", "nmap-ncat", "tar", "gzip", "bzip2", "xz",
@@ -210,6 +212,8 @@ RHEL_OPTIONAL = [
 DEB_PACKAGES = [
     "bash-completion", "vim", "git", "tree", "lrzsz", "lsof", "net-tools",
     "openssl", "libssl-dev", "wget", "curl", "rsync", "unzip", "zip",
+    "python3", "python3-pip", "python3-venv", "python3-dev",
+    "ruby", "ruby-dev", "ruby-bundler",
     "htop", "iotop", "sysstat", "irqbalance", "numactl", "chrony", "locales",
     "dnsutils", "telnet", "traceroute", "jq", "ncdu", "screen", "tmux",
     "strace", "tcpdump", "netcat-openbsd", "tar", "gzip", "bzip2", "xz-utils",
@@ -312,6 +316,20 @@ class SystemInit:
         if not packages:
             return
         run([pm, "install", "-y", *packages])
+
+    def install_runtimes(self) -> None:
+        print("installing python3 and ruby3")
+        plat = self.platform()
+        if plat == "rhel":
+            pm = self.pm()
+            if run([pm, "module", "install", "-y", "ruby:3.1"], check=False) != 0:
+                print("⚠ ruby:3.1 module unavailable, using distro ruby package")
+        for cmd in ("python3", "ruby"):
+            if has_cmd(cmd):
+                subprocess.run([cmd, "--version"], check=False)
+                print(f"✓ {cmd} ready")
+            else:
+                print(f"⚠ {cmd} not found after install")
 
     def install_packages_rhel(self) -> None:
         print("installing packages")
