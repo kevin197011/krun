@@ -339,6 +339,7 @@ class SystemInit:
         self.pm_install(pm, RHEL_PACKAGES)
         for pkg in RHEL_OPTIONAL:
             run([pm, "install", "-y", pkg])
+        self.install_runtimes()
         print("✓ packages installed")
 
     def install_packages_debian(self) -> None:
@@ -354,6 +355,7 @@ class SystemInit:
             run(["apt-get", "install", "-y", "mtr-tiny", "linux-cpupower"], env=env)
         run(["apt-get", "install", "-y", "ripgrep", "iftop", "nethogs", "iperf3",
              "glances", "parallel", "nmon", "dstat", "atop"], env=env)
+        self.install_runtimes()
         print("✓ packages installed")
 
     def configure_timezone(self) -> None:
