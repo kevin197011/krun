@@ -61,7 +61,6 @@ def _krun_mirror_urls(url):
             "https://raw.githubusercontent.com/kevin197011/krun/main/",
             "https://cdn.jsdelivr.net/gh/kevin197011/krun@main/",
         ))
-        urls.append("https://ghproxy.com/" + url)
     urls.append(url)
     seen, out = set(), []
     for item in urls:
@@ -75,6 +74,24 @@ def _krun_decompress(data):
         return gzip.decompress(data)
     return data
 
+def _krun_looks_like_html(data):
+    if not data:
+        return True
+    head = data[:512].lstrip().lower()
+    return head.startswith(b"<!doctype") or head.startswith(b"<html") or b"<head>" in head[:256]
+
+def _krun_validate_payload(data, url):
+    if _krun_looks_like_html(data):
+        raise ValueError("HTML response (mirror error page)")
+    if url.endswith(".py"):
+        text = data[:256].decode("utf-8", errors="strict").lstrip()
+        if not any(text.startswith(p) for p in ("#!", "#", "from ", "import ", chr(34)*3, chr(39)*3)):
+            raise ValueError("does not look like Python source")
+    elif url.rstrip("/").endswith("VERSION"):
+        text = _krun_decompress(data).decode("utf-8").strip()
+        if not text or len(text) > 64:
+            raise ValueError("invalid VERSION content")
+
 def _krun_read_text(path):
     data = path.read_bytes()
     return _krun_decompress(data).decode("utf-8").strip()
@@ -86,7 +103,15 @@ def _krun_fetch(url, timeout=60):
         for attempt in range(2):
             try:
                 req = urllib.request.Request(target, headers=_krun_browser_headers(target))
-                return _krun_decompress(urllib.request.urlopen(req, timeout=timeout).read())
+                data = _krun_decompress(urllib.request.urlopen(req, timeout=timeout).read())
+                _krun_validate_payload(data, url)
+                return data
+            except ValueError as exc:
+                errors.append(f"{target}: {exc}")
+                break
+            except UnicodeDecodeError as exc:
+                errors.append(f"{target}: not UTF-8 text ({exc})")
+                break
             except urllib.error.HTTPError as exc:
                 if exc.code == 429:
                     errors.append(f"{target}: HTTP 429")

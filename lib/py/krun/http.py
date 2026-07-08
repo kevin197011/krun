@@ -69,7 +69,6 @@ def mirror_urls(url: str) -> list[str]:
                 "https://cdn.jsdelivr.net/gh/kevin197011/krun@main/",
             )
         )
-        urls.append(f"https://ghproxy.com/{url}")
     urls.append(url)
     seen: set[str] = set()
     out: list[str] = []
@@ -95,13 +94,44 @@ def decode_text(data: bytes) -> str:
     return decompress_bytes(data).decode("utf-8")
 
 
+def looks_like_html(data: bytes) -> bool:
+    if not data:
+        return True
+    head = data[:512].lstrip().lower()
+    return head.startswith(b"<!doctype") or head.startswith(b"<html") or b"<head>" in head[:256]
+
+
+def validate_payload(data: bytes, url: str) -> None:
+    """Reject mirror error pages that return HTTP 200 + HTML."""
+    if looks_like_html(data):
+        raise ValueError("HTML response (mirror error page)")
+    if url.endswith(".py"):
+        text = data[:256].decode("utf-8", errors="strict").lstrip()
+        if not any(
+            text.startswith(p) for p in ("#!", "#", "from ", "import ", '"""', "'''")
+        ):
+            raise ValueError("does not look like Python source")
+    elif url.rstrip("/").endswith("VERSION"):
+        text = decode_text(data).strip()
+        if not text or len(text) > 64:
+            raise ValueError("invalid VERSION content")
+
+
 def fetch_bytes(url: str, *, timeout: int = 60) -> bytes:
     errors: list[str] = []
     for target in mirror_urls(url):
         for attempt in range(2):
             try:
                 req = urllib.request.Request(target, headers=browser_headers(target))
-                return decompress_bytes(urllib.request.urlopen(req, timeout=timeout).read())
+                data = decompress_bytes(urllib.request.urlopen(req, timeout=timeout).read())
+                validate_payload(data, url)
+                return data
+            except ValueError as exc:
+                errors.append(f"{target}: {exc}")
+                break
+            except UnicodeDecodeError as exc:
+                errors.append(f"{target}: not UTF-8 text ({exc})")
+                break
             except urllib.error.HTTPError as exc:
                 # ponytail: 429 = switch mirror now; don't backoff on the same host
                 if exc.code == 429:
@@ -201,7 +231,6 @@ def _krun_mirror_urls(url):
             "https://raw.githubusercontent.com/kevin197011/krun/main/",
             "https://cdn.jsdelivr.net/gh/kevin197011/krun@main/",
         ))
-        urls.append("https://ghproxy.com/" + url)
     urls.append(url)
     seen, out = set(), []
     for item in urls:
@@ -215,6 +244,24 @@ def _krun_decompress(data):
         return gzip.decompress(data)
     return data
 
+def _krun_looks_like_html(data):
+    if not data:
+        return True
+    head = data[:512].lstrip().lower()
+    return head.startswith(b"<!doctype") or head.startswith(b"<html") or b"<head>" in head[:256]
+
+def _krun_validate_payload(data, url):
+    if _krun_looks_like_html(data):
+        raise ValueError("HTML response (mirror error page)")
+    if url.endswith(".py"):
+        text = data[:256].decode("utf-8", errors="strict").lstrip()
+        if not any(text.startswith(p) for p in ("#!", "#", "from ", "import ", chr(34)*3, chr(39)*3)):
+            raise ValueError("does not look like Python source")
+    elif url.rstrip("/").endswith("VERSION"):
+        text = _krun_decompress(data).decode("utf-8").strip()
+        if not text or len(text) > 64:
+            raise ValueError("invalid VERSION content")
+
 def _krun_read_text(path):
     data = path.read_bytes()
     return _krun_decompress(data).decode("utf-8").strip()
@@ -226,7 +273,15 @@ def _krun_fetch(url, timeout=60):
         for attempt in range(2):
             try:
                 req = urllib.request.Request(target, headers=_krun_browser_headers(target))
-                return _krun_decompress(urllib.request.urlopen(req, timeout=timeout).read())
+                data = _krun_decompress(urllib.request.urlopen(req, timeout=timeout).read())
+                _krun_validate_payload(data, url)
+                return data
+            except ValueError as exc:
+                errors.append(f"{{target}}: {{exc}}")
+                break
+            except UnicodeDecodeError as exc:
+                errors.append(f"{{target}}: not UTF-8 text ({{exc}})")
+                break
             except urllib.error.HTTPError as exc:
                 if exc.code == 429:
                     errors.append(f"{{target}}: HTTP 429")
