@@ -1,88 +1,44 @@
 #!/usr/bin/env bash
-# Copyright (c) 2025 kk
+# Copyright (c) 2026 kk
+# MIT License
 #
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
+# GENERATED — do not edit by hand. Run: rake lib:sh:generate
+# Logic lives in lib/py (this wrapper only delegates).
+#
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/reset-git-history.sh | sudo bash
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/reset-git-history.sh | bash
+SCRIPT_PY="reset_git_history"
+RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
 
-# vars
-target_branch="${target_branch:-main}"
-commit_message="${commit_message:-Initial commit}"
-
-# run code
-krun::reset::git-history::run() {
-    local platform='debian'
-    command -v yum >/dev/null && platform='centos'
-    command -v dnf >/dev/null && platform='centos'
-    command -v brew >/dev/null && platform='mac'
-    eval "${FUNCNAME/::run/::${platform}}"
-}
-
-# centos code
-krun::reset::git-history::centos() {
-    krun::reset::git-history::common
-}
-
-# debian code
-krun::reset::git-history::debian() {
-    krun::reset::git-history::common
-}
-
-# mac code
-krun::reset::git-history::mac() {
-    krun::reset::git-history::common
-}
-
-# common code
-krun::reset::git-history::common() {
-    # check if git is installed
-    if ! command -v git >/dev/null 2>&1; then
-        echo "❌ Git is not installed"
+krun::sh::ensure_python3() {
+    if command -v python3 >/dev/null 2>&1; then
+        return 0
+    fi
+    echo "python3 not found; bootstrapping via install-python3.sh..."
+    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-python3.sh" | bash
+    command -v python3 >/dev/null 2>&1 || {
+        echo "✗ python3 still missing after bootstrap"
         exit 1
-    fi
-
-    # check if we are in a git repository
-    if ! git rev-parse --git-dir >/dev/null 2>&1; then
-        echo "❌ Not a git repository"
-        exit 1
-    fi
-
-    # display operation information
-    echo "⚠️  WARNING: Resetting all git history!"
-    echo "   Current branch: $(git branch --show-current)"
-    echo "   Target branch: $target_branch"
-    echo "   New commit message: $commit_message"
-    echo ""
-
-    # commit local changes if any
-    if [[ -n "$(git status --porcelain)" ]]; then
-        echo "Committing local changes..."
-        git add .
-        git commit -m "init." || true
-        echo "✓ Local changes committed"
-    fi
-
-    # checkout to target branch
-    echo "Checking out to $target_branch..."
-    git checkout "$target_branch"
-
-    # reset to single commit
-    echo "Resetting git history..."
-    git reset "$(git commit-tree HEAD^{tree} -m "$commit_message")"
-
-    # force push to origin
-    echo "Force pushing to origin/$target_branch..."
-    git push origin "$target_branch" --force
-
-    echo "✅ Git history has been reset successfully"
-    echo "   New commit: $(git log --oneline -1)"
+    }
 }
 
-# run main
-krun::reset::git-history::run "$@"
+krun::sh::run() {
+    krun::sh::ensure_python3
+    # Prefer local checkout when present (dev / installed tree).
+    local here
+    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
+    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+}
+
+krun::sh::run "$@"

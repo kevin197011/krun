@@ -23,7 +23,7 @@ MANIFEST_PATH = File.join(MANIFEST_DIR, 'lib-manifest.json')
 namespace :lib do
   desc 'Generate meta/lib-manifest.json from lib/sh and lib/py'
   task :manifest do
-    sh_files = Dir['lib/sh/*'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
+    sh_files = Dir['lib/sh/*.sh'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
     py_files = Dir['lib/py/scripts/*.py'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
     FileUtils.mkdir_p(MANIFEST_DIR)
     File.write(MANIFEST_PATH, JSON.pretty_generate({ 'sh' => sh_files, 'py' => py_files.sort }))
@@ -39,4 +39,13 @@ namespace :lib do
     puts "Wrote lib/py/krun/VERSION (#{ver})"
     Rake::Task['lib:manifest'].invoke
   end
+
+  desc 'Regenerate lib/sh wrappers that delegate to lib/py'
+  task 'sh:generate' do
+    system('python3', 'lib/sh/generate_wrappers.py') || raise('sh generate failed')
+    Rake::Task['lib:manifest'].invoke
+  end
+
+  desc 'Regenerate both py and sh entrypoints'
+  task generate: %w[lib:py:generate lib:sh:generate]
 end

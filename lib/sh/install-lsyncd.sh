@@ -1,157 +1,44 @@
 #!/usr/bin/env bash
-# Copyright (c) 2025 kk
+# Copyright (c) 2026 kk
+# MIT License
 #
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
+# GENERATED — do not edit by hand. Run: rake lib:sh:generate
+# Logic lives in lib/py (this wrapper only delegates).
+#
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-lsyncd.sh | sudo bash
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-lsyncd.sh | bash
+SCRIPT_PY="install_lsyncd"
+RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
 
-# vars
-
-# run code
-krun::install::lsyncd::run() {
-    local platform='debian'
-    command -v yum >/dev/null && platform='centos'
-    command -v dnf >/dev/null && platform='centos'
-    command -v brew >/dev/null && platform='mac'
-    eval "${FUNCNAME/::run/::${platform}}"
-}
-
-# centos code
-krun::install::lsyncd::centos() {
-    krun::install::lsyncd::common
-    yum install -y epel-release
-    yum install -y lsyncd
-    # Set up SSH key-based authentication
-    tee /etc/lsyncd.conf <<EOF
-settings {
-    logfile = "/var/log/lsyncd/lsyncd.log",
-    statusFile = "/var/log/lsyncd/lsyncd.status",
-    nodaemon = false
-}
-
--- rsync /data/dir1
-sync {
-    default.rsyncssh,
-    source = "/data/dir1/",
-    host = "10.1.1.1",
-    targetdir = "/data/dir1/",
-    delete = true,
-    rsync = {
-        archive = true,
-        compress = true,
-        verbose = true,
-        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
+krun::sh::ensure_python3() {
+    if command -v python3 >/dev/null 2>&1; then
+        return 0
+    fi
+    echo "python3 not found; bootstrapping via install-python3.sh..."
+    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-python3.sh" | bash
+    command -v python3 >/dev/null 2>&1 || {
+        echo "✗ python3 still missing after bootstrap"
+        exit 1
     }
 }
 
--- rsync /data/dir2
-sync {
-    default.rsyncssh,
-    source = "/data/dir2/",
-    host = "10.1.1.2",
-    targetdir = "/data/dir2/",
-    delete = true,
-    rsync = {
-        archive = true,
-        compress = true,
-        verbose = true,
-        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
-    }
+krun::sh::run() {
+    krun::sh::ensure_python3
+    # Prefer local checkout when present (dev / installed tree).
+    local here
+    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
+    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    curl -fsSL "$RAW_PY" | exec python3 - "$@"
 }
 
--- rsync /data/dir3
-sync {
-    default.rsyncssh,
-    source = "/data/dir3/",
-    host = "10.1.1.3",
-    targetdir = "/data/dir3/",
-    delete = true,
-    rsync = {
-        archive = true,
-        compress = true,
-        verbose = true,
-        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
-    }
-}
-EOF
-    systemctl enable lsyncd
-}
-
-# debian code
-krun::install::lsyncd::debian() {
-    krun::install::lsyncd::common
-    apt update -y
-    apt install lsyncd
-    tee /etc/lsyncd/lsyncd.conf.lua <<EOF
-settings {
-    logfile = "/var/log/lsyncd/lsyncd.log",
-    statusFile = "/var/log/lsyncd/lsyncd.status",
-    nodaemon = false
-}
-
--- rsync /data/dir1
-sync {
-    default.rsyncssh,
-    source = "/data/dir1/",
-    host = "10.1.1.1",
-    targetdir = "/data/dir1/",
-    delete = true,
-    rsync = {
-        archive = true,
-        compress = true,
-        verbose = true,
-        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
-    }
-}
-
--- rsync /data/dir2
-sync {
-    default.rsyncssh,
-    source = "/data/dir2/",
-    host = "10.1.1.2",
-    targetdir = "/data/dir2/",
-    delete = true,
-    rsync = {
-        archive = true,
-        compress = true,
-        verbose = true,
-        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
-    }
-}
-
--- rsync /data/dir3
-sync {
-    default.rsyncssh,
-    source = "/data/dir3/",
-    host = "10.1.1.3",
-    targetdir = "/data/dir3/",
-    delete = true,
-    rsync = {
-        archive = true,
-        compress = true,
-        verbose = true,
-        rsh = "/usr/bin/ssh -p 22 -o StrictHostKeyChecking=no"
-    }
-}
-EOF
-    systemctl enable lsyncd
-}
-
-# mac code
-krun::install::lsyncd::mac() {
-    krun::install::lsyncd::common
-}
-
-# common code
-krun::install::lsyncd::common() {
-    echo "${FUNCNAME}"
-}
-
-# run main
-krun::install::lsyncd::run "$@"
+krun::sh::run "$@"

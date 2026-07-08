@@ -1,158 +1,44 @@
 #!/usr/bin/env bash
-# Copyright (c) 2025 kk
+# Copyright (c) 2026 kk
+# MIT License
 #
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
+# GENERATED — do not edit by hand. Run: rake lib:sh:generate
+# Logic lives in lib/py (this wrapper only delegates).
+#
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-salt-master.sh | sudo bash
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-salt-master.sh | bash
+SCRIPT_PY="install_salt_master"
+RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
 
-# vars
-BOOTSTRAP_URL="https://raw.githubusercontent.com/saltstack/salt-bootstrap/stable/bootstrap-salt.sh"
-
-# run code
-krun::install::salt_master::run() {
-    local platform='debian'
-    command -v yum >/dev/null && platform='centos'
-    command -v dnf >/dev/null && platform='centos'
-    command -v brew >/dev/null && platform='mac'
-    eval "${FUNCNAME/::run/::${platform}}"
-}
-
-# centos code
-krun::install::salt_master::centos() {
-    [[ "$OSTYPE" != "darwin"* ]] && [[ $EUID -ne 0 ]] && echo "✗ Please run as root" && exit 1
-
-    echo "Installing Salt Master on RHEL/CentOS/Rocky/AlmaLinux..."
-
-    local bootstrap_file="/tmp/bootstrap-salt.sh"
-    curl -fsSL "$BOOTSTRAP_URL" -o "$bootstrap_file"
-    sh "$bootstrap_file" -M -x python3
-    rm -f "$bootstrap_file"
-
-    krun::install::salt_master::common
-}
-
-# debian code
-krun::install::salt_master::debian() {
-    [[ "$OSTYPE" != "darwin"* ]] && [[ $EUID -ne 0 ]] && echo "✗ Please run as root" && exit 1
-
-    echo "Installing Salt Master on Debian/Ubuntu..."
-
-    local bootstrap_file="/tmp/bootstrap-salt.sh"
-    curl -fsSL "$BOOTSTRAP_URL" -o "$bootstrap_file"
-    sh "$bootstrap_file" -M -x python3
-    rm -f "$bootstrap_file"
-
-    krun::install::salt_master::common
-}
-
-# mac code
-krun::install::salt_master::mac() {
-    echo "Installing Salt Master on macOS..."
-
-    command -v brew >/dev/null || {
-        echo "✗ Homebrew is required for macOS installation"
+krun::sh::ensure_python3() {
+    if command -v python3 >/dev/null 2>&1; then
+        return 0
+    fi
+    echo "python3 not found; bootstrapping via install-python3.sh..."
+    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-python3.sh" | bash
+    command -v python3 >/dev/null 2>&1 || {
+        echo "✗ python3 still missing after bootstrap"
         exit 1
     }
-
-    brew install saltstack
-
-    krun::install::salt_master::common
 }
 
-# common code
-krun::install::salt_master::common() {
-    command -v salt-master >/dev/null || {
-        echo "✗ Salt Master installation failed"
-        exit 1
-    }
-
-    echo "✓ Salt Master installed: $(salt-master --version 2>&1 | head -1)"
-
-    # Configure Salt Master
-    local master_config="/etc/salt/master"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        master_config="/usr/local/etc/salt/master"
-        [[ ! -f "$master_config" ]] && master_config="/opt/homebrew/etc/salt/master"
+krun::sh::run() {
+    krun::sh::ensure_python3
+    # Prefer local checkout when present (dev / installed tree).
+    local here
+    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
+    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
     fi
-
-    if [[ -f "$master_config" ]]; then
-        # Enable auto accept minion keys
-        if ! grep -q "^auto_accept:" "$master_config"; then
-            echo "" >>"$master_config"
-            echo "# Auto accept minion keys" >>"$master_config"
-            echo "auto_accept: True" >>"$master_config"
-            echo "✓ Enabled auto accept minion keys"
-        fi
-
-        # Configure Salt API
-        if ! grep -q "^rest_cherrypy:" "$master_config"; then
-            echo "" >>"$master_config"
-            echo "# Salt API configuration" >>"$master_config"
-            echo "rest_cherrypy:" >>"$master_config"
-            echo "  host: 0.0.0.0" >>"$master_config"
-            echo "  port: 8000" >>"$master_config"
-            echo "  disable_ssl: True" >>"$master_config"
-            echo "✓ Configured Salt API on port 8000"
-        fi
-
-        # Configure external authentication (PAM)
-        if ! grep -q "^external_auth:" "$master_config"; then
-            echo "" >>"$master_config"
-            echo "# External authentication for Salt API" >>"$master_config"
-            echo "external_auth:" >>"$master_config"
-            echo "  pam:" >>"$master_config"
-            echo "    salt:" >>"$master_config"
-            echo "      - .*" >>"$master_config"
-            echo "      - '@runner'" >>"$master_config"
-            echo "      - '@wheel'" >>"$master_config"
-            echo "✓ Configured Salt API authentication (PAM)"
-        fi
+    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
     fi
-
-    # Install salt-api if not installed
-    if [[ "$OSTYPE" != "darwin"* ]]; then
-        if ! command -v salt-api >/dev/null 2>&1; then
-            echo "Installing salt-api..."
-            if command -v dnf >/dev/null 2>&1; then
-                dnf install -y salt-api 2>/dev/null || yum install -y salt-api 2>/dev/null || true
-            elif command -v yum >/dev/null 2>&1; then
-                yum install -y salt-api 2>/dev/null || true
-            elif command -v apt-get >/dev/null 2>&1; then
-                apt-get install -y salt-api 2>/dev/null || true
-            fi
-        fi
-    fi
-
-    if [[ "$OSTYPE" != "darwin"* ]]; then
-        systemctl enable salt-master 2>/dev/null || true
-        systemctl restart salt-master 2>/dev/null || true
-        systemctl status salt-master --no-pager 2>/dev/null || true
-        echo "✓ Salt Master service enabled and started"
-
-        if command -v salt-api >/dev/null 2>&1; then
-            systemctl enable salt-api 2>/dev/null || true
-            systemctl start salt-api 2>/dev/null || true
-            systemctl status salt-api --no-pager 2>/dev/null || true
-            echo "✓ Salt API service enabled and started"
-        fi
-    else
-        echo "To start Salt Master on macOS:"
-        echo "  salt-master -d"
-        echo "  brew services start saltstack"
-    fi
-
-    echo "✓ Salt Master installation completed"
-    echo "  - Auto accept minion keys: enabled"
-    echo "  - Salt API: http://0.0.0.0:8000 (authentication required)"
-    echo "  - API Auth: PAM authentication enabled (user: salt)"
-    echo "  - Note: Create 'salt' user or modify /etc/salt/master external_auth section"
+    curl -fsSL "$RAW_PY" | exec python3 - "$@"
 }
 
-# run main
-krun::install::salt_master::run "$@"
+krun::sh::run "$@"

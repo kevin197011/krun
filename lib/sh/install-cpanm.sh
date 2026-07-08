@@ -1,51 +1,44 @@
 #!/usr/bin/env bash
-# Copyright (c) 2025 kk
+# Copyright (c) 2026 kk
+# MIT License
 #
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
+# GENERATED — do not edit by hand. Run: rake lib:sh:generate
+# Logic lives in lib/py (this wrapper only delegates).
+#
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-cpanm.sh | sudo bash
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-cpanm.sh | bash
+SCRIPT_PY="install_cpanm"
+RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
 
-# vars
-
-krun::install::cpanm::sudo() {
-    [[ "$(id -u 2>/dev/null || echo 1)" -eq 0 ]] && return 0
-    command -v sudo >/dev/null 2>&1 && echo "sudo"
+krun::sh::ensure_python3() {
+    if command -v python3 >/dev/null 2>&1; then
+        return 0
+    fi
+    echo "python3 not found; bootstrapping via install-python3.sh..."
+    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-python3.sh" | bash
+    command -v python3 >/dev/null 2>&1 || {
+        echo "✗ python3 still missing after bootstrap"
+        exit 1
+    }
 }
 
-# run code
-krun::install::cpanm::run() {
-    local platform='debian'
-    command -v yum >/dev/null && platform='centos'
-    command -v dnf >/dev/null && platform='centos'
-    command -v brew >/dev/null && platform='mac'
-    eval "${FUNCNAME/::run/::${platform}}"
+krun::sh::run() {
+    krun::sh::ensure_python3
+    # Prefer local checkout when present (dev / installed tree).
+    local here
+    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
+    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    curl -fsSL "$RAW_PY" | exec python3 - "$@"
 }
 
-# centos code
-krun::install::cpanm::centos() {
-    sudo="$(krun::install::cpanm::sudo)"
-    command -v dnf >/dev/null 2>&1 && $sudo dnf -y install perl-App-cpanminus && return
-    $sudo yum -y install perl-App-cpanminus
-}
-
-# debian code
-krun::install::cpanm::debian() {
-    sudo="$(krun::install::cpanm::sudo)"
-    $sudo apt-get update -qq || true
-    $sudo apt-get install -y cpanminus
-}
-
-# mac code
-krun::install::cpanm::mac() {
-    brew install cpanminus
-}
-
-# run main
-krun::install::cpanm::run "$@"
-
+krun::sh::run "$@"

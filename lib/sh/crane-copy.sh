@@ -1,56 +1,44 @@
 #!/usr/bin/env bash
-# Copyright (c) 2025 kk
+# Copyright (c) 2026 kk
+# MIT License
 #
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
+# GENERATED — do not edit by hand. Run: rake lib:sh:generate
+# Logic lives in lib/py (this wrapper only delegates).
+#
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/crane-copy.sh | sudo bash
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/crane-copy.sh | bash
+SCRIPT_PY="crane_copy"
+RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
 
-# vars
-# 两端仓库认证：crane 使用 ~/.docker/config.json，需对源、目标仓库分别登录
-#   docker login ghcr.io
-#   docker login harbor.devops.com
-# 或设置 DOCKER_CONFIG 指向含 auth 的 config.json
-#
-# 直接执行: krun crane-copy.sh <源镜像> <目标镜像>
-# 或环境变量: CRANE_COPY_SRC / CRANE_COPY_DST
-
-# run code
-krun::crane::copy::run() {
-    local platform='debian'
-    command -v yum >/dev/null && platform='centos'
-    command -v dnf >/dev/null && platform='centos'
-    command -v brew >/dev/null && platform='mac'
-    eval "${FUNCNAME/::run/::${platform}}"
-}
-
-# centos / debian / mac 共用
-krun::crane::copy::centos() { krun::crane::copy::common; }
-krun::crane::copy::debian() { krun::crane::copy::common; }
-krun::crane::copy::mac()   { krun::crane::copy::common; }
-
-krun::crane::copy::common() {
-    command -v crane >/dev/null 2>&1 || { echo "crane not found. run: krun install-crane.sh"; exit 1; }
-
-    local src="${CRANE_COPY_SRC:-${1:-}}"
-    local dst="${CRANE_COPY_DST:-${2:-}}"
-
-    if [[ -z "$src" || -z "$dst" ]]; then
-        echo "Usage: krun crane-copy.sh <源镜像> <目标镜像>"
-        echo "   or: CRANE_COPY_SRC=<src> CRANE_COPY_DST=<dst> krun crane-copy.sh"
-        echo "Example: krun crane-copy.sh ghcr.io/kevin197011/doris-webhook:main-aaef595 harbor.devops.com/devops/doris-webhook:main-aaef595"
-        exit 1
+krun::sh::ensure_python3() {
+    if command -v python3 >/dev/null 2>&1; then
+        return 0
     fi
-
-    echo "Copy: $src -> $dst"
-    crane copy "$src" "$dst"
-    echo "✓ Done"
+    echo "python3 not found; bootstrapping via install-python3.sh..."
+    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-python3.sh" | bash
+    command -v python3 >/dev/null 2>&1 || {
+        echo "✗ python3 still missing after bootstrap"
+        exit 1
+    }
 }
 
-# run main
-krun::crane::copy::run "$@"
+krun::sh::run() {
+    krun::sh::ensure_python3
+    # Prefer local checkout when present (dev / installed tree).
+    local here
+    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
+    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+}
+
+krun::sh::run "$@"

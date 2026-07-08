@@ -1,54 +1,44 @@
 #!/usr/bin/env bash
-# Copyright (c) 2025 kk
+# Copyright (c) 2026 kk
+# MIT License
 #
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
+# GENERATED — do not edit by hand. Run: rake lib:sh:generate
+# Logic lives in lib/py (this wrapper only delegates).
+#
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-puppet_bolt.sh | sudo bash
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-puppet_bolt.sh | bash
+SCRIPT_PY="install_puppet_bolt"
+RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
 
-# vars
-
-# run code
-krun::install::puppet_bolt::run() {
-    local platform='debian'
-    command -v yum >/dev/null && platform='centos'
-    command -v dnf >/dev/null && platform='centos'
-    command -v brew >/dev/null && platform='mac'
-    eval "${FUNCNAME/::run/::${platform}}"
+krun::sh::ensure_python3() {
+    if command -v python3 >/dev/null 2>&1; then
+        return 0
+    fi
+    echo "python3 not found; bootstrapping via install-python3.sh..."
+    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-python3.sh" | bash
+    command -v python3 >/dev/null 2>&1 || {
+        echo "✗ python3 still missing after bootstrap"
+        exit 1
+    }
 }
 
-# centos code
-krun::install::puppet_bolt::centos() {
-    krun::install::puppet_bolt::common
+krun::sh::run() {
+    krun::sh::ensure_python3
+    # Prefer local checkout when present (dev / installed tree).
+    local here
+    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
+    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
+        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
+    fi
+    curl -fsSL "$RAW_PY" | exec python3 - "$@"
 }
 
-# debian code
-krun::install::puppet_bolt::debian() {
-    wget https://apt.puppet.com/puppet-tools-release-jammy.deb
-    sudo dpkg -i puppet-tools-release-jammy.deb
-    rm -rf puppet-tools-release-jammy.deb
-    sudo apt-get update -y
-    sudo apt-get install puppet-bolt -y
-    krun::install::puppet_bolt::common
-}
-
-# mac code
-krun::install::puppet_bolt::mac() {
-    brew tap puppetlabs/puppet
-    brew install --cask puppet-bolt
-    brew install --cask puppetlabs/puppet/pdk
-    krun::install::puppet_bolt::common
-}
-
-# common code
-krun::install::puppet_bolt::common() {
-    bolt --version
-}
-
-# run main
-krun::install::puppet_bolt::run "$@"
+krun::sh::run "$@"

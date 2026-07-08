@@ -25,9 +25,11 @@ krun/
 ├── meta/lib-manifest.json   # 脚本清单
 ├── lib/
 │   ├── sh/
-│   │   └── install-python3.sh   # 唯一 Shell 脚本（安装 Python3 依赖）
+│   │   ├── *.sh                 # 生成型薄包装（委托 py；rake lib:sh:generate）
+│   │   ├── install-python3.sh   # 原生：无 Python 时 bootstrap
+│   │   └── install-node-exporter-offline.sh  # 原生：离线安装
 │   └── py/
-│       ├── krun/                # 核心库（不直接 curl）
+│       ├── krun/                # 核心库（业务逻辑唯一来源）
 │       │   ├── bootstrap.py     # 远程执行时拉取依赖
 │       │   ├── common.py        # 平台检测、装包、run()
 │       │   ├── registry.py      # 脚本名 → handler
@@ -36,7 +38,7 @@ krun/
 │       │       ├── config.py
 │       │       ├── ops.py
 │       │       └── system.py
-│       ├── scripts/             # 可执行入口（79 个薄 wrapper）
+│       ├── scripts/             # 可执行入口（薄 wrapper）
 │       └── generate_wrappers.py # rake lib:py:generate
 └── install.sh               # 安装 krun CLI
 ```
@@ -201,9 +203,9 @@ krun list
 
 # 执行脚本（自动下载并执行；兼容旧 kebab-case 名称）
 krun install_docker.py
-krun install-docker.sh      # 兼容旧名
+krun install-docker.sh      # 兼容：薄包装 → 同一套 py 逻辑
 krun init_system.py
-krun install-python3.sh     # 唯一保留的 shell 脚本
+krun install-python3.sh     # 原生 shell（无 python3 时 bootstrap）
 ```
 
 **安装说明**：
@@ -211,7 +213,7 @@ krun install-python3.sh     # 唯一保留的 shell 脚本
 - 自动检测平台并安装所需依赖（Python3、curl）
 - 自动配置 PATH 环境变量
 - 安装目录：`~/.krun/bin/krun`
-- krun 工具管理 `lib/py/scripts/` 下的 Python 脚本；`lib/sh/` 仅保留 `install-python3.sh`
+- 业务逻辑只在 `lib/py`；`lib/sh/*.sh`（除原生少数）为生成型委托包装，保证与 py 一致
 - 本地开发时 `krun` 优先读仓库内文件，再回退 GitHub raw
 
 ### 方式二：直接执行脚本
@@ -273,7 +275,7 @@ cat meta/lib-manifest.json
 | 运维工具 | `deploy_node_exporter.py`, `crane_copy.py`, `check_ip_quality.py` |
 | 开发环境 | `install_asdf.py`, `install_oh_my_zsh.py`, `install_rbenv.py` |
 
-`lib/sh/` 仅保留 `install-python3.sh`（安装 Python3 运行依赖）。
+`lib/sh/`：多数为生成型薄包装（委托对应 `lib/py/scripts/*.py`）；原生仅 `install-python3.sh`、`install-node-exporter-offline.sh`。
 
 ## 支持平台
 
@@ -368,7 +370,10 @@ data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/scripts/config_disk
 # 1. 在 krun/handlers/ 添加逻辑
 # 2. 在 krun/registry.py 的 SCRIPTS 注册名称
 # 3. 生成入口并更新清单
-rake lib:py:generate   # → lib/py/scripts/ + meta/lib-manifest.json
+rake lib:generate      # → py scripts + sh wrappers + manifest
+# 或分开：
+rake lib:py:generate
+rake lib:sh:generate
 ```
 
 ## 贡献指南
