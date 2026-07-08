@@ -9,6 +9,9 @@
 import os, sys, time, urllib.error, urllib.request, importlib.util
 from pathlib import Path
 
+def _krun_refresh_wanted():
+    return os.environ.get("KRUN_REFRESH", "1").strip().lower() not in {"0", "false", "no", "off"}
+
 def _krun_mirror_urls(url):
     urls = [url]
     mirror = os.environ.get("KRUN_PY_MIRROR", "").strip()
@@ -64,7 +67,7 @@ def _krun_prefetch():
         remote_ver = ""
     ver_path = cache / "krun" / "VERSION"
     cached_ver = ver_path.read_text(encoding="utf-8").strip() if ver_path.is_file() else ""
-    stale = bool(os.environ.get("KRUN_REFRESH")) or (remote_ver and remote_ver != cached_ver)
+    stale = _krun_refresh_wanted() or (remote_ver and remote_ver != cached_ver)
     if not stale:
         required = ("krun/registry.py", "krun/handlers/config.py", "krun/handlers/system.py")
         stale = any(not (cache / rel).is_file() for rel in required)

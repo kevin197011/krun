@@ -37,6 +37,11 @@ FILES = [
 ]
 
 
+def refresh_wanted() -> bool:
+    """Default on; set KRUN_REFRESH=0 to use cache when version matches."""
+    return os.environ.get("KRUN_REFRESH", "1").strip().lower() not in {"0", "false", "no", "off"}
+
+
 def _mirror_urls(url: str) -> list[str]:
     urls = [url]
     mirror = os.environ.get("KRUN_PY_MIRROR", "").strip()
@@ -101,7 +106,7 @@ def _files_complete(root: Path) -> bool:
 
 
 def _cache_stale() -> bool:
-    if os.environ.get("KRUN_REFRESH"):
+    if refresh_wanted():
         return True
     if not _files_complete(CACHE):
         return True
