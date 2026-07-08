@@ -82,9 +82,10 @@ def _krun_prefetch():
             else:
                 print(f"✗ bootstrap download failed: {exc}")
                 raise SystemExit(1) from exc
-        elif stale:
-            for rel in ("krun/registry.py", "krun/handlers/config.py", "krun/handlers/system.py"):
-                (cache / rel).unlink(missing_ok=True)
+        else:
+            if stale:
+                for rel in ("krun/registry.py", "krun/handlers/config.py", "krun/handlers/system.py"):
+                    (cache / rel).unlink(missing_ok=True)
     if str(cache) not in sys.path:
         sys.path.insert(0, str(cache))
     return cache
