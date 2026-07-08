@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import gzip
 import os
 import random
 import time
@@ -29,7 +30,6 @@ def browser_headers(url: str) -> dict[str, str]:
         "User-Agent": USER_AGENT,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate",
         "Connection": "keep-alive",
         "Upgrade-Insecure-Requests": "1",
         "Sec-Fetch-Dest": "document",
@@ -83,13 +83,23 @@ def _retry_delay(attempt: int) -> None:
     time.sleep((2**attempt) + random.uniform(0.3, 1.5))
 
 
+def decompress_bytes(data: bytes) -> bytes:
+    if len(data) >= 2 and data[:2] == b"\x1f\x8b":
+        return gzip.decompress(data)
+    return data
+
+
+def decode_text(data: bytes) -> str:
+    return decompress_bytes(data).decode("utf-8")
+
+
 def fetch_bytes(url: str, *, timeout: int = 120) -> bytes:
     errors: list[str] = []
     for target in mirror_urls(url):
         for attempt in range(4):
             try:
                 req = urllib.request.Request(target, headers=browser_headers(target))
-                return urllib.request.urlopen(req, timeout=timeout).read()
+                return decompress_bytes(urllib.request.urlopen(req, timeout=timeout).read())
             except urllib.error.HTTPError as exc:
                 if exc.code in RETRYABLE_HTTP and attempt < 3:
                     _retry_delay(attempt)
@@ -130,6 +140,7 @@ def curl_cmd(
 def inline_bootstrap() -> str:
     """Self-contained prefetch block inlined into scripts/*.py (no krun import)."""
     return f'''
+import gzip
 import os, sys, time, random, urllib.error, urllib.request, importlib.util
 from pathlib import Path
 from urllib.parse import urlparse
@@ -143,7 +154,6 @@ def _krun_browser_headers(url):
         "User-Agent": _KRUN_UA,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate",
         "Connection": "keep-alive",
         "Upgrade-Insecure-Requests": "1",
         "Sec-Fetch-Dest": "document",
@@ -193,6 +203,15 @@ def _krun_mirror_urls(url):
             out.append(item)
     return out
 
+def _krun_decompress(data):
+    if len(data) >= 2 and data[:2] == b"\\x1f\\x8b":
+        return gzip.decompress(data)
+    return data
+
+def _krun_read_text(path):
+    data = path.read_bytes()
+    return _krun_decompress(data).decode("utf-8").strip()
+
 def _krun_fetch(url, timeout=120):
     errors = []
     retryable = {{429, 502, 503, 504}}
@@ -200,7 +219,7 @@ def _krun_fetch(url, timeout=120):
         for attempt in range(4):
             try:
                 req = urllib.request.Request(target, headers=_krun_browser_headers(target))
-                return urllib.request.urlopen(req, timeout=timeout).read()
+                return _krun_decompress(urllib.request.urlopen(req, timeout=timeout).read())
             except urllib.error.HTTPError as exc:
                 if exc.code in retryable and attempt < 3:
                     _krun_retry_delay(attempt)
@@ -226,11 +245,11 @@ def _krun_prefetch():
         pass
     cache.mkdir(parents=True, exist_ok=True)
     try:
-        remote_ver = _krun_fetch(f"{{base}}/krun/VERSION", timeout=30).decode().strip()
+        remote_ver = _krun_decompress(_krun_fetch(f"{{base}}/krun/VERSION", timeout=30)).decode().strip()
     except OSError:
         remote_ver = ""
     ver_path = cache / "krun" / "VERSION"
-    cached_ver = ver_path.read_text(encoding="utf-8").strip() if ver_path.is_file() else ""
+    cached_ver = _krun_read_text(ver_path) if ver_path.is_file() else ""
     stale = _krun_refresh_wanted() or (remote_ver and remote_ver != cached_ver)
     if not stale:
         required = ("krun/registry.py", "krun/handlers/config.py", "krun/handlers/system.py")

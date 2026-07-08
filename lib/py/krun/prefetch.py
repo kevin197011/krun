@@ -9,7 +9,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from krun.http import fetch_bytes, inline_bootstrap
+from krun.http import decode_text, fetch_bytes, inline_bootstrap
 
 BASE = os.environ.get(
     "KRUN_PY_BASE",
@@ -31,7 +31,7 @@ def refresh_wanted() -> bool:
 
 def _fetch_version(base: str) -> str:
     try:
-        return fetch_bytes(f"{base}/krun/VERSION", timeout=30).decode().strip()
+        return decode_text(fetch_bytes(f"{base}/krun/VERSION", timeout=30))
     except OSError:
         return ""
 
@@ -58,7 +58,13 @@ def prefetch_path() -> None:
     cache.mkdir(parents=True, exist_ok=True)
     remote_ver = _fetch_version(base)
     ver_path = cache / "krun" / "VERSION"
-    cached_ver = ver_path.read_text(encoding="utf-8").strip() if ver_path.is_file() else ""
+    if ver_path.is_file():
+        try:
+            cached_ver = decode_text(ver_path.read_bytes())
+        except OSError:
+            cached_ver = ""
+    else:
+        cached_ver = ""
     stale = refresh_wanted() or (remote_ver and remote_ver != cached_ver)
     if not stale:
         stale = _cache_incomplete(cache)

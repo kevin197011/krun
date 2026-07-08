@@ -80,12 +80,19 @@ def _fetch(url: str, dest: Path, fetch) -> None:
 def _read_version(path: Path) -> str:
     if not path.is_file():
         return ""
-    return path.read_text(encoding="utf-8").strip()
+    try:
+        from krun.http import decode_text
+
+        return decode_text(path.read_bytes())
+    except Exception:
+        return path.read_text(encoding="utf-8", errors="replace").strip()
 
 
 def _remote_version(fetch) -> str:
     try:
-        return fetch(f"{BASE}/{VERSION_FILE}", timeout=30).decode().strip()
+        from krun.http import decode_text
+
+        return decode_text(fetch(f"{BASE}/{VERSION_FILE}", timeout=30))
     except OSError:
         return ""
 
