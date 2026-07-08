@@ -30,6 +30,9 @@ def _krun_prefetch():
     ver_path = cache / "krun" / "VERSION"
     cached_ver = ver_path.read_text(encoding="utf-8").strip() if ver_path.is_file() else ""
     stale = bool(os.environ.get("KRUN_REFRESH")) or (remote_ver and remote_ver != cached_ver)
+    if not stale:
+        required = ("krun/registry.py", "krun/handlers/config.py", "krun/handlers/system.py")
+        stale = any(not (cache / rel).is_file() for rel in required)
     if stale and (cache / "krun").is_dir():
         import shutil
         shutil.rmtree(cache / "krun", ignore_errors=True)

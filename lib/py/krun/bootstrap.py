@@ -55,13 +55,25 @@ def _remote_version() -> str:
         return ""
 
 
+def _files_complete() -> bool:
+    return all((CACHE / rel).is_file() for rel in FILES)
+
+
 def _cache_stale() -> bool:
     if os.environ.get("KRUN_REFRESH"):
+        return True
+    if not _files_complete():
         return True
     remote = _remote_version()
     if not remote:
         return False
     return remote != _read_version(CACHE / VERSION_FILE)
+
+
+def _clear_krun_modules() -> None:
+    for key in list(sys.modules):
+        if key == "krun" or key.startswith("krun."):
+            del sys.modules[key]
 
 
 def setup() -> None:
@@ -80,6 +92,7 @@ def setup() -> None:
     stale = _cache_stale()
     if stale and (CACHE / "krun").is_dir():
         shutil.rmtree(CACHE / "krun", ignore_errors=True)
+        _clear_krun_modules()
 
     for rel in FILES:
         dest = CACHE / rel

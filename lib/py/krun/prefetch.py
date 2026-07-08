@@ -16,6 +16,11 @@ BASE = os.environ.get(
 )
 CACHE = Path(os.environ.get("KRUN_PY_CACHE", Path.home() / ".cache/krun/py"))
 UA = "krun/2.1"
+_REQUIRED = (
+    "krun/registry.py",
+    "krun/handlers/config.py",
+    "krun/handlers/system.py",
+)
 
 
 def _fetch_version(base: str) -> str:
@@ -24,6 +29,10 @@ def _fetch_version(base: str) -> str:
         return urllib.request.urlopen(req, timeout=30).read().decode().strip()
     except OSError:
         return ""
+
+
+def _cache_incomplete(cache: Path) -> bool:
+    return any(not (cache / rel).is_file() for rel in _REQUIRED)
 
 
 def prefetch_path() -> None:
@@ -46,6 +55,8 @@ def prefetch_path() -> None:
     ver_path = cache / "krun" / "VERSION"
     cached_ver = ver_path.read_text(encoding="utf-8").strip() if ver_path.is_file() else ""
     stale = bool(os.environ.get("KRUN_REFRESH")) or (remote_ver and remote_ver != cached_ver)
+    if not stale:
+        stale = _cache_incomplete(cache)
     if stale and (cache / "krun").is_dir():
         shutil.rmtree(cache / "krun", ignore_errors=True)
 
@@ -117,6 +128,9 @@ def _krun_prefetch():
     ver_path = cache / "krun" / "VERSION"
     cached_ver = ver_path.read_text(encoding="utf-8").strip() if ver_path.is_file() else ""
     stale = bool(os.environ.get("KRUN_REFRESH")) or (remote_ver and remote_ver != cached_ver)
+    if not stale:
+        required = ("krun/registry.py", "krun/handlers/config.py", "krun/handlers/system.py")
+        stale = any(not (cache / rel).is_file() for rel in required)
     if stale and (cache / "krun").is_dir():
         import shutil
         shutil.rmtree(cache / "krun", ignore_errors=True)
