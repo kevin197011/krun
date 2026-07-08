@@ -6,8 +6,47 @@
 # idempotent: safe to re-run
 """krun script: config_ssh"""
 
-import os, sys, time, urllib.error, urllib.request, importlib.util
+import os, sys, time, random, urllib.error, urllib.request, importlib.util
 from pathlib import Path
+from urllib.parse import urlparse
+
+_KRUN_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 krun/2.1'
+
+def _krun_browser_headers(url):
+    parsed = urlparse(url)
+    host = (parsed.netloc or "").lower()
+    headers = {
+        "User-Agent": _KRUN_UA,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "DNT": "1",
+    }
+    if "raw.githubusercontent.com" in host:
+        headers["Accept"] = "application/vnd.github.raw+json, text/plain, */*;q=0.8"
+        headers["Referer"] = "https://github.com/"
+        headers["Sec-Fetch-Site"] = "cross-site"
+        headers["Sec-Fetch-Dest"] = "empty"
+        headers["Sec-Fetch-Mode"] = "cors"
+    elif host.endswith("github.com") or host == "api.github.com":
+        headers["Accept"] = "application/json, text/plain, */*;q=0.8"
+        headers["Referer"] = "https://github.com/"
+        headers["Sec-Fetch-Site"] = "same-origin" if host.endswith("github.com") else "cross-site"
+        headers["Sec-Fetch-Dest"] = "empty"
+        headers["Sec-Fetch-Mode"] = "cors"
+    elif host:
+        headers["Referer"] = f"{parsed.scheme or 'https'}://{host}/"
+        headers["Sec-Fetch-Site"] = "same-origin"
+    return headers
+
+def _krun_retry_delay(attempt):
+    time.sleep((2 ** attempt) + random.uniform(0.3, 1.5))
 
 def _krun_refresh_wanted():
     return os.environ.get("KRUN_REFRESH", "1").strip().lower() not in {"0", "false", "no", "off"}
@@ -32,14 +71,15 @@ def _krun_mirror_urls(url):
 
 def _krun_fetch(url, timeout=120):
     errors = []
+    retryable = {429, 502, 503, 504}
     for target in _krun_mirror_urls(url):
         for attempt in range(4):
             try:
-                req = urllib.request.Request(target, headers={"User-Agent": "krun/2.1"})
+                req = urllib.request.Request(target, headers=_krun_browser_headers(target))
                 return urllib.request.urlopen(req, timeout=timeout).read()
             except urllib.error.HTTPError as exc:
-                if exc.code in (429, 502, 503, 504) and attempt < 3:
-                    time.sleep(2 ** attempt)
+                if exc.code in retryable and attempt < 3:
+                    _krun_retry_delay(attempt)
                     continue
                 errors.append(f"{target}: HTTP {exc.code}")
                 break
@@ -72,7 +112,15 @@ def _krun_prefetch():
         required = ("krun/registry.py", "krun/handlers/config.py", "krun/handlers/system.py")
         stale = any(not (cache / rel).is_file() for rel in required)
     dest = cache / "krun" / "bootstrap.py"
+    http_dest = cache / "krun" / "http.py"
     dest.parent.mkdir(parents=True, exist_ok=True)
+    if not http_dest.is_file() or stale:
+        try:
+            http_dest.write_bytes(_krun_fetch(f"{base}/krun/http.py"))
+        except OSError as exc:
+            if not http_dest.is_file():
+                print(f"✗ http client download failed: {exc}")
+                raise SystemExit(1) from exc
     if not dest.is_file() or stale:
         try:
             dest.write_bytes(_krun_fetch(f"{base}/krun/bootstrap.py"))

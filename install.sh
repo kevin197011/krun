@@ -15,6 +15,22 @@ set -o pipefail
 KRUN_VERSION="${KRUN_VERSION:-2.0.0}"
 KRUN_REPO="https://github.com/kevin197011/krun"
 KRUN_RELEASES_URL="${KRUN_REPO}/releases/download/v${KRUN_VERSION}"
+KRUN_CURL_UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 krun/2.1'
+
+krun::install::browser_curl() {
+    curl -fsSL \
+        -A "$KRUN_CURL_UA" \
+        -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
+        -H 'Accept-Language: en-US,en;q=0.9' \
+        -H 'Connection: keep-alive' \
+        -H 'Upgrade-Insecure-Requests: 1' \
+        -H 'Sec-Fetch-Dest: document' \
+        -H 'Sec-Fetch-Mode: navigate' \
+        -H 'Sec-Fetch-Site: none' \
+        -H 'Sec-Fetch-User: ?1' \
+        -H 'DNT: 1' \
+        "$@"
+}
 
 # run code
 krun::install::run() {
@@ -115,7 +131,7 @@ krun::install::install_from_package() {
 
     # Set download command
     if command -v curl >/dev/null 2>&1; then
-        download_cmd="curl -fsSL -o"
+        download_cmd="krun::install::browser_curl -o"
     elif command -v wget >/dev/null 2>&1; then
         download_cmd="wget -qO"
     else
@@ -163,7 +179,7 @@ krun::install::install_binary() {
 
     # Set download command
     if command -v curl >/dev/null 2>&1; then
-        download_cmd="curl -fsSL"
+        download_cmd="krun::install::browser_curl"
     elif command -v wget >/dev/null 2>&1; then
         download_cmd="wget -qO-"
     else

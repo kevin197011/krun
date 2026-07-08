@@ -6,11 +6,14 @@ from __future__ import annotations
 
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+from krun.http import curl_cmd, mirror_urls
 
 REPO = "kevin197011/krun"
 RAW = f"https://raw.githubusercontent.com/{REPO}/main/lib/py/scripts"
@@ -175,9 +178,13 @@ def install_packages(
             print(f"✓ {service} enabled")
 
 
+def curl_shell(url: str, *, head: bool = False, output: str | None = None) -> str:
+    return " ".join(shlex.quote(part) for part in curl_cmd(url, head=head, output=output))
+
+
 def curl_pipe(url: str, shell: str = "bash") -> None:
     require_root()
-    proc = subprocess.run(["curl", "-fsSL", url], capture_output=True, check=False)
+    proc = subprocess.run(curl_cmd(url), capture_output=True, check=False)
     if proc.returncode != 0:
         print(f"✗ curl failed: {url}")
         sys.exit(1)
@@ -224,17 +231,17 @@ def _pick_tarball_url(
         f"https://github.com/{repo}/releases/download/v{tag}/{name}_{tag}_Linux_{arch}.tar.gz",
         f"https://github.com/{repo}/releases/download/v{tag}/{name}_Linux_{arch}.tar.gz",
     ):
-        proc = subprocess.run(["curl", "-fsI", pattern], capture_output=True, check=False)
+        proc = subprocess.run(curl_cmd(pattern, head=True), capture_output=True, check=False)
         if proc.returncode == 0 and b" 200" in proc.stdout:
             return pattern
     return None
 
 
 def _download_url(url: str, dest: Path) -> bool:
-    if run_ok(["curl", "-fsSL", url, "-o", str(dest)]):
-        return True
-    mirror = f"https://ghproxy.com/{url}"
-    return run(["curl", "-fsSL", mirror, "-o", str(dest)]) == 0
+    for target in mirror_urls(url):
+        if run_ok(curl_cmd(target, output=str(dest))):
+            return True
+    return False
 
 
 def github_binary(
@@ -245,7 +252,7 @@ def github_binary(
 ) -> None:
     require_root()
     api = f"https://api.github.com/repos/{repo}/releases/latest"
-    proc = subprocess.run(["curl", "-fsSL", api], capture_output=True, text=True, check=False)
+    proc = subprocess.run(curl_cmd(api), capture_output=True, text=True, check=False)
     if proc.returncode != 0:
         print(f"✗ cannot fetch release info for {repo}")
         sys.exit(1)

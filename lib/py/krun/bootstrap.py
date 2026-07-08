@@ -3,12 +3,10 @@
 
 from __future__ import annotations
 
+import importlib.util
 import os
 import shutil
 import sys
-import time
-import urllib.error
-import urllib.request
 from pathlib import Path
 
 BASE = os.environ.get(
@@ -16,10 +14,11 @@ BASE = os.environ.get(
     "https://raw.githubusercontent.com/kevin197011/krun/main/lib/py",
 )
 CACHE = Path(os.environ.get("KRUN_PY_CACHE", Path.home() / ".cache/krun/py"))
-UA = "krun/2.1"
 VERSION_FILE = "krun/VERSION"
+HTTP_FILE = "krun/http.py"
 
 FILES = [
+    HTTP_FILE,
     "krun/__init__.py",
     VERSION_FILE,
     "krun/prefetch.py",
@@ -42,50 +41,40 @@ def refresh_wanted() -> bool:
     return os.environ.get("KRUN_REFRESH", "1").strip().lower() not in {"0", "false", "no", "off"}
 
 
-def _mirror_urls(url: str) -> list[str]:
-    urls = [url]
-    mirror = os.environ.get("KRUN_PY_MIRROR", "").strip()
-    if mirror:
-        urls.insert(0, f"{mirror.rstrip('/')}/{url}")
-    if "raw.githubusercontent.com" in url:
-        urls.append(f"https://ghproxy.com/{url}")
-        urls.append(
-            url.replace(
-                "https://raw.githubusercontent.com/kevin197011/krun/main/",
-                "https://cdn.jsdelivr.net/gh/kevin197011/krun@main/",
-            )
-        )
-    seen: set[str] = set()
-    out: list[str] = []
-    for item in urls:
-        if item and item not in seen:
-            seen.add(item)
-            out.append(item)
-    return out
+def _load_http_fetch():
+    """Load fetch_bytes from sibling http.py (cache may not have krun package yet)."""
+    try:
+        from krun.http import fetch_bytes
+
+        return fetch_bytes
+    except ImportError:
+        pass
+    path = Path(__file__).resolve().parent / "http.py"
+    if not path.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("krun.http", path)
+    mod = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(mod)
+    return mod.fetch_bytes
 
 
-def fetch_bytes(url: str, *, timeout: int = 120) -> bytes:
-    errors: list[str] = []
-    for target in _mirror_urls(url):
-        for attempt in range(4):
-            try:
-                req = urllib.request.Request(target, headers={"User-Agent": UA})
-                return urllib.request.urlopen(req, timeout=timeout).read()
-            except urllib.error.HTTPError as exc:
-                if exc.code in (429, 502, 503, 504) and attempt < 3:
-                    time.sleep(2 ** attempt)
-                    continue
-                errors.append(f"{target}: HTTP {exc.code}")
-                break
-            except OSError as exc:
-                errors.append(f"{target}: {exc}")
-                break
-    raise OSError(f"fetch failed for {url}: " + "; ".join(errors))
+def _bootstrap_fetch(url: str, *, timeout: int = 120) -> bytes:
+    """Fetch before krun/http.py is importable from cache."""
+    fn = _load_http_fetch()
+    if fn is not None:
+        return fn(url, timeout=timeout)
+    try:
+        from krun.http import fetch_bytes
+
+        return fetch_bytes(url, timeout=timeout)
+    except ImportError as exc:
+        raise OSError("krun/http.py missing from cache; re-run prefetch") from exc
 
 
-def _fetch(url: str, dest: Path) -> None:
+def _fetch(url: str, dest: Path, fetch) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(fetch_bytes(url))
+    dest.write_bytes(fetch(url))
 
 
 def _read_version(path: Path) -> str:
@@ -94,9 +83,9 @@ def _read_version(path: Path) -> str:
     return path.read_text(encoding="utf-8").strip()
 
 
-def _remote_version() -> str:
+def _remote_version(fetch) -> str:
     try:
-        return fetch_bytes(f"{BASE}/{VERSION_FILE}", timeout=30).decode().strip()
+        return fetch(f"{BASE}/{VERSION_FILE}", timeout=30).decode().strip()
     except OSError:
         return ""
 
@@ -110,7 +99,8 @@ def _cache_stale() -> bool:
         return True
     if not _files_complete(CACHE):
         return True
-    remote = _remote_version()
+    fetch = _load_http_fetch() or _bootstrap_fetch
+    remote = _remote_version(fetch)
     if not remote:
         return False
     return remote != _read_version(CACHE / VERSION_FILE)
@@ -145,11 +135,21 @@ def setup() -> None:
         staging.mkdir(parents=True, exist_ok=True)
 
     try:
+        http_dest = target / HTTP_FILE
+        if stale or not http_dest.is_file():
+            _fetch(f"{BASE}/{HTTP_FILE}", http_dest, _bootstrap_fetch)
+
+        fetch = _load_http_fetch()
+        if fetch is None:
+            fetch = _bootstrap_fetch
+
         for rel in FILES:
+            if rel == HTTP_FILE and http_dest.is_file() and not stale:
+                continue
             dest = target / rel
             if dest.is_file() and not stale:
                 continue
-            _fetch(f"{BASE}/{rel}", dest)
+            _fetch(f"{BASE}/{rel}", dest, fetch)
     except OSError as exc:
         if stale and staging.is_dir():
             shutil.rmtree(staging, ignore_errors=True)

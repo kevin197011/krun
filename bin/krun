@@ -31,7 +31,6 @@ _  ,<  _  /   / /_/ /_  / / /
     PYTHON_EXTS = {'.py'}
 
     def __init__(self):
-        self.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
         self.base_url = "https://raw.githubusercontent.com/kevin197011/krun/main"
         self.ssl_context = ssl._create_unverified_context()
         self.repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -113,8 +112,21 @@ _  ,<  _  /   / /_/ /_  / / /
         return None
 
     def fetch_url(self, url):
-        req = Request(url)
-        req.add_header("User-Agent", self.user_agent)
+        lib_py = os.path.join(self.repo_root, 'lib', 'py')
+        if os.path.isdir(lib_py) and lib_py not in sys.path:
+            sys.path.insert(0, lib_py)
+        try:
+            from krun.http import browser_headers
+            headers = browser_headers(url)
+        except ImportError:
+            headers = {
+                "User-Agent": (
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/131.0.0.0 Safari/537.36 krun/2.1"
+                ),
+            }
+        req = Request(url, headers=headers)
         return urlopen(req, context=self.ssl_context).read().decode("utf-8")
 
     def local_script_path(self, script_name):

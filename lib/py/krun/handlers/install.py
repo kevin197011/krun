@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from krun.common import (
     curl_pipe,
+    curl_shell,
     github_binary,
     install_packages,
     platform,
@@ -67,8 +69,9 @@ def install_docker() -> None:
         os_release = read_os_release()
         dist = os_release.get("ID", "ubuntu")
         codename = os_release.get("VERSION_CODENAME", "bookworm")
+        gpg_url = f"https://download.docker.com/linux/{dist}/gpg"
         run(
-            f"install -d /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/{dist}/gpg "
+            f"install -d /etc/apt/keyrings && {curl_shell(gpg_url)} "
             f"| gpg --dearmor -o /etc/apt/keyrings/docker.gpg && "
             f'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] '
             f'https://download.docker.com/linux/{dist} {codename} stable" > /etc/apt/sources.list.d/docker.list',
@@ -113,10 +116,8 @@ def install_web_panel(panel: str) -> None:
 def install_salt(role: str) -> None:
     require_root()
     flag = "-M" if role == "master" else ""
-    run(
-        f"curl -fsSL https://github.com/saltstack/salt-bootstrap/releases/latest/download/bootstrap-salt.sh | sh -s -- stable {flag}".strip(),
-        shell=True,
-    )
+    salt_url = "https://github.com/saltstack/salt-bootstrap/releases/latest/download/bootstrap-salt.sh"
+    run(f"{curl_shell(salt_url)} | sh -s -- stable {flag}".strip(), shell=True)
     print(f"✓ salt {role} done")
 
 
@@ -134,7 +135,8 @@ def install_github_tool(tool: str) -> None:
 def install_awscli() -> None:
     require_root()
     if platform() == "deb":
-        run("curl -fsSL https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip -o /tmp/aws.zip && unzip -qo /tmp/aws.zip -d /tmp && /tmp/aws/install", shell=True)
+        aws_url = "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip"
+        run(f"{curl_shell(aws_url, output='/tmp/aws.zip')} && unzip -qo /tmp/aws.zip -d /tmp && /tmp/aws/install", shell=True)
     else:
         install_packages(rhel=["awscli"], deb=["awscli"])
     print("✓ awscli done")
@@ -145,7 +147,8 @@ def install_cloud_cli(vendor: str) -> None:
     if vendor == "gcloud":
         curl_pipe("https://sdk.cloud.google.com", shell="bash")
     elif vendor == "aliyun":
-        run("curl -fsSL https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz | tar xz -C /usr/local/bin", shell=True)
+        aliyun_url = "https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz"
+        run(f"{curl_shell(aliyun_url)} | tar xz -C /usr/local/bin", shell=True)
     print(f"✓ {vendor} cli done")
 
 
@@ -158,7 +161,8 @@ def install_cursor_cli() -> None:
 
 
 def install_oh_my_zsh() -> None:
-    run('sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended', shell=True)
+    zsh_url = "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+    run(f'sh -c "$({curl_shell(zsh_url)})" "" --unattended', shell=True)
 
 
 def install_spacevim() -> None:
