@@ -49,19 +49,20 @@ def _krun_retry_delay(attempt):
     time.sleep((2 ** attempt) + random.uniform(0.3, 1.5))
 
 def _krun_refresh_wanted():
-    return os.environ.get("KRUN_REFRESH", "1").strip().lower() not in {"0", "false", "no", "off"}
+    return os.environ.get("KRUN_REFRESH", "0").strip().lower() in {"1", "true", "yes", "on"}
 
 def _krun_mirror_urls(url):
-    urls = [url]
+    urls = []
     mirror = os.environ.get("KRUN_PY_MIRROR", "").strip()
     if mirror:
-        urls.insert(0, mirror.rstrip("/") + "/" + url)
+        urls.append(mirror.rstrip("/") + "/" + url)
     if "raw.githubusercontent.com" in url:
-        urls.append("https://ghproxy.com/" + url)
         urls.append(url.replace(
             "https://raw.githubusercontent.com/kevin197011/krun/main/",
             "https://cdn.jsdelivr.net/gh/kevin197011/krun@main/",
         ))
+        urls.append("https://ghproxy.com/" + url)
+    urls.append(url)
     seen, out = set(), []
     for item in urls:
         if item and item not in seen:
@@ -78,16 +79,19 @@ def _krun_read_text(path):
     data = path.read_bytes()
     return _krun_decompress(data).decode("utf-8").strip()
 
-def _krun_fetch(url, timeout=120):
+def _krun_fetch(url, timeout=60):
     errors = []
-    retryable = {429, 502, 503, 504}
+    retryable = {502, 503, 504}
     for target in _krun_mirror_urls(url):
-        for attempt in range(4):
+        for attempt in range(2):
             try:
                 req = urllib.request.Request(target, headers=_krun_browser_headers(target))
                 return _krun_decompress(urllib.request.urlopen(req, timeout=timeout).read())
             except urllib.error.HTTPError as exc:
-                if exc.code in retryable and attempt < 3:
+                if exc.code == 429:
+                    errors.append(f"{target}: HTTP 429")
+                    break
+                if exc.code in retryable and attempt < 1:
                     _krun_retry_delay(attempt)
                     continue
                 errors.append(f"{target}: HTTP {exc.code}")
@@ -110,13 +114,15 @@ def _krun_prefetch():
     except NameError:
         pass
     cache.mkdir(parents=True, exist_ok=True)
-    try:
-        remote_ver = _krun_decompress(_krun_fetch(f"{base}/krun/VERSION", timeout=30)).decode().strip()
-    except OSError:
-        remote_ver = ""
-    ver_path = cache / "krun" / "VERSION"
-    cached_ver = _krun_read_text(ver_path) if ver_path.is_file() else ""
-    stale = _krun_refresh_wanted() or (remote_ver and remote_ver != cached_ver)
+    stale = _krun_refresh_wanted()
+    if not stale:
+        try:
+            remote_ver = _krun_decompress(_krun_fetch(f"{base}/krun/VERSION", timeout=30)).decode().strip()
+        except OSError:
+            remote_ver = ""
+        ver_path = cache / "krun" / "VERSION"
+        cached_ver = _krun_read_text(ver_path) if ver_path.is_file() else ""
+        stale = bool(remote_ver and remote_ver != cached_ver)
     if not stale:
         required = ("krun/registry.py", "krun/handlers/config.py", "krun/handlers/system.py")
         stale = any(not (cache / rel).is_file() for rel in required)

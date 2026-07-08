@@ -26,7 +26,7 @@ INLINE = inline_bootstrap()
 
 
 def refresh_wanted() -> bool:
-    return os.environ.get("KRUN_REFRESH", "1").strip().lower() not in {"0", "false", "no", "off"}
+    return os.environ.get("KRUN_REFRESH", "0").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _fetch_version(base: str) -> str:
@@ -56,16 +56,18 @@ def prefetch_path() -> None:
     base = BASE
     cache = CACHE
     cache.mkdir(parents=True, exist_ok=True)
-    remote_ver = _fetch_version(base)
-    ver_path = cache / "krun" / "VERSION"
-    if ver_path.is_file():
-        try:
-            cached_ver = decode_text(ver_path.read_bytes())
-        except OSError:
+    stale = refresh_wanted()
+    if not stale:
+        remote_ver = _fetch_version(base)
+        ver_path = cache / "krun" / "VERSION"
+        if ver_path.is_file():
+            try:
+                cached_ver = decode_text(ver_path.read_bytes())
+            except OSError:
+                cached_ver = ""
+        else:
             cached_ver = ""
-    else:
-        cached_ver = ""
-    stale = refresh_wanted() or (remote_ver and remote_ver != cached_ver)
+        stale = bool(remote_ver and remote_ver != cached_ver)
     if not stale:
         stale = _cache_incomplete(cache)
 

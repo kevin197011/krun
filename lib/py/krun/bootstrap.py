@@ -37,8 +37,8 @@ FILES = [
 
 
 def refresh_wanted() -> bool:
-    """Default on; set KRUN_REFRESH=0 to use cache when version matches."""
-    return os.environ.get("KRUN_REFRESH", "1").strip().lower() not in {"0", "false", "no", "off"}
+    """Default off; set KRUN_REFRESH=1 to force full re-download."""
+    return os.environ.get("KRUN_REFRESH", "0").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _load_http_fetch():
@@ -59,7 +59,7 @@ def _load_http_fetch():
     return mod.fetch_bytes
 
 
-def _bootstrap_fetch(url: str, *, timeout: int = 120) -> bytes:
+def _bootstrap_fetch(url: str, *, timeout: int = 60) -> bytes:
     """Fetch before krun/http.py is importable from cache."""
     fn = _load_http_fetch()
     if fn is not None:
@@ -72,9 +72,11 @@ def _bootstrap_fetch(url: str, *, timeout: int = 120) -> bytes:
         raise OSError("krun/http.py missing from cache; re-run prefetch") from exc
 
 
-def _fetch(url: str, dest: Path, fetch) -> None:
+def _fetch(url: str, dest: Path, fetch, *, label: str = "") -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(fetch(url))
+    if label:
+        print(f"krun: fetch {label}...", flush=True)
+    dest.write_bytes(fetch(url, timeout=30))
 
 
 def _read_version(path: Path) -> str:
@@ -102,9 +104,9 @@ def _files_complete(root: Path) -> bool:
 
 
 def _cache_stale() -> bool:
-    if refresh_wanted():
-        return True
     if not _files_complete(CACHE):
+        return True
+    if refresh_wanted():
         return True
     fetch = _load_http_fetch() or _bootstrap_fetch
     remote = _remote_version(fetch)
@@ -144,7 +146,7 @@ def setup() -> None:
     try:
         http_dest = target / HTTP_FILE
         if stale or not http_dest.is_file():
-            _fetch(f"{BASE}/{HTTP_FILE}", http_dest, _bootstrap_fetch)
+            _fetch(f"{BASE}/{HTTP_FILE}", http_dest, _bootstrap_fetch, label=HTTP_FILE)
 
         fetch = _load_http_fetch()
         if fetch is None:
@@ -156,7 +158,7 @@ def setup() -> None:
             dest = target / rel
             if dest.is_file() and not stale:
                 continue
-            _fetch(f"{BASE}/{rel}", dest, fetch)
+            _fetch(f"{BASE}/{rel}", dest, fetch, label=rel)
     except OSError as exc:
         if stale and staging.is_dir():
             shutil.rmtree(staging, ignore_errors=True)
