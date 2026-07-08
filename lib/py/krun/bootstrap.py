@@ -6,6 +6,8 @@ from __future__ import annotations
 import os
 import shutil
 import sys
+import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -35,10 +37,50 @@ FILES = [
 ]
 
 
+def _mirror_urls(url: str) -> list[str]:
+    urls = [url]
+    mirror = os.environ.get("KRUN_PY_MIRROR", "").strip()
+    if mirror:
+        urls.insert(0, f"{mirror.rstrip('/')}/{url}")
+    if "raw.githubusercontent.com" in url:
+        urls.append(f"https://ghproxy.com/{url}")
+        urls.append(
+            url.replace(
+                "https://raw.githubusercontent.com/kevin197011/krun/main/",
+                "https://cdn.jsdelivr.net/gh/kevin197011/krun@main/",
+            )
+        )
+    seen: set[str] = set()
+    out: list[str] = []
+    for item in urls:
+        if item and item not in seen:
+            seen.add(item)
+            out.append(item)
+    return out
+
+
+def fetch_bytes(url: str, *, timeout: int = 120) -> bytes:
+    errors: list[str] = []
+    for target in _mirror_urls(url):
+        for attempt in range(4):
+            try:
+                req = urllib.request.Request(target, headers={"User-Agent": UA})
+                return urllib.request.urlopen(req, timeout=timeout).read()
+            except urllib.error.HTTPError as exc:
+                if exc.code in (429, 502, 503, 504) and attempt < 3:
+                    time.sleep(2 ** attempt)
+                    continue
+                errors.append(f"{target}: HTTP {exc.code}")
+                break
+            except OSError as exc:
+                errors.append(f"{target}: {exc}")
+                break
+    raise OSError(f"fetch failed for {url}: " + "; ".join(errors))
+
+
 def _fetch(url: str, dest: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    dest.write_bytes(urllib.request.urlopen(req, timeout=120).read())
+    dest.write_bytes(fetch_bytes(url))
 
 
 def _read_version(path: Path) -> str:
@@ -49,20 +91,19 @@ def _read_version(path: Path) -> str:
 
 def _remote_version() -> str:
     try:
-        req = urllib.request.Request(f"{BASE}/{VERSION_FILE}", headers={"User-Agent": UA})
-        return urllib.request.urlopen(req, timeout=30).read().decode().strip()
+        return fetch_bytes(f"{BASE}/{VERSION_FILE}", timeout=30).decode().strip()
     except OSError:
         return ""
 
 
-def _files_complete() -> bool:
-    return all((CACHE / rel).is_file() for rel in FILES)
+def _files_complete(root: Path) -> bool:
+    return all((root / rel).is_file() for rel in FILES)
 
 
 def _cache_stale() -> bool:
     if os.environ.get("KRUN_REFRESH"):
         return True
-    if not _files_complete():
+    if not _files_complete(CACHE):
         return True
     remote = _remote_version()
     if not remote:
@@ -90,19 +131,36 @@ def setup() -> None:
 
     CACHE.mkdir(parents=True, exist_ok=True)
     stale = _cache_stale()
-    if stale and (CACHE / "krun").is_dir():
-        shutil.rmtree(CACHE / "krun", ignore_errors=True)
-        _clear_krun_modules()
+    staging = CACHE / ".staging"
+    target = staging if stale else CACHE
 
-    for rel in FILES:
-        dest = CACHE / rel
-        if dest.is_file() and not stale:
-            continue
-        try:
+    if stale:
+        if staging.is_dir():
+            shutil.rmtree(staging, ignore_errors=True)
+        staging.mkdir(parents=True, exist_ok=True)
+
+    try:
+        for rel in FILES:
+            dest = target / rel
+            if dest.is_file() and not stale:
+                continue
             _fetch(f"{BASE}/{rel}", dest)
-        except OSError as exc:
-            print(f"✗ bootstrap failed: {BASE}/{rel} ({exc})")
+    except OSError as exc:
+        if stale and staging.is_dir():
+            shutil.rmtree(staging, ignore_errors=True)
+        if _files_complete(CACHE):
+            print(f"⚠ refresh failed, using cached krun ({exc})")
+        else:
+            print(f"✗ bootstrap failed: {exc}")
             raise SystemExit(1) from exc
+        stale = False
+    else:
+        if stale:
+            if (CACHE / "krun").is_dir():
+                shutil.rmtree(CACHE / "krun", ignore_errors=True)
+            shutil.move(str(staging / "krun"), str(CACHE / "krun"))
+            shutil.rmtree(staging, ignore_errors=True)
+            _clear_krun_modules()
 
     path = str(CACHE)
     if path not in sys.path:
