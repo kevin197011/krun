@@ -1,6 +1,8 @@
 # lib/sh — shell entrypoints
 
-Most `*.sh` files here are **generated thin wrappers**. They only ensure `python3` exists, then run the matching `lib/py/scripts/*.py` (local path or curl).
+Naming matches Python: `init_system.sh` ↔ `init_system.py`.
+
+Most `*.sh` files are **generated thin wrappers**. They ensure `python3` exists, then run the matching `lib/py/scripts/*.py` (local path or curl).
 
 Do not hand-edit generated wrappers. Run:
 
@@ -14,13 +16,13 @@ rake lib:generate
 
 | Script | Why native |
 |--------|------------|
-| `install-python3.sh` | Bootstrap when Python is missing |
-| `install-node-exporter-offline.sh` | Offline tarball install (no GitHub) |
+| `install_python3.sh` | Bootstrap when Python is missing |
+| `install_node_exporter_offline.sh` | Offline tarball install (no GitHub) |
 
 ## Curl
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/init-system.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/init_system.sh | sudo bash
 # equivalent to:
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/init_system.py | sudo python3
 ```

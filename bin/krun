@@ -65,30 +65,37 @@ _  ,<  _  /   / /_/ /_  / / /
                 return f'lib/py/{rel}'
             return f'lib/{rel}'
 
-        legacy = script_name.replace('.sh', '').replace('.py', '').replace('-', '_')
-        py_new = os.path.join(self.repo_root, 'lib', 'py', 'scripts', f'{legacy}.py')
-        py_old = os.path.join(self.repo_root, 'lib', 'py', f'{legacy}.py')
-        sh_path = os.path.join(self.repo_root, 'lib', 'sh', script_name if script_name.endswith('.sh') else f'{legacy.replace("_", "-")}.sh')
+        stem = script_name.replace('.sh', '').replace('.py', '').replace('-', '_')
+        py_new = os.path.join(self.repo_root, 'lib', 'py', 'scripts', f'{stem}.py')
+        py_old = os.path.join(self.repo_root, 'lib', 'py', f'{stem}.py')
+        sh_underscore = os.path.join(self.repo_root, 'lib', 'sh', f'{stem}.sh')
+        # legacy kebab-case fallback (pre-naming cleanup)
+        sh_kebab = os.path.join(self.repo_root, 'lib', 'sh', f'{stem.replace("_", "-")}.sh')
+        if script_name.endswith('.sh') and '/' not in script_name:
+            sh_given = os.path.join(self.repo_root, 'lib', 'sh', script_name)
+        else:
+            sh_given = None
 
         if os.path.isfile(py_new):
-            return f'lib/py/scripts/{legacy}.py'
+            return f'lib/py/scripts/{stem}.py'
         if os.path.isfile(py_old):
-            return f'lib/py/{legacy}.py'
+            return f'lib/py/{stem}.py'
         _, py_scripts = self.get_script_list()
-        if f'{legacy}.py' in py_scripts:
-            return f'lib/py/scripts/{legacy}.py'
+        if f'{stem}.py' in py_scripts:
+            return f'lib/py/scripts/{stem}.py'
 
-        if os.path.isfile(sh_path):
-            return f'lib/sh/{os.path.basename(sh_path)}'
+        for candidate in (sh_given, sh_underscore, sh_kebab):
+            if candidate and os.path.isfile(candidate):
+                return f'lib/sh/{os.path.basename(candidate)}'
         sh_scripts, _ = self.get_script_list()
         for name in sh_scripts:
-            if name.removesuffix('.sh').replace('-', '_') == legacy:
+            if name.removesuffix('.sh').replace('-', '_') == stem:
                 return f'lib/sh/{name}'
 
         lang = self.script_lang(script_name)
         if lang == 'py' or script_name.endswith('.py'):
-            return f'lib/py/scripts/{legacy}.py'
-        return f'lib/sh/{script_name if script_name.endswith(".sh") else legacy.replace("_", "-") + ".sh"}'
+            return f'lib/py/scripts/{stem}.py'
+        return f'lib/sh/{stem}.sh'
 
     def get_interpreter(self, filename, content=None):
         ext = self.get_extension(filename)

@@ -26,8 +26,8 @@ krun/
 ├── lib/
 │   ├── sh/
 │   │   ├── *.sh                 # 生成型薄包装（委托 py；rake lib:sh:generate）
-│   │   ├── install-python3.sh   # 原生：无 Python 时 bootstrap
-│   │   └── install-node-exporter-offline.sh  # 原生：离线安装
+│   │   ├── install_python3.sh   # 原生：无 Python 时 bootstrap
+│   │   └── install_node_exporter_offline.sh  # 原生：离线安装
 │   └── py/
 │       ├── krun/                # 核心库（业务逻辑唯一来源）
 │       │   ├── bootstrap.py     # 远程执行时拉取依赖
@@ -104,7 +104,7 @@ sequenceDiagram
     participant H as krun/handlers
 
     U->>K: krun install_docker.py
-    K->>M: 解析脚本名（兼容 install-docker.sh）
+    K->>M: 解析脚本名（兼容 install_docker.sh）
     alt 本地仓库存在
         K->>S: 读取 lib/py/scripts/
     else 远程下载
@@ -201,11 +201,11 @@ source ~/.bashrc  # 或 source ~/.zshrc
 # 查看可用脚本列表
 krun list
 
-# 执行脚本（自动下载并执行；兼容旧 kebab-case 名称）
+# 执行脚本（自动下载并执行；sh/py 同名，仅扩展名不同）
 krun install_docker.py
-krun install-docker.sh      # 兼容：薄包装 → 同一套 py 逻辑
+krun install_docker.sh      # 薄包装 → 同一套 py 逻辑
 krun init_system.py
-krun install-python3.sh     # 原生 shell（无 python3 时 bootstrap）
+krun install_python3.sh     # 原生 shell（无 python3 时 bootstrap）
 ```
 
 **安装说明**：
@@ -232,7 +232,7 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/script
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/init_system.py | sudo python3
 
 # Python3 依赖安装（唯一 shell 脚本）
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install-python3.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh | bash
 ```
 
 ### 方式三：本地使用
@@ -275,7 +275,7 @@ cat meta/lib-manifest.json
 | 运维工具 | `deploy_node_exporter.py`, `crane_copy.py`, `check_ip_quality.py` |
 | 开发环境 | `install_asdf.py`, `install_oh_my_zsh.py`, `install_rbenv.py` |
 
-`lib/sh/`：多数为生成型薄包装（委托对应 `lib/py/scripts/*.py`）；原生仅 `install-python3.sh`、`install-node-exporter-offline.sh`。
+`lib/sh/`：多数为生成型薄包装（委托对应 `lib/py/scripts/*.py`）；原生仅 `install_python3.sh`、`install_node_exporter_offline.sh`。
 
 ## 支持平台
 
@@ -307,7 +307,7 @@ krun install_git.py
 krun install_vim.py
 
 # 4. 配置开发环境
-krun install-python3.sh
+krun install_python3.sh
 krun install_golang.py
 krun install_oh_my_zsh.py
 ```
