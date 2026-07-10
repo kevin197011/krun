@@ -11,7 +11,7 @@
 # supported: Rocky 8/9, AlmaLinux 8/9, RHEL 8/9, CentOS Stream 8/9,
 #            Debian 11/12, Ubuntu 22.04/24.04
 #
-# SYSTEM_TIMEZONE=Asia/Hong_Kong
+# SYSTEM_TIMEZONE=Asia/Hong_Kong   # 默认香港时区
 # SYSTEM_LOCALE=en_US.UTF-8
 # DISABLE_SELINUX=1
 # DISABLE_FIREWALL=1
@@ -214,7 +214,7 @@ DEB_PACKAGES = [
     "openssl", "libssl-dev", "wget", "curl", "rsync", "unzip", "zip",
     "python3", "python3-pip", "python3-venv", "python3-dev",
     "ruby", "ruby-dev", "ruby-bundler",
-    "htop", "iotop", "sysstat", "irqbalance", "numactl", "chrony", "locales",
+    "htop", "iotop", "sysstat", "irqbalance", "numactl", "locales",
     "dnsutils", "telnet", "traceroute", "jq", "ncdu", "screen", "tmux",
     "strace", "tcpdump", "netcat-openbsd", "tar", "gzip", "bzip2", "xz-utils",
     "psmisc", "procps", "util-linux",
@@ -223,6 +223,9 @@ DEB_PACKAGES = [
 DISABLE_SERVICES = [
     "bluetooth", "cups", "avahi-daemon", "ModemManager", "whoopsie", "apport",
 ]
+
+# Legacy ntpd/ntp — replaced by chronyd (RHEL) or systemd-timesyncd (Debian/Ubuntu)
+LEGACY_TIME_SERVICES = ("ntpd", "ntp", "openntpd")
 
 
 def has_cmd(name: str) -> bool:
@@ -499,19 +502,56 @@ class SystemInit:
         run(["setenforce", "0"])
         print("✓ SELinux disabled")
 
-    def configure_ntp(self) -> None:
-        print("enabling time sync")
-        units = subprocess.run(
+    def _unit_files(self) -> str:
+        proc = subprocess.run(
             ["systemctl", "list-unit-files"], capture_output=True, text=True, check=False
-        ).stdout
-        if "chronyd.service" in units:
+        )
+        return proc.stdout
+
+    def _stop_time_service(self, name: str) -> None:
+        for action in ("stop", "disable", "mask"):
+            run(["systemctl", action, name], check=False)
+
+    def configure_time_sync(self) -> None:
+        """Use each distro's current time sync daemon (not legacy ntpd)."""
+        print("configuring time sync")
+        plat = self.platform()
+        units = self._unit_files()
+
+        for svc in LEGACY_TIME_SERVICES:
+            if f"{svc}.service" in units:
+                print(f"  retiring legacy {svc}")
+                self._stop_time_service(svc)
+
+        if plat == "rhel":
+            # RHEL/Rocky/Alma: chronyd is the supported replacement for ntpd
+            if "systemd-timesyncd.service" in units:
+                self._stop_time_service("systemd-timesyncd")
+            if "chronyd.service" not in units:
+                print("⚠ chronyd not installed, skip time sync")
+                return
+            run(["systemctl", "unmask", "chronyd"], check=False)
             run(["systemctl", "enable", "--now", "chronyd"])
-            print("✓ chronyd enabled")
-        elif "systemd-timesyncd.service" in units:
+            if has_cmd("timedatectl"):
+                run(["timedatectl", "set-ntp", "true"])
+            print("✓ chronyd enabled (RHEL family default)")
+            return
+
+        if plat == "debian":
+            # Debian/Ubuntu: systemd-timesyncd (no chrony package installed)
+            if "chronyd.service" in units:
+                self._stop_time_service("chronyd")
+            if "systemd-timesyncd.service" not in units:
+                print("⚠ systemd-timesyncd not found, skip time sync")
+                return
+            run(["systemctl", "unmask", "systemd-timesyncd"], check=False)
             run(["systemctl", "enable", "--now", "systemd-timesyncd"])
-            print("✓ systemd-timesyncd enabled")
-        else:
-            print("⚠ no time sync service found, skip")
+            if has_cmd("timedatectl"):
+                run(["timedatectl", "set-ntp", "true"])
+            print("✓ systemd-timesyncd enabled (Debian/Ubuntu default)")
+            return
+
+        print("⚠ unsupported platform for time sync, skip")
 
     def configure_tuned(self) -> None:
         if not has_cmd("tuned-adm"):
@@ -572,7 +612,7 @@ class SystemInit:
         self.configure_io()
         self.configure_firewall()
         self.configure_selinux()
-        self.configure_ntp()
+        self.configure_time_sync()
         self.configure_tuned()
         self.configure_cpufreq()
         self.configure_tools()
