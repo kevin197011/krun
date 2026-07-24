@@ -1,44 +1,117 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 kk
-# MIT License
+# Copyright (c) 2025 kk
 #
-# GENERATED — do not edit by hand. Run: rake lib:sh:generate
-# Logic lives in lib/py (this wrapper only delegates).
-#
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_rakefile.sh | sudo bash
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-SCRIPT_PY="config_rakefile"
-RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_rakefile.sh | bash
+#
+# Idempotent: overwrites ./Rakefile, ./push.rb; ensures kk-git (and bundler) gems are installed.
 
-krun::sh::ensure_python3() {
-    if command -v python3 >/dev/null 2>&1; then
-        return 0
-    fi
-    echo "python3 not found; bootstrapping via install_python3.sh..."
-    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh" | bash
-    command -v python3 >/dev/null 2>&1 || {
-        echo "✗ python3 still missing after bootstrap"
-        exit 1
+# vars
+rakefile_path=${rakefile_path:-./Rakefile}
+push_rb_path=${push_rb_path:-./push.rb}
+
+# run code
+krun::config::rakefile::run() {
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
+}
+
+# centos code
+krun::config::rakefile::centos() {
+    krun::config::rakefile::common
+}
+
+# debian code
+krun::config::rakefile::debian() {
+    krun::config::rakefile::common
+}
+
+# mac code
+krun::config::rakefile::mac() {
+    krun::config::rakefile::common
+}
+
+krun::config::rakefile::install_gems() {
+    command -v gem >/dev/null 2>&1 || {
+        echo "✗ gem not found; install Ruby first (lib/install-ruby.sh)"
+        return 1
     }
+
+    if ! gem list bundler -i >/dev/null 2>&1; then
+        echo "Installing bundler..."
+        gem install bundler --no-document
+    else
+        echo "✓ bundler already installed"
+    fi
+
+    if ! gem list kk-git -i >/dev/null 2>&1; then
+        echo "Installing kk-git..."
+        gem install kk-git --no-document
+    else
+        echo "✓ kk-git already installed"
+    fi
 }
 
-krun::sh::run() {
-    krun::sh::ensure_python3
-    # Prefer local checkout when present (dev / installed tree).
-    local here
-    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
-    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+# common code
+krun::config::rakefile::common() {
+    krun::config::rakefile::install_gems
+
+    echo "Writing Rakefile..."
+    cat >"$rakefile_path" <<'EOF'
+# frozen_string_literal: true
+
+# Copyright (c) 2025 kk
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+require 'bundler/setup'
+require 'kk/git/rake_tasks'
+
+task default: %w[push]
+
+task :push do
+  Rake::Task['git:auto_commit_push'].invoke
+end
+
+task :run do
+  system 'docker compose down'
+  system 'docker compose up -d --build --remove-orphans'
+  # system 'docker compose logs -f'
+end
+EOF
+
+    echo "✓ Rakefile written: ${rakefile_path}"
+
+    echo "Writing push.rb..."
+    cat >"$push_rb_path" <<'EOF'
+# frozen_string_literal: true
+
+# Copyright (c) 2025 kk
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+system 'rake'
+EOF
+
+    echo "✓ push.rb written: ${push_rb_path}"
+    echo ""
+    echo "Available tasks:"
+    echo "  rake push       # git auto commit and push (kk-git)"
+    echo "  rake run        # docker compose up"
+    echo "  ruby push.rb    # editor / Code Runner shortcut"
 }
 
-krun::sh::run "$@"
+# run main
+krun::config::rakefile::run "$@"

@@ -15,8 +15,8 @@ set -o pipefail
 #   node_exporter-1.11.1.linux-amd64.tar.gz
 #
 # Usage:
-#   sudo bash install_node_exporter_offline.sh
-#   sudo node_exporter_tarball=/path/to/node_exporter-1.11.1.linux-amd64.tar.gz bash install_node_exporter_offline.sh
+#   sudo bash install-node-exporter-offline.sh
+#   sudo node_exporter_tarball=/path/to/node_exporter-1.11.1.linux-amd64.tar.gz bash install-node-exporter-offline.sh
 #
 # idempotent: safe to re-run
 

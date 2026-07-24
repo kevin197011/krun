@@ -1,44 +1,105 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 kk
-# MIT License
+# Copyright (c) 2025 kk
 #
-# GENERATED — do not edit by hand. Run: rake lib:sh:generate
-# Logic lives in lib/py (this wrapper only delegates).
-#
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_fstab.sh | sudo bash
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-SCRIPT_PY="config_fstab"
-RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_fstab.sh | bash
 
-krun::sh::ensure_python3() {
-    if command -v python3 >/dev/null 2>&1; then
-        return 0
-    fi
-    echo "python3 not found; bootstrapping via install_python3.sh..."
-    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh" | bash
-    command -v python3 >/dev/null 2>&1 || {
-        echo "✗ python3 still missing after bootstrap"
-        exit 1
-    }
+# vars
+
+# run code
+krun::config::fstab::run() {
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
-krun::sh::run() {
-    krun::sh::ensure_python3
-    # Prefer local checkout when present (dev / installed tree).
-    local here
-    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
-    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+# centos code
+krun::config::fstab::centos() {
+    echo "Configuring fstab on CentOS/RHEL..."
+    krun::config::fstab::common
 }
 
-krun::sh::run "$@"
+# debian code
+krun::config::fstab::debian() {
+    echo "Configuring fstab on Debian/Ubuntu..."
+    krun::config::fstab::common
+}
+
+# mac code
+krun::config::fstab::mac() {
+    echo "macOS does not use /etc/fstab in the traditional way"
+    echo "Use Disk Utility or diskutil for mount configuration"
+    return 0
+}
+
+# common code
+krun::config::fstab::common() {
+    echo "Configuring /etc/fstab..."
+
+    # Backup current fstab
+    if [[ -f /etc/fstab ]]; then
+        cp /etc/fstab /etc/fstab.backup.$(date +%Y%m%d-%H%M%S)
+        echo "✓ Backed up current fstab"
+    fi
+
+    # Show current fstab
+    echo ""
+    echo "Current /etc/fstab contents:"
+    echo "================================"
+    cat /etc/fstab 2>/dev/null || echo "No fstab file found"
+    echo "================================"
+
+    # Show mounted filesystems
+    echo ""
+    echo "Currently mounted filesystems:"
+    echo "================================"
+    df -h
+    echo "================================"
+
+    # Show available block devices
+    echo ""
+    echo "Available block devices:"
+    echo "================================"
+    if command -v lsblk >/dev/null 2>&1; then
+        lsblk
+    else
+        fdisk -l 2>/dev/null | grep -E '^Disk /dev'
+    fi
+    echo "================================"
+
+    echo ""
+    echo "⚠ IMPORTANT: Modifying /etc/fstab can make your system unbootable!"
+    echo "Always test mount points manually before adding to fstab:"
+    echo ""
+    echo "Example fstab entry:"
+    echo "/dev/sdb1 /mnt/data ext4 defaults,noatime 0 2"
+    echo ""
+    echo "Common mount options:"
+    echo "  defaults    - rw,suid,dev,exec,auto,nouser,async"
+    echo "  noatime     - Don't update access times (performance)"
+    echo "  ro          - Read-only"
+    echo "  rw          - Read-write"
+    echo "  noexec      - Don't allow execution"
+    echo "  nosuid      - Don't allow suid"
+    echo "  nodev       - Don't allow device files"
+    echo ""
+    echo "Testing commands:"
+    echo "  mount -a                    - Mount all fstab entries"
+    echo "  mount /mnt/point           - Mount specific point"
+    echo "  umount /mnt/point          - Unmount"
+    echo "  findmnt                    - Show mount tree"
+    echo ""
+    echo "fstab configuration guidance provided."
+}
+
+# run main
+krun::config::fstab::run "$@"

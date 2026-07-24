@@ -1,44 +1,75 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 kk
-# MIT License
+# Copyright (c) 2025 kk
 #
-# GENERATED — do not edit by hand. Run: rake lib:sh:generate
-# Logic lives in lib/py (this wrapper only delegates).
-#
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_cursor.sh | sudo bash
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-SCRIPT_PY="config_cursor"
-RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_cursor.sh | bash
 
-krun::sh::ensure_python3() {
-    if command -v python3 >/dev/null 2>&1; then
-        return 0
-    fi
-    echo "python3 not found; bootstrapping via install_python3.sh..."
-    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh" | bash
-    command -v python3 >/dev/null 2>&1 || {
-        echo "✗ python3 still missing after bootstrap"
-        exit 1
-    }
+# vars
+
+# run code
+krun::config::cursor::run() {
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
-krun::sh::run() {
-    krun::sh::ensure_python3
-    # Prefer local checkout when present (dev / installed tree).
-    local here
-    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
-    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+# centos code
+krun::config::cursor::centos() {
+    krun::config::cursor::common
 }
 
-krun::sh::run "$@"
+# debian code
+krun::config::cursor::debian() {
+    krun::config::cursor::common
+}
+
+# mac code
+krun::config::cursor::mac() {
+    krun::config::cursor::common
+}
+
+# common code
+krun::config::cursor::common() {
+    echo "Configuring cursor files..."
+
+    rm -rf .cursor
+    git clone git@github.com:kevin197011/cursor.git .cursor
+
+    # Handle Rakefile
+    if [[ ! -f Rakefile ]]; then
+        mv .cursor/Rakefile .
+    else
+        rm -rf .cursor/Rakefile
+    fi
+
+    mv .cursor/push.rb .
+    mv .cursor/.rubocop.yml .
+    mv .cursor/deploy.sh .
+    ( [[ -e .cursor/openspec ]] && mv .cursor/openspec . ) || true
+    mv .cursor/AGENTS.md .
+    mv .cursor/r.md .
+    chmod +x ./deploy.sh
+    rm -rf .cursor/.git
+
+    if command -v uipro >/dev/null 2>&1; then
+        uipro init --ai cursor || true
+    fi
+
+    mkdir -p docs
+
+    grep -q '\.cursor' .gitignore 2>/dev/null || printf '\n.cursor\n' >> .gitignore
+
+    echo "✓ Cursor configuration completed"
+}
+
+# run main
+krun::config::cursor::run "$@"

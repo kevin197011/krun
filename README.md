@@ -25,11 +25,11 @@ krun/
 ├── meta/lib-manifest.json   # 脚本清单
 ├── lib/
 │   ├── sh/
-│   │   ├── *.sh                 # 生成型薄包装（委托 py；rake lib:sh:generate）
-│   │   ├── install_python3.sh   # 原生：无 Python 时 bootstrap
-│   │   └── install_node_exporter_offline.sh  # 原生：离线安装
+│   │   ├── *.sh                 # 独立完整 bash 实现（与 py 同名）
+│   │   ├── install_python3.sh   # 无 Python 时 bootstrap
+│   │   └── install_node_exporter_offline.sh  # 离线安装
 │   └── py/
-│       ├── krun/                # 核心库（业务逻辑唯一来源）
+│       ├── krun/                # Python 核心库
 │       │   ├── bootstrap.py     # 远程执行时拉取依赖
 │       │   ├── common.py        # 平台检测、装包、run()
 │       │   ├── registry.py      # 脚本名 → handler
@@ -38,7 +38,7 @@ krun/
 │       │       ├── config.py
 │       │       ├── ops.py
 │       │       └── system.py
-│       ├── scripts/             # 可执行入口（薄 wrapper）
+│       ├── scripts/             # Python 可执行入口（薄 wrapper）
 │       └── generate_wrappers.py # rake lib:py:generate
 └── install.sh               # 安装 krun CLI
 ```
@@ -201,11 +201,11 @@ source ~/.bashrc  # 或 source ~/.zshrc
 # 查看可用脚本列表
 krun list
 
-# 执行脚本（自动下载并执行；sh/py 同名，仅扩展名不同）
+# 执行脚本（自动下载并执行；sh/py 同名，各自独立实现）
 krun install_docker.py
-krun install_docker.sh      # 薄包装 → 同一套 py 逻辑
+krun install_docker.sh      # 完整 bash，不调用 Python
 krun init_system.py
-krun install_python3.sh     # 原生 shell（无 python3 时 bootstrap）
+krun install_python3.sh     # 无 python3 时 bootstrap
 ```
 
 **安装说明**：
@@ -213,7 +213,7 @@ krun install_python3.sh     # 原生 shell（无 python3 时 bootstrap）
 - 自动检测平台并安装所需依赖（Python3、curl）
 - 自动配置 PATH 环境变量
 - 安装目录：`~/.krun/bin/krun`
-- 业务逻辑只在 `lib/py`；`lib/sh/*.sh`（除原生少数）为生成型委托包装，保证与 py 一致
+- `lib/sh` 与 `lib/py` 各自完整实现，互不委托；命名同 stem，仅扩展名不同
 - 本地开发时 `krun` 优先读仓库内文件，再回退 GitHub raw
 
 ### 方式二：直接执行脚本
@@ -275,7 +275,7 @@ cat meta/lib-manifest.json
 | 运维工具 | `deploy_node_exporter.py`, `crane_copy.py`, `check_ip_quality.py` |
 | 开发环境 | `install_asdf.py`, `install_oh_my_zsh.py`, `install_rbenv.py` |
 
-`lib/sh/`：多数为生成型薄包装（委托对应 `lib/py/scripts/*.py`）；原生仅 `install_python3.sh`、`install_node_exporter_offline.sh`。
+`lib/sh/`：独立完整 bash 实现（不调用 Python）；与 `lib/py/scripts/*.py` 同名对应。
 
 ## 支持平台
 
@@ -367,13 +367,13 @@ data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/scripts/config_disk
 ### 创建新脚本
 
 ```bash
+# Python：
 # 1. 在 krun/handlers/ 添加逻辑
 # 2. 在 krun/registry.py 的 SCRIPTS 注册名称
 # 3. 生成入口并更新清单
-rake lib:generate      # → py scripts + sh wrappers + manifest
-# 或分开：
-rake lib:py:generate
-rake lib:sh:generate
+rake lib:py:generate   # → lib/py/scripts/ + meta/lib-manifest.json
+
+# Shell：直接在 lib/sh/ 新增完整 bash（命名与 py stem 一致，如 install_foo.sh）
 ```
 
 ## 贡献指南

@@ -1,28 +1,16 @@
-# lib/sh — shell entrypoints
+# lib/sh — standalone bash scripts
 
-Naming matches Python: `init_system.sh` ↔ `init_system.py`.
+Each `*.sh` is a **full bash implementation** (not a Python wrapper). Naming matches Python stems: `init_system.sh` ↔ `init_system.py`.
 
-Most `*.sh` files are **generated thin wrappers**. They ensure `python3` exists, then run the matching `lib/py/scripts/*.py` (local path or curl).
-
-Do not hand-edit generated wrappers. Run:
-
-```bash
-rake lib:sh:generate
-# or both:
-rake lib:generate
-```
-
-## Native (hand-maintained)
-
-| Script | Why native |
-|--------|------------|
-| `install_python3.sh` | Bootstrap when Python is missing |
-| `install_node_exporter_offline.sh` | Offline tarball install (no GitHub) |
+Logic in `lib/sh` and `lib/py` is maintained separately. Prefer editing the language you execute.
 
 ## Curl
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/init_system.sh | sudo bash
-# equivalent to:
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/init_system.py | sudo python3
 ```
+
+## Notes
+
+- Bootstrap without Python: `install_python3.sh`
+- Offline node_exporter: `install_node_exporter_offline.sh`

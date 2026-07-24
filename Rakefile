@@ -40,12 +40,6 @@ namespace :lib do
     Rake::Task['lib:manifest'].invoke
   end
 
-  desc 'Regenerate lib/sh wrappers that delegate to lib/py'
-  task 'sh:generate' do
-    system('python3', 'lib/sh/generate_wrappers.py') || raise('sh generate failed')
-    Rake::Task['lib:manifest'].invoke
-  end
-
-  desc 'Regenerate both py and sh entrypoints'
-  task generate: %w[lib:py:generate lib:sh:generate]
+  desc 'Regenerate py entrypoints (lib/sh is hand-maintained bash)'
+  task generate: %w[lib:py:generate]
 end

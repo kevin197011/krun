@@ -1,44 +1,61 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 kk
-# MIT License
+# Copyright (c) 2025 kk
 #
-# GENERATED — do not edit by hand. Run: rake lib:sh:generate
-# Logic lives in lib/py (this wrapper only delegates).
-#
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/delete_video.sh | sudo bash
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-SCRIPT_PY="delete_video"
-RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/delete_video.sh | bash
 
-krun::sh::ensure_python3() {
-    if command -v python3 >/dev/null 2>&1; then
-        return 0
-    fi
-    echo "python3 not found; bootstrapping via install_python3.sh..."
-    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh" | bash
-    command -v python3 >/dev/null 2>&1 || {
-        echo "✗ python3 still missing after bootstrap"
-        exit 1
-    }
+# vars
+
+# run code
+krun::delete::video::run() {
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
-krun::sh::run() {
-    krun::sh::ensure_python3
-    # Prefer local checkout when present (dev / installed tree).
-    local here
-    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
-    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+# centos code
+krun::delete::video::centos() {
+    krun::delete::video::common
 }
 
-krun::sh::run "$@"
+# debian code
+krun::delete::video::debian() {
+    krun::delete::video::common
+}
+
+# mac code
+krun::delete::video::mac() {
+    krun::delete::video::common
+}
+
+# common code
+krun::delete::video::common() {
+    mkdir -p /opt/scripts
+
+    tee /opt/scripts/delete-video.sh <<EOF
+#!/usr/bin/env bash
+
+video_path="\${video_path_custom:-/data/record}"
+find "\${video_path}" -mtime +30 -name "*.mp4" -exec rm -rf {} \;
+echo "Delete 30 days ago video done."
+EOF
+
+    chmod +x /opt/scripts/delete-video.sh
+
+    (
+        crontab -l 2>/dev/null
+        echo "0 3 * * * /opt/scripts/delete-video.sh"
+    ) | crontab -
+}
+
+# run main
+krun::delete::video::run "$@"

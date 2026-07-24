@@ -1,44 +1,83 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 kk
-# MIT License
+# Copyright (c) 2025 kk
 #
-# GENERATED — do not edit by hand. Run: rake lib:sh:generate
-# Logic lives in lib/py (this wrapper only delegates).
-#
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_rocky_repo.sh | sudo bash
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-SCRIPT_PY="config_rocky_repo"
-RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_rocky_repo.sh | bash
 
-krun::sh::ensure_python3() {
-    if command -v python3 >/dev/null 2>&1; then
-        return 0
-    fi
-    echo "python3 not found; bootstrapping via install_python3.sh..."
-    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh" | bash
-    command -v python3 >/dev/null 2>&1 || {
-        echo "✗ python3 still missing after bootstrap"
-        exit 1
-    }
+# vars
+
+# run code
+krun::config::rocky_repo::run() {
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
-krun::sh::run() {
-    krun::sh::ensure_python3
-    # Prefer local checkout when present (dev / installed tree).
-    local here
-    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
-    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
+# centos code
+krun::config::rocky_repo::centos() {
+    [[ "$OSTYPE" != "darwin"* ]] && [[ $EUID -ne 0 ]] && echo "✗ Please run as root" && exit 1
+
+    echo "Configuring Rocky Linux repositories..."
+
+    mkdir -p /etc/yum.repos.d/backup
+    ls /etc/yum.repos.d/rocky*.repo >/dev/null 2>&1 && mv /etc/yum.repos.d/rocky*.repo /etc/yum.repos.d/backup/ || true
+
+    cat >/etc/yum.repos.d/rocky.repo <<'EOF'
+[baseos]
+name=Rocky Linux $releasever - BaseOS
+baseurl=http://mirrors.tuna.tsinghua.edu.cn/rocky/$releasever/BaseOS/$basearch/os/
+enabled=1
+gpgcheck=0
+
+[appstream]
+name=Rocky Linux $releasever - AppStream
+baseurl=http://mirrors.tuna.tsinghua.edu.cn/rocky/$releasever/AppStream/$basearch/os/
+enabled=1
+gpgcheck=0
+
+[extras]
+name=Rocky Linux $releasever - Extras
+baseurl=http://mirrors.tuna.tsinghua.edu.cn/rocky/$releasever/extras/$basearch/os/
+enabled=1
+gpgcheck=0
+EOF
+
+    if command -v dnf >/dev/null 2>&1; then
+        dnf clean all >/dev/null 2>&1
+        dnf makecache >/dev/null 2>&1
+    else
+        yum clean all >/dev/null 2>&1
+        yum makecache >/dev/null 2>&1
     fi
-    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+
+    krun::config::rocky_repo::common
 }
 
-krun::sh::run "$@"
+# debian code
+krun::config::rocky_repo::debian() {
+    echo "This script is for Rocky Linux/CentOS systems only"
+    exit 1
+}
+
+# mac code
+krun::config::rocky_repo::mac() {
+    echo "This script is for Rocky Linux/CentOS systems only"
+    exit 1
+}
+
+# common code
+krun::config::rocky_repo::common() {
+    echo "Rocky Linux repository configuration completed"
+}
+
+# run main
+krun::config::rocky_repo::run "$@"

@@ -1,44 +1,103 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 kk
-# MIT License
+# Copyright (c) 2025 kk
 #
-# GENERATED — do not edit by hand. Run: rake lib:sh:generate
-# Logic lives in lib/py (this wrapper only delegates).
-#
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_timezone.sh | sudo bash
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-SCRIPT_PY="config_timezone"
-RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_timezone.sh | bash
 
-krun::sh::ensure_python3() {
-    if command -v python3 >/dev/null 2>&1; then
-        return 0
-    fi
-    echo "python3 not found; bootstrapping via install_python3.sh..."
-    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh" | bash
-    command -v python3 >/dev/null 2>&1 || {
-        echo "✗ python3 still missing after bootstrap"
-        exit 1
-    }
+# vars
+TIMEZONE="Asia/Hong_Kong"
+
+# run code
+krun::config::timezone::run() {
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
-krun::sh::run() {
-    krun::sh::ensure_python3
-    # Prefer local checkout when present (dev / installed tree).
-    local here
-    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
-    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
+# centos code
+krun::config::timezone::centos() {
+    echo "Setting timezone to $TIMEZONE on CentOS/RHEL..."
+
+    # Install tzdata if not present
+    yum install -y tzdata >/dev/null 2>&1 || dnf install -y tzdata >/dev/null 2>&1 || true
+
+    # Set timezone using timedatectl (preferred method)
+    if command -v timedatectl >/dev/null 2>&1; then
+        timedatectl set-timezone "$TIMEZONE"
+    else
+        # Fallback: symlink method
+        ln -sf /usr/share/zoneinfo/$TIMEZONE /etc/localtime
+        echo "ZONE=$TIMEZONE" >/etc/sysconfig/clock
     fi
-    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+
+    echo "✓ Timezone set to $TIMEZONE"
+    krun::config::timezone::common
 }
 
-krun::sh::run "$@"
+# debian code
+krun::config::timezone::debian() {
+    echo "Setting timezone to $TIMEZONE on Debian/Ubuntu..."
+
+    # Install tzdata if not present
+    DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata >/dev/null 2>&1 || true
+
+    # Set timezone using timedatectl (preferred method)
+    if command -v timedatectl >/dev/null 2>&1; then
+        timedatectl set-timezone "$TIMEZONE"
+    else
+        # Fallback: dpkg-reconfigure method
+        echo "$TIMEZONE" >/etc/timezone
+        dpkg-reconfigure -f noninteractive tzdata >/dev/null 2>&1 || true
+        ln -sf /usr/share/zoneinfo/$TIMEZONE /etc/localtime
+    fi
+
+    echo "✓ Timezone set to $TIMEZONE"
+    krun::config::timezone::common
+}
+
+# mac code
+krun::config::timezone::mac() {
+    echo "Setting timezone to $TIMEZONE on macOS..."
+
+    # macOS uses systemsetup command
+    if command -v systemsetup >/dev/null 2>&1; then
+        sudo systemsetup -settimezone "$TIMEZONE" >/dev/null 2>&1 || {
+            echo "⚠ Failed to set timezone. You may need to run: sudo systemsetup -settimezone $TIMEZONE"
+        }
+    else
+        echo "⚠ systemsetup command not found. Please set timezone manually in System Preferences."
+    fi
+
+    echo "✓ Timezone set to $TIMEZONE"
+    krun::config::timezone::common
+}
+
+# common code
+krun::config::timezone::common() {
+    echo "Verifying timezone configuration..."
+
+    # Display current timezone
+    if command -v timedatectl >/dev/null 2>&1; then
+        echo "Current timezone: $(timedatectl | grep 'Time zone' | awk '{print $3}')"
+    elif [[ -f /etc/timezone ]]; then
+        echo "Current timezone: $(cat /etc/timezone)"
+    elif [[ -L /etc/localtime ]]; then
+        echo "Current timezone: $(readlink /etc/localtime | sed 's|.*/zoneinfo/||')"
+    fi
+
+    # Display current date and time
+    echo "Current date and time: $(date)"
+    echo "Timezone configuration completed."
+}
+
+# run main
+krun::config::timezone::run "$@"

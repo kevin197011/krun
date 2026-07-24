@@ -1,44 +1,103 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 kk
-# MIT License
+# Copyright (c) 2025 kk
 #
-# GENERATED — do not edit by hand. Run: rake lib:sh:generate
-# Logic lives in lib/py (this wrapper only delegates).
-#
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_mc.sh | sudo bash
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-SCRIPT_PY="install_mc"
-RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_mc.sh | bash
 
-krun::sh::ensure_python3() {
-    if command -v python3 >/dev/null 2>&1; then
-        return 0
-    fi
-    echo "python3 not found; bootstrapping via install_python3.sh..."
-    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh" | bash
-    command -v python3 >/dev/null 2>&1 || {
-        echo "✗ python3 still missing after bootstrap"
-        exit 1
-    }
+# vars
+
+# run code
+krun::install::mc::run() {
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
-krun::sh::run() {
-    krun::sh::ensure_python3
-    # Prefer local checkout when present (dev / installed tree).
-    local here
-    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
-    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+# centos code
+krun::install::mc::centos() {
+    echo "Installing Midnight Commander on CentOS/RHEL..."
+
+    # Install EPEL repository if needed
+    yum install -y epel-release || true
+
+    # Install mc
+    yum install -y mc
+
+    krun::install::mc::common
 }
 
-krun::sh::run "$@"
+# debian code
+krun::install::mc::debian() {
+    echo "Installing Midnight Commander on Debian/Ubuntu..."
+
+    # Update package lists
+    apt-get update
+
+    # Install mc
+    apt-get install -y mc
+
+    krun::install::mc::common
+}
+
+# mac code
+krun::install::mc::mac() {
+    echo "Installing Midnight Commander on macOS..."
+
+    if ! command -v brew >/dev/null 2>&1; then
+        echo "Homebrew is required for mc installation on macOS"
+        return 1
+    fi
+
+    # Install mc via Homebrew
+    brew install mc
+
+    krun::install::mc::common
+}
+
+# common code
+krun::install::mc::common() {
+    echo "Configuring Midnight Commander..."
+
+    # Verify installation
+    if ! command -v mc >/dev/null 2>&1; then
+        echo "✗ Midnight Commander installation failed"
+        return 1
+    fi
+
+    echo "✓ Midnight Commander installed successfully"
+    mc --version
+
+    # Create basic configuration directory
+    mkdir -p "$HOME/.config/mc"
+
+    echo ""
+    echo "=== Midnight Commander Installation Summary ==="
+    echo "Version: $(mc --version | head -1)"
+    echo "Executable: $(which mc)"
+    echo "Config directory: $HOME/.config/mc"
+    echo ""
+    echo "Basic usage:"
+    echo "  mc                    - Start Midnight Commander"
+    echo "  F1                    - Help"
+    echo "  F3                    - View file"
+    echo "  F4                    - Edit file"
+    echo "  F5                    - Copy files"
+    echo "  F6                    - Move files"
+    echo "  F8                    - Delete files"
+    echo "  F10                   - Quit"
+    echo "  Tab                   - Switch between panels"
+    echo ""
+    echo "Midnight Commander is ready to use!"
+}
+
+# run main
+krun::install::mc::run "$@"

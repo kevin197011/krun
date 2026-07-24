@@ -1,44 +1,98 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 kk
-# MIT License
+# Copyright (c) 2025 kk
 #
-# GENERATED — do not edit by hand. Run: rake lib:sh:generate
-# Logic lives in lib/py (this wrapper only delegates).
-#
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_nginx.sh | sudo bash
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-SCRIPT_PY="install_nginx"
-RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_nginx.sh | bash
 
-krun::sh::ensure_python3() {
-    if command -v python3 >/dev/null 2>&1; then
-        return 0
+# vars
+
+# run code
+krun::install::nginx::run() {
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
+}
+
+# centos code
+krun::install::nginx::centos() {
+    echo "Installing Nginx on RHEL/CentOS/Rocky/AlmaLinux/Fedora..."
+
+    [[ "$OSTYPE" != "darwin"* ]] && [[ $EUID -ne 0 ]] && echo "✗ Please run as root" && return 1
+
+    if command -v dnf >/dev/null 2>&1; then
+        dnf install -y epel-release 2>/dev/null || true
+        dnf install -y nginx
+    else
+        yum install -y epel-release 2>/dev/null || true
+        yum install -y nginx
     fi
-    echo "python3 not found; bootstrapping via install_python3.sh..."
-    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh" | bash
-    command -v python3 >/dev/null 2>&1 || {
-        echo "✗ python3 still missing after bootstrap"
-        exit 1
+
+    krun::install::nginx::common
+}
+
+# debian code
+krun::install::nginx::debian() {
+    echo "Installing Nginx on Debian/Ubuntu..."
+
+    [[ "$OSTYPE" != "darwin"* ]] && [[ $EUID -ne 0 ]] && echo "✗ Please run as root" && return 1
+
+    apt-get update -qq
+    apt-get install -y nginx
+
+    krun::install::nginx::common
+}
+
+# mac code
+krun::install::nginx::mac() {
+    echo "Installing Nginx on macOS..."
+
+    command -v brew >/dev/null || {
+        echo "✗ Homebrew is required for macOS installation"
+        return 1
     }
+
+    brew install nginx
+
+    krun::install::nginx::common
 }
 
-krun::sh::run() {
-    krun::sh::ensure_python3
-    # Prefer local checkout when present (dev / installed tree).
-    local here
-    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
-    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
+# common code
+krun::install::nginx::common() {
+    command -v nginx >/dev/null || {
+        echo "✗ Nginx installation failed"
+        return 1
+    }
+
+    echo "✓ Nginx installed: $(nginx -v 2>&1)"
+
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "To start nginx on macOS:"
+        echo "  sudo nginx"
+        echo "  brew services start nginx"
+    else
+        systemctl enable nginx 2>/dev/null || true
+        systemctl restart nginx 2>/dev/null || true
+
+        if systemctl is-active --quiet nginx 2>/dev/null; then
+            echo "✓ Nginx service started and enabled"
+        else
+            echo "⚠ Nginx service may not be running"
+            echo "Check status: systemctl status nginx"
+        fi
     fi
-    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+
+    echo ""
+    echo "✓ Nginx installation completed"
 }
 
-krun::sh::run "$@"
+# run main
+krun::install::nginx::run "$@"

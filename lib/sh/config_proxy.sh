@@ -1,44 +1,67 @@
 #!/usr/bin/env bash
-# Copyright (c) 2026 kk
-# MIT License
+# Copyright (c) 2025 kk
 #
-# GENERATED — do not edit by hand. Run: rake lib:sh:generate
-# Logic lives in lib/py (this wrapper only delegates).
-#
-# curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_proxy.sh | sudo bash
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-SCRIPT_PY="config_proxy"
-RAW_PY="https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/${SCRIPT_PY}.py"
+# curl exec:
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_proxy.sh | bash
+# source (proxy applies in current shell):
+# source <(curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_proxy.sh)
 
-krun::sh::ensure_python3() {
-    if command -v python3 >/dev/null 2>&1; then
-        return 0
-    fi
-    echo "python3 not found; bootstrapping via install_python3.sh..."
-    curl -fsSL "https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh" | bash
-    command -v python3 >/dev/null 2>&1 || {
-        echo "✗ python3 still missing after bootstrap"
-        exit 1
-    }
+# vars
+PROXY_HOST="${PROXY_HOST:-10.170.1.19}"
+PROXY_PORT="${PROXY_PORT:-8888}"
+PROXY_URL="http://${PROXY_HOST}:${PROXY_PORT}"
+
+# run code
+krun::config::proxy::run() {
+    local platform='debian'
+    command -v yum >/dev/null && platform='centos'
+    command -v dnf >/dev/null && platform='centos'
+    command -v brew >/dev/null && platform='mac'
+    eval "${FUNCNAME/::run/::${platform}}"
 }
 
-krun::sh::run() {
-    krun::sh::ensure_python3
-    # Prefer local checkout when present (dev / installed tree).
-    local here
-    here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)" 2>/dev/null || here=""
-    if [[ -n "$here" && -f "$here/../py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    if [[ -n "$here" && -f "$here/../../lib/py/scripts/${SCRIPT_PY}.py" ]]; then
-        exec python3 "$here/../../lib/py/scripts/${SCRIPT_PY}.py" "$@"
-    fi
-    curl -fsSL "$RAW_PY" | exec python3 - "$@"
+# centos code
+krun::config::proxy::centos() {
+    krun::config::proxy::common
 }
 
-krun::sh::run "$@"
+# debian code
+krun::config::proxy::debian() {
+    krun::config::proxy::common
+}
+
+# mac code
+krun::config::proxy::mac() {
+    krun::config::proxy::common
+}
+
+# common code
+krun::config::proxy::common() {
+    if [[ "${BASH_SOURCE[0]:-}" != "${0}" ]]; then
+        export http_proxy="$PROXY_URL"
+        export https_proxy="$PROXY_URL"
+        export HTTP_PROXY="$PROXY_URL"
+        export HTTPS_PROXY="$PROXY_URL"
+        export no_proxy="${no_proxy:-127.0.0.1,localhost}"
+        export NO_PROXY="${NO_PROXY:-$no_proxy}"
+        echo "✓ Proxy applied in current shell: http/https = $PROXY_URL"
+        return
+    fi
+    echo "export http_proxy=\"$PROXY_URL\""
+    echo "export https_proxy=\"$PROXY_URL\""
+    echo "export HTTP_PROXY=\"$PROXY_URL\""
+    echo "export HTTPS_PROXY=\"$PROXY_URL\""
+    echo "export no_proxy=\"${no_proxy:-127.0.0.1,localhost}\""
+    echo "export NO_PROXY=\"\${no_proxy}\""
+    echo "echo '✓ Proxy applied in current shell: http/https = $PROXY_URL'"
+}
+
+# run main
+krun::config::proxy::run "$@"
