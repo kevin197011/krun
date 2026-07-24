@@ -110,6 +110,7 @@ krun::init::system::common() {
     krun::init::system::configure_tools
     krun::init::system::disable_services
     sysctl -p /etc/sysctl.d/99-system.conf >/dev/null 2>&1 || true
+    sysctl -p /etc/sysctl.d/99-docker.conf >/dev/null 2>&1 || true
     echo "✓ system init and performance tuning done, reboot recommended"
 }
 
@@ -259,13 +260,17 @@ net.ipv4.conf.all.accept_source_route = 0
 net.ipv4.conf.default.accept_source_route = 0
 net.ipv4.conf.all.log_martians = 1
 net.ipv4.conf.default.log_martians = 1
-net.ipv4.conf.all.rp_filter = 1
-net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.all.rp_filter = 0
+net.ipv4.conf.default.rp_filter = 0
 net.ipv4.icmp_echo_ignore_broadcasts = 1
 net.ipv4.icmp_ignore_bogus_error_responses = 1
-net.ipv4.ip_forward = 0
+net.ipv4.ip_forward = 1
 
-# filesystem
+# docker / container host
+fs.may_detach_mounts = 1
+vm.max_map_count = 262144
+kernel.keys.maxkeys = 2000000
+kernel.keys.root_maxkeys = 2000000
 fs.file-max = 2097152
 fs.nr_open = 1048576
 fs.inotify.max_user_watches = 524288
@@ -281,7 +286,21 @@ kernel.kptr_restrict = 2
 kernel.yama.ptrace_scope = 1
 kernel.unprivileged_bpf_disabled = 1
 EOF
-    echo "✓ sysctl config written"
+
+    cat >/etc/sysctl.d/99-docker.conf <<'EOF'
+# Docker bridge networking (requires br_netfilter)
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+
+# IPv6 container networks
+net.ipv6.conf.all.forwarding = 1
+net.ipv6.conf.default.forwarding = 1
+EOF
+
+    mkdir -p /etc/modules-load.d
+    echo br_netfilter >/etc/modules-load.d/br_netfilter.conf
+    modprobe br_netfilter >/dev/null 2>&1 || true
+    echo "✓ sysctl config written (system + docker, ip_forward=1)"
 }
 
 krun::init::system::configure_limits() {
