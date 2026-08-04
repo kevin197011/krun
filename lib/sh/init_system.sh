@@ -11,14 +11,19 @@ set -o pipefail
 # curl exec:
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/init_system.sh | bash
 #
-# system initialization (packages, tuning, limits)
+# system initialization (packages, tuning, limits, node_exporter)
 # supported: Rocky 8/9, AlmaLinux 8/9, RHEL 8/9, CentOS Stream 8/9,
 #            Debian 11/12, Ubuntu 22.04/24.04
+#
+# SKIP_NODE_EXPORTER=1          skip node_exporter install
+# NODE_EXPORTER_VERSION=latest  or e.g. 1.9.1 / v1.9.1
 
 # vars
 SYSTEM_TIMEZONE="${SYSTEM_TIMEZONE:-Asia/Hong_Kong}"
 SYSTEM_LOCALE="${SYSTEM_LOCALE:-en_US.UTF-8}"
 DISABLE_SELINUX="${DISABLE_SELINUX:-1}"
+SKIP_NODE_EXPORTER="${SKIP_NODE_EXPORTER:-0}"
+NODE_EXPORTER_VERSION="${NODE_EXPORTER_VERSION:-latest}"
 DISTRO_ID=""
 DISTRO_VERSION=""
 
@@ -108,6 +113,7 @@ krun::init::system::common() {
     krun::init::system::configure_tuned
     krun::init::system::configure_cpufreq
     krun::init::system::configure_tools
+    krun::init::system::install_node_exporter
     krun::init::system::disable_services
     sysctl -p /etc/sysctl.d/99-system.conf >/dev/null 2>&1 || true
     sysctl -p /etc/sysctl.d/99-docker.conf >/dev/null 2>&1 || true
@@ -520,6 +526,148 @@ alias status='systemctl status'
 EOF
     chmod +x /etc/profile.d/ops-aliases.sh
     echo "✓ dev/ops tools configured"
+}
+
+krun::init::system::node_exporter_latest_tag() {
+    local version=""
+    version=$(curl -fsSL --connect-timeout 5 --max-time 15 \
+        https://api.github.com/repos/prometheus/node_exporter/releases/latest 2>/dev/null |
+        grep -oE '"tag_name":[[:space:]]*"[^"]+"' | head -1 | cut -d '"' -f4)
+    if [[ -z "$version" ]]; then
+        version=$(curl -fsSL --connect-timeout 5 --max-time 15 \
+            "https://cdn.jsdelivr.net/gh/prometheus/node_exporter@latest/VERSION" 2>/dev/null | tr -d '[:space:]')
+        [[ -n "$version" && "$version" != *"html"* ]] || version=""
+    fi
+    if [[ -z "$version" ]]; then
+        version=$(curl -fsSL --connect-timeout 5 --max-time 15 \
+            "https://ghproxy.com/https://api.github.com/repos/prometheus/node_exporter/releases/latest" 2>/dev/null |
+            grep -oE '"tag_name":[[:space:]]*"[^"]+"' | head -1 | cut -d '"' -f4)
+    fi
+    echo "${version:-v1.9.1}"
+}
+
+krun::init::system::install_node_exporter() {
+    case "${SKIP_NODE_EXPORTER}" in
+    1 | true | TRUE | yes | YES | on | ON)
+        echo "skip node_exporter (SKIP_NODE_EXPORTER=${SKIP_NODE_EXPORTER})"
+        return 0
+        ;;
+    esac
+
+    echo "installing node_exporter (latest release)"
+    command -v curl >/dev/null 2>&1 || {
+        echo "⚠ curl missing, skip node_exporter"
+        return 0
+    }
+    command -v tar >/dev/null 2>&1 || {
+        if command -v apt-get >/dev/null 2>&1; then
+            apt-get install -y tar >/dev/null 2>&1 || true
+        elif command -v dnf >/dev/null 2>&1; then
+            dnf install -y tar >/dev/null 2>&1 || true
+        elif command -v yum >/dev/null 2>&1; then
+            yum install -y tar >/dev/null 2>&1 || true
+        fi
+    }
+
+    local arch os tag
+    arch=$(uname -m)
+    case "$arch" in
+    x86_64 | amd64) arch=amd64 ;;
+    aarch64 | arm64) arch=arm64 ;;
+    *)
+        echo "⚠ unsupported arch $arch, skip node_exporter"
+        return 0
+        ;;
+    esac
+    os=$(uname -s | tr '[:upper:]' '[:lower:]')
+    [[ "$os" == "linux" ]] || {
+        echo "⚠ node_exporter auto-install only on Linux, skip"
+        return 0
+    }
+
+    tag="${NODE_EXPORTER_VERSION}"
+    if [[ "$tag" == "latest" || -z "$tag" ]]; then
+        tag=$(krun::init::system::node_exporter_latest_tag)
+    fi
+    tag=${tag#v}
+    echo "  version: v${tag} (${os}/${arch})"
+
+    local url="https://github.com/prometheus/node_exporter/releases/download/v${tag}/node_exporter-${tag}.${os}-${arch}.tar.gz"
+    local tmp
+    tmp=$(mktemp -d)
+
+    local ok=0
+    if curl -fsSL --connect-timeout 10 --max-time 120 "$url" -o "${tmp}/ne.tar.gz" &&
+        gzip -t "${tmp}/ne.tar.gz" 2>/dev/null; then
+        ok=1
+    fi
+    if [[ "$ok" -ne 1 ]]; then
+        echo "  direct download failed, trying mirrors..."
+        rm -f "${tmp}/ne.tar.gz"
+        local mirrors=(
+            "https://ghproxy.com/${url}"
+            "https://mirror.ghproxy.com/${url}"
+        )
+        local m
+        for m in "${mirrors[@]}"; do
+            if curl -fsSL --connect-timeout 10 --max-time 120 "$m" -o "${tmp}/ne.tar.gz" &&
+                gzip -t "${tmp}/ne.tar.gz" 2>/dev/null; then
+                ok=1
+                break
+            fi
+            rm -f "${tmp}/ne.tar.gz"
+        done
+    fi
+    if [[ "$ok" -ne 1 ]]; then
+        echo "⚠ node_exporter download failed, skip"
+        rm -rf "$tmp"
+        return 0
+    fi
+
+    systemctl stop node_exporter >/dev/null 2>&1 || true
+    tar -xzf "${tmp}/ne.tar.gz" -C "$tmp"
+    local bin
+    bin=$(find "$tmp" -type f -name node_exporter | head -1)
+    if [[ -z "$bin" || ! -f "$bin" ]]; then
+        echo "⚠ node_exporter binary missing in archive, skip"
+        rm -rf "$tmp"
+        return 0
+    fi
+
+    install -d /usr/local/bin
+    install -m 0755 "$bin" /usr/local/bin/node_exporter
+    rm -rf "$tmp"
+    command -v restorecon >/dev/null 2>&1 && restorecon /usr/local/bin/node_exporter 2>/dev/null || true
+
+    cat >/etc/systemd/system/node_exporter.service <<'EOF'
+[Unit]
+Description=Prometheus Node Exporter
+Documentation=https://github.com/prometheus/node_exporter
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/node_exporter
+Restart=always
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl daemon-reload
+    systemctl enable --now node_exporter >/dev/null 2>&1 || {
+        echo "⚠ failed to start node_exporter"
+        systemctl status node_exporter --no-pager -l 2>/dev/null || true
+        return 0
+    }
+
+    local ver
+    ver=$(/usr/local/bin/node_exporter --version 2>&1 | head -1 || true)
+    echo "✓ node_exporter installed: ${ver:-v${tag}} (http://localhost:9100/metrics)"
 }
 
 krun::init::system::disable_services() {
