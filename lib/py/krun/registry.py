@@ -104,6 +104,7 @@ SCRIPTS: dict[str, callable] = {
     "install_helm": lambda: install.install_github_tool("helm"),
     "install_crane": lambda: install.install_github_tool("crane"),
     "install_rclone": lambda: install.install_github_tool("rclone"),
+    "install_mysql": install.install_mysql,
     "install_node_exporter": install.install_node_exporter,
     "install_blackbox_exporter": lambda: _prometheus_exporter("blackbox"),
     "install_awscli": install.install_awscli,

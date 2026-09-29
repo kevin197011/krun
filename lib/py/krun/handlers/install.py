@@ -176,6 +176,103 @@ def install_kssh() -> None:
     run("git clone https://github.com/kevin197011/kssh.git ~/.kssh && cd ~/.kssh && bundle install", shell=True)
 
 
+def install_mysql() -> None:
+    """Install MySQL 8.4 LTS from the official community repo."""
+    plat = platform()
+    if plat == "mac":
+        run(["brew", "install", "mysql@8.4"])
+        run(["brew", "services", "start", "mysql@8.4"], check=False)
+        print("✓ MySQL 8.4 installed via Homebrew")
+        return
+
+    require_root()
+    if run_ok("mysqld --version 2>/dev/null | grep -q 'Ver 8.'"):
+        print("✓ MySQL 8 already installed")
+        _mysql_enable()
+        return
+
+    if plat == "rhel":
+        osr = read_os_release()
+        major = osr.get("VERSION_ID", "9").split(".", 1)[0]
+        rpms = {
+            "7": "https://repo.mysql.com/mysql84-community-release-el7-1.noarch.rpm",
+            "8": "https://repo.mysql.com/mysql84-community-release-el8-1.noarch.rpm",
+            "9": "https://repo.mysql.com/mysql84-community-release-el9-1.noarch.rpm",
+        }
+        url = rpms.get(major)
+        if not url:
+            print(f"✗ unsupported RHEL major: {major}")
+            raise SystemExit(1)
+        pm = pm_rhel()
+        run("rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 || true", shell=True)
+        run("rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 || true", shell=True)
+        run(f"{pm} module disable -y mysql >/dev/null 2>&1 || true", shell=True)
+        run([pm, "install", "-y", url])
+        run([pm, "install", "-y", "mysql-community-server", "mysql-community-client"])
+    elif plat == "deb":
+        osr = read_os_release()
+        family = "ubuntu" if osr.get("ID") == "ubuntu" or "ubuntu" in osr.get("ID_LIKE", "") else "debian"
+        codename = osr.get("VERSION_CODENAME", "")
+        if not codename:
+            print("✗ cannot read VERSION_CODENAME")
+            raise SystemExit(1)
+        env = {**os.environ, "DEBIAN_FRONTEND": "noninteractive"}
+        run(["apt-get", "update"], env=env)
+        run(["apt-get", "install", "-y", "ca-certificates", "curl", "gnupg"], env=env)
+        run(
+            "install -d /usr/share/keyrings && "
+            "curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 | gpg --dearmor -o /usr/share/keyrings/mysql-2023.gpg && "
+            "curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | gpg --dearmor -o /usr/share/keyrings/mysql-2025.gpg && "
+            "cat /usr/share/keyrings/mysql-2023.gpg /usr/share/keyrings/mysql-2025.gpg > /usr/share/keyrings/mysql.gpg && "
+            f'echo "deb [signed-by=/usr/share/keyrings/mysql.gpg] https://repo.mysql.com/apt/{family} {codename} mysql-8.4-lts" '
+            "> /etc/apt/sources.list.d/mysql.list",
+            shell=True,
+        )
+        run(["apt-get", "update"], env=env)
+        run(["apt-get", "install", "-y", "mysql-community-server", "mysql-community-client"], env=env)
+    else:
+        print("✗ mysql install supports deb/rhel/mac only")
+        raise SystemExit(1)
+    _mysql_enable()
+    print("✓ MySQL 8.4 LTS installed")
+
+
+def _mysql_enable() -> None:
+    import subprocess
+
+    listed = subprocess.run(
+        ["systemctl", "list-unit-files", "mysql.service", "mysqld.service"],
+        capture_output=True, text=True, check=False,
+    ).stdout
+    svc = "mysql" if "mysql.service" in listed and "mysqld.service" not in listed else "mysqld"
+    if "mysqld.service" in listed:
+        svc = "mysqld"
+    elif "mysql.service" in listed:
+        svc = "mysql"
+    service_enable(svc)
+    print(f"✓ MySQL service {svc} enabled")
+    log = subprocess.run(
+        "grep -h 'temporary password' /var/log/mysqld.log /var/log/mysql/error.log 2>/dev/null | tail -1",
+        shell=True, capture_output=True, text=True, check=False,
+    )
+    line = log.stdout.strip()
+    if line:
+        print(line)
+    password = os.environ.get("MYSQL_ROOT_PASSWORD", "")
+    if not password:
+        print("  mysql -uroot -p")
+        return
+    if not line:
+        print("⚠ MYSQL_ROOT_PASSWORD set but no temporary password in the log")
+        return
+    tmp = line.split()[-1]
+    ok = run([
+        "mysql", "--connect-expired-password", "-uroot", f"-p{tmp}", "-e",
+        f"ALTER USER 'root'@'localhost' IDENTIFIED BY '{password}';",
+    ])
+    print("✓ root password updated" if ok == 0 else "⚠ failed to set MYSQL_ROOT_PASSWORD")
+
+
 def install_node_exporter() -> None:
     """Install latest node_exporter from GitHub releases and enable systemd."""
     require_root()
