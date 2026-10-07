@@ -8,7 +8,7 @@
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/init-system.py | sudo python3
 #
 # system initialization (packages, tuning, limits)
-# supported: Rocky 8/9, AlmaLinux 8/9, RHEL 8/9, CentOS Stream 8/9,
+# supported: Rocky 8/9, AlmaLinux 8/9, Oracle Linux 8/9, RHEL 8/9, CentOS Stream 8/9,
 #            Debian 11/12, Ubuntu 22.04/24.04
 #
 # SYSTEM_TIMEZONE=Asia/Hong_Kong   # 默认香港时区
