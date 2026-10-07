@@ -12,8 +12,8 @@ set -o pipefail
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/init_system.sh | bash
 #
 # system initialization (packages, tuning, limits, node_exporter)
-# supported: Rocky 8/9, AlmaLinux 8/9, RHEL 8/9, CentOS Stream 8/9,
-#            Debian 11/12, Ubuntu 22.04/24.04
+# supported: Rocky 8/9, AlmaLinux 8/9, Oracle Linux 8/9, RHEL 8/9,
+#            CentOS Stream 8/9, Debian 11/12, Ubuntu 22.04/24.04
 #
 # SKIP_NODE_EXPORTER=1          skip node_exporter install
 # NODE_EXPORTER_VERSION=latest  or e.g. 1.9.1 / v1.9.1
@@ -39,7 +39,7 @@ krun::init::system::run() {
     eval "${FUNCNAME/::run/::${platform}}"
 }
 
-# centos code (Rocky / Alma / RHEL / CentOS Stream)
+# centos code (Rocky / Alma / Oracle Linux / RHEL / CentOS Stream)
 krun::init::system::centos() {
     echo "initializing ${DISTRO_ID:-rhel} ${DISTRO_VERSION}"
     krun::init::system::check_rhel_version
@@ -72,11 +72,16 @@ krun::init::system::detect_distro() {
 }
 
 krun::init::system::check_rhel_version() {
+    # Rocky/Alma/OL/RHEL/CentOS Stream: ID differs, VERSION_ID major must be 8/9
     local major="${DISTRO_VERSION%%.*}"
+    case "${DISTRO_ID}" in
+    rocky | almalinux | ol | rhel | centos | centos-stream | "") ;;
+    *) echo "⚠ unlisted RHEL-family ID=${DISTRO_ID}, continuing with dnf/yum path" ;;
+    esac
     case "$major" in
     8 | 9) ;;
     7) echo "⚠ RHEL family 7 is EOL, some packages may be unavailable" ;;
-    *) echo "⚠ untested RHEL family version: $DISTRO_VERSION" ;;
+    *) echo "⚠ untested RHEL family version: ${DISTRO_ID} ${DISTRO_VERSION}" ;;
     esac
 }
 
