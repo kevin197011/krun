@@ -4,7 +4,7 @@
 
 运维脚本工具集：`lib/sh`（bash）+ `lib/ps1`（PowerShell），由 Go CLI（`cmd/krun`）**`go:embed` 打进单一二进制**后执行。
 
-`install.sh` 只从 GitHub Release 安装 CLI；**运行脚本不再访问网络**。
+`deploy.sh` 只从 GitHub Release 安装 CLI；**运行脚本不再访问网络**。
 
 **非目标**
 
@@ -35,10 +35,10 @@
 
 - GoReleaser：linux/darwin/windows × amd64/arm64 + deb/rpm + checksums
 - 产物：`krun_<ver>_<os>_<arch>.tar.gz`（Windows zip）
-- `install.sh`：按 OS/Arch 安装；`KRUN_VERSION` 可钉版本
+- `deploy.sh`（Linux/mac）/ `deploy.ps1`（Windows）：按 OS/Arch **安装/覆盖更新或卸载** CLI（优先写回已有路径，清其它残留）；`KRUN_VERSION` 可钉版本；`--uninstall` / `-Uninstall` / `KRUN_ACTION=uninstall`
 - **`rake push` / `ruby push.rb`**：有新 commit 时自动 **patch +1** 打 `vX.Y.Z` annotated tag 并 `git push` tag（触发 Release）。`KRUN_BUMP=minor|major` 可改；`SKIP_TAG=1` 跳过
 
-**验收**：`v*` tag 发布后 `curl …/install.sh | bash` 得到可用 `krun`；本地 `rake push` 后出现新 tag。
+**验收**：`v*` tag 发布后 `curl …/deploy.sh | bash` 得到可用 `krun`；`--uninstall` 可卸；本地 `rake push` 后出现新 tag。
 
 ### FR-KRUN-WIN 远程与装机
 
@@ -48,7 +48,7 @@
 
 ```mermaid
 flowchart TB
-    I["install.sh"] --> R["GitHub Releases"]
+    I["deploy.sh / deploy.ps1"] --> R["GitHub Releases"]
     R --> BIN["krun binary"]
     BIN --> SH["embed sh"]
     BIN --> PS["embed ps1"]
@@ -67,7 +67,9 @@ flowchart TB
 
 | 日期 | 说明 |
 | --- | --- |
-| 2026-11-11 | 删除 meta/manifest、旧 nfpm、deploy.sh、lib/py；CLI 仅 embed |
+| 2026-11-11 | deploy 安装覆盖更新：优先原路径、原子替换、清残留副本 |
+| 2026-11-11 | `deploy.sh` / `deploy.ps1`（含卸载）；取代 install.sh/ps1 |
+| 2026-11-11 | 删除 meta/manifest、旧 nfpm、空壳 compose deploy、lib/py；CLI 仅 embed |
 | 2026-11-11 | go:embed；Go CLI + GoReleaser；config_remote TermService |
 
 ## 开发进度记录

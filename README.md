@@ -26,7 +26,7 @@ krun/
 │   ├── fs.go                # go:embed sh + ps1
 │   ├── sh/*.sh              # Linux/mac 脚本（权威，打进二进制）
 │   └── ps1/*.ps1            # Windows 脚本（权威，打进二进制）
-├── install.sh               # 从 GitHub Release 安装 CLI 二进制
+├── deploy.sh / deploy.ps1 # 从 GitHub Release 安装/卸载 CLI（Linux/mac / Windows）
 └── .goreleaser.yaml         # 多平台发布
 ```
 
@@ -156,26 +156,33 @@ flowchart LR
 ### 方式一：安装 Krun 工具（推荐）
 
 ```bash
-# 一键安装（按 OS/Arch 拉 GitHub Release 二进制；Linux 可选用 deb/rpm）
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | bash
-
-# 重新加载 shell 配置
+# Linux / macOS — 安装
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
 source ~/.bashrc  # 或 source ~/.zshrc
 
-# 查看可用脚本列表
-krun list
+# 卸载
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash -s -- --uninstall
+```
 
-# 执行脚本（自动下载并执行；sh/py 同名，各自独立实现）
-krun install_docker.sh
+```powershell
+# Windows — 安装
+irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
+# 新开终端后可用 krun（已写入 User PATH）
+
+# 卸载
+$env:KRUN_ACTION='uninstall'; irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
+```
+
+```bash
+krun list
 krun install_docker.sh
 krun init_system.sh
-krun install_python3.sh     # 无 python3 时 bootstrap
 ```
 
 **安装说明**：
 - 支持 macOS 和 Linux（CentOS/RHEL、Debian/Ubuntu）
 - 自动检测 OS/Arch，下载对应 `krun_<ver>_<os>_<arch>.tar.gz`（或 deb/rpm）
-- 默认装到 `~/.krun/bin`（root 且可写则 `/usr/local/bin`）
+- 默认装到 `~/.krun/bin`（root 且可写则 `/usr/local/bin`）；**重复执行会覆盖更新**已有二进制并清理其它残留路径
 - Linux/mac 脚本用 `lib/sh`；Windows 用 `lib/ps1`
 - 本地开发：`go build -o bin/krun ./cmd/krun` 或 `rake build`
 - 本地开发时 `krun` 优先读仓库内文件，再回退 GitHub raw
@@ -204,8 +211,8 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/init_s
 git clone https://github.com/kevin197011/krun.git
 cd krun
 
-# 方式 3.1: 使用安装脚本安装 krun 工具
-./install.sh
+# 方式 3.1: 使用安装脚本部署 krun CLI
+./deploy.sh
 source ~/.bashrc  # 或 source ~/.zshrc
 krun list
 
@@ -291,8 +298,8 @@ irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/disable_fire
 ### 新服务器初始化
 
 ```bash
-# 1. 安装 krun 工具
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | bash
+# 1. 部署 krun CLI
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
 source ~/.bashrc
 
 # 2. 系统基础配置
@@ -382,7 +389,7 @@ rake build
 ### Q: 如何更新 krun 工具？
 ```bash
 # 重新运行安装脚本即可（会自动下载最新版本）
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
 source ~/.bashrc  # 或 source ~/.zshrc
 ```
 
@@ -403,20 +410,19 @@ ls -l lib/sh/*.sh lib/ps1/*.ps1
 
 ### Q: 如何卸载 krun？
 ```bash
-# 删除安装目录
-rm -rf ~/.krun
+# Linux / macOS
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash -s -- --uninstall
+# 或本地：./deploy.sh --uninstall
+```
 
-# 删除 PATH 配置
-# 编辑 ~/.bashrc 或 ~/.zshrc，删除 krun 相关的 PATH 配置
+```powershell
+# Windows
+$env:KRUN_ACTION='uninstall'; irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
+# 或本地：.\deploy.ps1 -Uninstall
 ```
 
 ### Q: 安装脚本会自动安装依赖吗？
-```bash
-# 是的，install.sh 会自动检测并安装所需依赖：
-# - macOS: 使用 Homebrew 安装 Python3 和 curl（如未安装 Homebrew 会自动安装）
-# - Linux: 使用系统包管理器（apt/yum/dnf）安装 Python3 和 curl
-# 如果系统已有这些依赖，则跳过安装步骤
-```
+`deploy.sh` / `deploy.ps1` 只拉 GitHub Release 里的 `krun` 二进制并写 PATH；不装 Python 等运行时依赖。脚本本身需要 `curl`/`tar`（Windows 用 PowerShell）。
 
 
 ## 发布
@@ -427,7 +433,7 @@ KRUN_BUMP=minor ruby push.rb
 SKIP_TAG=1 ruby push.rb   # 只提交不打 tag
 ```
 
-打 `v*` tag 后 GitHub Actions（GoReleaser）发多平台二进制；`install.sh` 拉 latest。
+打 `v*` tag 后 GitHub Actions（GoReleaser）发多平台二进制；`deploy.sh` / `deploy.ps1` 拉 latest。
 
 ## 许可证
 

@@ -76,20 +76,24 @@ def write_commands_md!
   lines = []
   lines << '# Krun 快捷命令清单'
   lines << ''
-  lines << '复制即用。脚本已 `go:embed` 进 CLI；也可 curl/irm 单文件执行。'
+  lines << '复制即用（curl / irm）。'
   lines << ''
   lines << '刷新本页：`rake docs:commands`'
   lines << ''
-  lines << '## 安装 CLI'
+  lines << '## 部署 CLI'
+  lines << ''
+  lines << '### Linux / macOS'
   lines << ''
   lines << '```bash'
-  lines << "curl -fsSL #{RAW_BASE}/install.sh | bash"
+  lines << "curl -fsSL #{RAW_BASE}/deploy.sh | bash"
+  lines << "curl -fsSL #{RAW_BASE}/deploy.sh | bash -s -- --uninstall"
   lines << '```'
   lines << ''
-  lines << '```bash'
-  lines << 'krun list'
-  lines << 'krun languages'
-  lines << 'krun version'
+  lines << '### Windows'
+  lines << ''
+  lines << '```powershell'
+  lines << "irm #{RAW_BASE}/deploy.ps1 | iex"
+  lines << "$env:KRUN_ACTION='uninstall'; irm #{RAW_BASE}/deploy.ps1 | iex"
   lines << '```'
   lines << ''
   lines << '## Shell（Linux / macOS）'
@@ -97,7 +101,6 @@ def write_commands_md!
   lines << '通用：'
   lines << ''
   lines << '```bash'
-  lines << 'krun <name>.sh'
   lines << "curl -fsSL #{RAW_BASE}/lib/sh/<name>.sh | sudo bash"
   lines << '```'
   lines << ''
@@ -112,7 +115,6 @@ def write_commands_md!
       lines << "#### `#{name}`"
       lines << ''
       lines << '```bash'
-      lines << "krun #{name}"
       lines << "curl -fsSL #{RAW_BASE}/lib/sh/#{name} | sudo bash"
       lines << '```'
       lines << ''
@@ -124,7 +126,6 @@ def write_commands_md!
   lines << '通用（管理员）：'
   lines << ''
   lines << '```powershell'
-  lines << 'krun <name>.ps1'
   lines << "irm #{RAW_BASE}/lib/ps1/<name>.ps1 | iex"
   lines << '```'
   lines << ''
@@ -141,7 +142,6 @@ def write_commands_md!
       lines << "#### `#{name}`"
       lines << ''
       lines << '```powershell'
-      lines << "krun #{name}"
       lines << "irm #{RAW_BASE}/lib/ps1/#{name} | iex"
       lines << '```'
       lines << ''
