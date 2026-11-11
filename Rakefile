@@ -21,13 +21,17 @@ MANIFEST_DIR = 'meta'
 MANIFEST_PATH = File.join(MANIFEST_DIR, 'lib-manifest.json')
 
 namespace :lib do
-  desc 'Generate meta/lib-manifest.json from lib/sh and lib/py'
+  desc 'Generate meta/lib-manifest.json from lib/sh, lib/py, and lib/ps1'
   task :manifest do
     sh_files = Dir['lib/sh/*.sh'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
     py_files = Dir['lib/py/scripts/*.py'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
+    ps1_files = Dir['lib/ps1/*.ps1'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
     FileUtils.mkdir_p(MANIFEST_DIR)
-    File.write(MANIFEST_PATH, JSON.pretty_generate({ 'sh' => sh_files, 'py' => py_files.sort }))
-    puts "Wrote #{MANIFEST_PATH} (sh: #{sh_files.size}, py: #{py_files.size})"
+    File.write(
+      MANIFEST_PATH,
+      JSON.pretty_generate({ 'sh' => sh_files, 'py' => py_files.sort, 'ps1' => ps1_files })
+    )
+    puts "Wrote #{MANIFEST_PATH} (sh: #{sh_files.size}, py: #{py_files.size}, ps1: #{ps1_files.size})"
   end
 
   desc 'Regenerate lib/py entrypoints from registry'

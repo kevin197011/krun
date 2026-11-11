@@ -16,7 +16,7 @@ from urllib.request import Request, urlopen
 
 
 class Krun:
-    """Script runner for shell and Python utilities."""
+    """Script runner for shell, Python, and PowerShell utilities."""
 
     BANNER = r"""______
 ___  /____________  ________
@@ -29,6 +29,7 @@ _  ,<  _  /   / /_/ /_  / / /
 
     SHELL_EXTS = {'.sh', '.bash', '.zsh'}
     PYTHON_EXTS = {'.py'}
+    POWERSHELL_EXTS = {'.ps1'}
 
     def __init__(self):
         self.base_url = "https://raw.githubusercontent.com/kevin197011/krun/main"
@@ -56,6 +57,8 @@ _  ,<  _  /   / /_/ /_  / / /
             return 'sh'
         if ext in self.PYTHON_EXTS:
             return 'py'
+        if ext in self.POWERSHELL_EXTS:
+            return 'ps1'
         return None
 
     def resolve_script_path(self, script_name):
@@ -65,10 +68,16 @@ _  ,<  _  /   / /_/ /_  / / /
                 return f'lib/py/{rel}'
             return f'lib/{rel}'
 
-        stem = script_name.replace('.sh', '').replace('.py', '').replace('-', '_')
+        stem = (
+            script_name.replace('.sh', '')
+            .replace('.py', '')
+            .replace('.ps1', '')
+            .replace('-', '_')
+        )
         py_new = os.path.join(self.repo_root, 'lib', 'py', 'scripts', f'{stem}.py')
         py_old = os.path.join(self.repo_root, 'lib', 'py', f'{stem}.py')
         sh_underscore = os.path.join(self.repo_root, 'lib', 'sh', f'{stem}.sh')
+        ps1_path = os.path.join(self.repo_root, 'lib', 'ps1', f'{stem}.ps1')
         # legacy kebab-case fallback (pre-naming cleanup)
         sh_kebab = os.path.join(self.repo_root, 'lib', 'sh', f'{stem.replace("_", "-")}.sh')
         if script_name.endswith('.sh') and '/' not in script_name:
@@ -76,23 +85,33 @@ _  ,<  _  /   / /_/ /_  / / /
         else:
             sh_given = None
 
+        if script_name.endswith('.ps1') or os.path.isfile(ps1_path):
+            if os.path.isfile(ps1_path):
+                return f'lib/ps1/{stem}.ps1'
+            sh_scripts, py_scripts, ps1_scripts = self.get_script_list()
+            if f'{stem}.ps1' in ps1_scripts:
+                return f'lib/ps1/{stem}.ps1'
+
         if os.path.isfile(py_new):
             return f'lib/py/scripts/{stem}.py'
         if os.path.isfile(py_old):
             return f'lib/py/{stem}.py'
-        _, py_scripts = self.get_script_list()
+        sh_scripts, py_scripts, ps1_scripts = self.get_script_list()
         if f'{stem}.py' in py_scripts:
             return f'lib/py/scripts/{stem}.py'
+        if f'{stem}.ps1' in ps1_scripts:
+            return f'lib/ps1/{stem}.ps1'
 
         for candidate in (sh_given, sh_underscore, sh_kebab):
             if candidate and os.path.isfile(candidate):
                 return f'lib/sh/{os.path.basename(candidate)}'
-        sh_scripts, _ = self.get_script_list()
         for name in sh_scripts:
             if name.removesuffix('.sh').replace('-', '_') == stem:
                 return f'lib/sh/{name}'
 
         lang = self.script_lang(script_name)
+        if lang == 'ps1' or script_name.endswith('.ps1'):
+            return f'lib/ps1/{stem}.ps1'
         if lang == 'py' or script_name.endswith('.py'):
             return f'lib/py/scripts/{stem}.py'
         return f'lib/sh/{stem}.sh'
@@ -110,9 +129,16 @@ _  ,<  _  /   / /_/ /_  / / /
                 return 'python'
             return None
 
+        if ext in self.POWERSHELL_EXTS:
+            if self.command_exists('pwsh'):
+                return 'pwsh'
+            if self.command_exists('powershell'):
+                return 'powershell'
+            return None
+
         if content and content.startswith('#!'):
             shebang = content.split('\n', 1)[0][2:].strip()
-            for cmd in ['python3', 'python', 'bash', 'zsh', 'sh']:
+            for cmd in ['python3', 'python', 'bash', 'zsh', 'sh', 'pwsh', 'powershell']:
                 if cmd in shebang and self.command_exists(cmd):
                     return cmd
 
@@ -152,18 +178,20 @@ _  ,<  _  /   / /_/ /_  / / /
 
     def parse_manifest(self, data):
         if isinstance(data, dict):
-            if 'sh' in data or 'py' in data:
-                return data.get('sh', []), data.get('py', [])
+            if 'sh' in data or 'py' in data or 'ps1' in data:
+                return data.get('sh', []), data.get('py', []), data.get('ps1', [])
             if 'files' in data:
                 files = data['files']
                 sh = [f for f in files if self.script_lang(f) == 'sh']
                 py = [f for f in files if self.script_lang(f) == 'py']
-                return sh, py
+                ps1 = [f for f in files if self.script_lang(f) == 'ps1']
+                return sh, py, ps1
         if isinstance(data, list):
             sh = [f for f in data if self.script_lang(f) == 'sh']
             py = [f for f in data if self.script_lang(f) == 'py']
-            return sh, py
-        return [], []
+            ps1 = [f for f in data if self.script_lang(f) == 'ps1']
+            return sh, py, ps1
+        return [], [], []
 
     def get_script_list(self):
         local_manifest = os.path.join(self.repo_root, 'meta', 'lib-manifest.json')
@@ -175,8 +203,12 @@ _  ,<  _  /   / /_/ /_  / / /
         return self.parse_manifest(json.loads(self.fetch_url(url)))
 
     def all_scripts(self):
-        sh_scripts, py_scripts = self.get_script_list()
-        return [('sh', name) for name in sh_scripts] + [('py', name) for name in py_scripts]
+        sh_scripts, py_scripts, ps1_scripts = self.get_script_list()
+        return (
+            [('sh', name) for name in sh_scripts]
+            + [('py', name) for name in py_scripts]
+            + [('ps1', name) for name in ps1_scripts]
+        )
 
     def execute_script(self, script_name):
         tmp_path = None
@@ -195,19 +227,25 @@ _  ,<  _  /   / /_/ /_  / / /
                 env['PYTHONPATH'] = lib_py + os.pathsep + env.get('PYTHONPATH', '')
                 env['KRUN_PY_LIB'] = lib_py
 
+            def _argv(path):
+                if interpreter in {'pwsh', 'powershell'}:
+                    return [interpreter, '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path]
+                return [interpreter, path]
+
             if local_path := self.local_script_path(script_name):
                 print(f"running {script_name} ({interpreter}) [{source}]")
-                subprocess.run([interpreter, local_path], env=env, cwd=lib_py, check=False)
+                cwd = lib_py if interpreter.startswith('python') else self.repo_root
+                subprocess.run(_argv(local_path), env=env, cwd=cwd, check=False)
                 return
 
-            suffix = self.get_extension(script_name) or '.sh'
+            suffix = self.get_extension(actual_name) or self.get_extension(script_name) or '.sh'
             with tempfile.NamedTemporaryFile(mode='w', suffix=suffix, delete=False) as tmp_file:
                 tmp_file.write(content)
                 tmp_path = tmp_file.name
 
             os.chmod(tmp_path, 0o755)
             print(f"running {script_name} ({interpreter}) [{source}]")
-            subprocess.run([interpreter, tmp_path], env=env, check=False)
+            subprocess.run(_argv(tmp_path), env=env, check=False)
         except KeyboardInterrupt:
             print("\ninterrupted")
         except Exception as exc:
@@ -239,9 +277,12 @@ _  ,<  _  /   / /_/ /_  / / /
         print(self.BANNER)
         print("=" * 50)
 
-        sh_scripts, py_scripts = self.get_script_list()
+        sh_scripts, py_scripts, ps1_scripts = self.get_script_list()
         all_items = self.all_scripts()
-        print(f"\n📊 total: {len(all_items)} (sh: {len(sh_scripts)}, py: {len(py_scripts)})")
+        print(
+            f"\n📊 total: {len(all_items)} "
+            f"(sh: {len(sh_scripts)}, py: {len(py_scripts)}, ps1: {len(ps1_scripts)})"
+        )
         print()
 
         num = 1
@@ -261,27 +302,41 @@ _  ,<  _  /   / /_/ /_  / / /
                 num += 1
             print()
 
-        print("💡 usage: krun <number> | krun <script_name> | krun sh/foo.sh | krun py/bar.py")
+        if ps1_scripts:
+            print("💠 powershell scripts (lib/ps1/)")
+            print("─" * 40)
+            for script in ps1_scripts:
+                print(f"    [{num:2}] {script}")
+                num += 1
+            print()
+
+        print(
+            "💡 usage: krun <number> | krun <script_name> | "
+            "krun sh/foo.sh | krun py/bar.py | krun ps1/baz.ps1"
+        )
 
     def show_status(self):
         print("krun ready")
         print("✓ bash" if self.command_exists('bash') else "✗ bash")
         print("✓ python3" if self.command_exists('python3') else "✗ python3")
+        print("✓ pwsh" if self.command_exists('pwsh') else "✗ pwsh")
+        print("✓ powershell" if self.command_exists('powershell') else "✗ powershell")
 
     def show_languages(self):
         print(self.BANNER)
         print("\nsupported:")
-        print("  ✓ shell  lib/sh/*.sh   interpreter: bash")
-        print("  ✓ python lib/py/scripts/*.py   interpreter: python3")
+        print("  ✓ shell       lib/sh/*.sh            interpreter: bash")
+        print("  ✓ python      lib/py/scripts/*.py    interpreter: python3")
+        print("  ✓ powershell  lib/ps1/*.ps1          interpreter: pwsh|powershell")
 
     def show_help(self):
         print(self.BANNER)
         print("\nusage:")
-        print("  krun list                      list scripts")
-        print("  krun <number>                  run by index")
-        print("  krun <script.sh|script.py>     run by name")
-        print("  krun sh/foo.sh | py/bar.py     run by path")
-        print("  krun <target> --debug          show script content")
+        print("  krun list                              list scripts")
+        print("  krun <number>                          run by index")
+        print("  krun <script.sh|script.py|script.ps1>  run by name")
+        print("  krun sh/foo.sh | py/bar.py | ps1/x.ps1 run by path")
+        print("  krun <target> --debug                  show script content")
         print("  krun status | languages | help")
 
     def show_version(self):
@@ -310,17 +365,25 @@ _  ,<  _  /   / /_/ /_  / / /
             self.execute_script(script_name)
 
     def is_script_name(self, name):
-        return bool(re.match(r".*\.(sh|bash|zsh|py)$", name, re.IGNORECASE))
+        return bool(re.match(r".*\.(sh|bash|zsh|py|ps1)$", name, re.IGNORECASE))
 
     def resolve_bare_name(self, name: str) -> str | None:
         """Map install-docker / install_docker -> install_docker.py"""
-        key = name.replace('.sh', '').replace('.py', '').replace('-', '_')
-        sh_scripts, py_scripts = self.get_script_list()
+        key = (
+            name.replace('.sh', '')
+            .replace('.py', '')
+            .replace('.ps1', '')
+            .replace('-', '_')
+        )
+        sh_scripts, py_scripts, ps1_scripts = self.get_script_list()
         for script in py_scripts:
             if script.removesuffix('.py') == key:
                 return script
         for script in sh_scripts:
             if script.removesuffix('.sh').replace('-', '_') == key:
+                return script
+        for script in ps1_scripts:
+            if script.removesuffix('.ps1').replace('-', '_') == key:
                 return script
         return None
 
@@ -348,7 +411,7 @@ _  ,<  _  /   / /_/ /_  / / /
             self.show_languages()
         elif command.isdigit():
             self.run_by_number(command, parsed.debug)
-        elif self.is_script_name(command) or command.startswith(('sh/', 'py/')):
+        elif self.is_script_name(command) or command.startswith(('sh/', 'py/', 'ps1/')):
             self.run_by_name(command, parsed.debug)
         elif resolved := self.resolve_bare_name(command):
             self.run_by_name(resolved, parsed.debug)

@@ -168,5 +168,18 @@
     "install_zsh.py",
     "reset_git_history.py",
     "update_vagrant_box.py"
+  ],
+  "ps1": [
+    "config_remote.ps1",
+    "config_timezone_utc8_ntp.ps1",
+    "disable_firewall.ps1",
+    "install_bandizip.ps1",
+    "install_caddy.ps1",
+    "install_chrome.ps1",
+    "install_obs.ps1",
+    "install_snipaste.ps1",
+    "install_vscode.ps1",
+    "install_windows_all.ps1",
+    "install_winget.ps1"
   ]
 }

@@ -28,6 +28,8 @@ krun/
 │   │   ├── *.sh                 # 独立完整 bash 实现（与 py 同名）
 │   │   ├── install_python3.sh   # 无 Python 时 bootstrap
 │   │   └── install_node_exporter_offline.sh  # 离线安装
+│   ├── ps1/
+│   │   └── *.ps1                # Windows PowerShell 安装/配置
 │   └── py/
 │       ├── krun/                # Python 核心库
 │       │   ├── bootstrap.py     # 远程执行时拉取依赖
@@ -276,6 +278,27 @@ cat meta/lib-manifest.json
 | 开发环境 | `install_asdf.py`, `install_oh_my_zsh.py`, `install_rbenv.py` |
 
 `lib/sh/`：独立完整 bash 实现（不调用 Python）；与 `lib/py/scripts/*.py` 同名对应。
+
+## Windows（PowerShell）
+
+并入原 [windows-utils](https://github.com/kevin197011/windows-utils) 能力，脚本在 `lib/ps1/`：
+
+```powershell
+# 单脚本（远程）
+irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_chrome.ps1 | iex
+
+# 强制重装
+$env:FORCE_INSTALL='true'; irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_vscode.ps1 | iex
+
+# 批量安装（manifest 中 install_*.ps1）
+irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_windows_all.ps1 | iex
+```
+
+本机已装 `krun` 且有 `pwsh`/`powershell` 时：`krun install_chrome.ps1`。
+
+包含：winget、Chrome、Bandizip、Snipaste、OBS、Caddy、VS Code、东八区 NTP（`config_timezone_utc8_ntp.ps1`）。
+
+详细需求见 [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md)。
 
 ## 支持平台
 
