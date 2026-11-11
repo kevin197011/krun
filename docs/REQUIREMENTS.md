@@ -72,7 +72,7 @@ Krun 是运维脚本工具集：`lib/sh`（bash）、`lib/py`（Python）、`lib
 
 ```
 lib/sh/*.sh           → bash
-lib/py/scripts/*.py   → python3 + krun handlers
+lib/py/*.py   → python3 + krun handlers
 lib/ps1/*.ps1         → pwsh / powershell（Windows）
 meta/lib-manifest.json → { sh, py, ps1 }
 bin/krun              → 解析清单并调用解释器
@@ -103,7 +103,7 @@ bin/krun              → 解析清单并调用解释器
 
 ### 2026-11-11（flatten lib/py）
 
-- **做了什么**：去掉 registry/handlers/bootstrap；`lib/py/scripts/*.py` 改为与 sh/ps1 一样的独立完整脚本
+- **做了什么**：去掉 registry/handlers/bootstrap；`lib/py/*.py` 改为与 sh/ps1 一样的独立完整脚本
 - **验证**：`python3 -m py_compile` 全部 scripts；`hello_world.py` 可跑；scripts 内无 `krun.registry` import
 - **遗留**：部分 install_* 仍是「薄装包」逻辑（未与同名 sh 功能深度对齐）
 

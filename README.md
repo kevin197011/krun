@@ -31,7 +31,7 @@ krun/
 │   ├── ps1/
 │   │   └── *.ps1                # Windows PowerShell 安装/配置
 │   └── py/
-│       └── scripts/             # 独立完整 Python 脚本（与 sh/ps1 同风格）
+│       └── *.py                 # 独立完整 Python 脚本（与 sh/ps1 同风格）
 └── install.sh               # 安装 krun CLI
 ```
 
@@ -53,7 +53,7 @@ flowchart TB
 
     subgraph Scripts["脚本层（各自完整实现）"]
         SH["lib/sh/*.sh"]
-        PY["lib/py/scripts/*.py"]
+        PY["lib/py/*.py"]
         PS["lib/ps1/*.ps1"]
     end
 
@@ -73,7 +73,7 @@ sequenceDiagram
     actor U as 用户
     participant K as bin/krun
     participant M as meta/lib-manifest.json
-    participant S as lib/py/scripts/xxx.py
+    participant S as lib/py/xxx.py
 
     U->>K: krun install_docker.py
     K->>M: 解析脚本名
@@ -97,7 +97,7 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-    A["手写或套模版"] --> B["lib/sh|py/scripts|ps1"]
+    A["手写或套模版"] --> B["lib/sh|py|ps1"]
     B --> C["rake lib:manifest"]
     C --> D["krun list 可见"]
 ```
@@ -113,7 +113,7 @@ flowchart LR
 - 🎯 **远程执行**: 支持 curl 直接执行，无需克隆仓库
 - ⚡ **自动依赖**: 安装脚本自动检测并安装所需依赖（Python3、curl 等）
 - 🐚 **Shell 脚本**: `lib/sh/*.sh`，通过 bash 执行
-- 🐍 **Python 脚本**: `lib/py/scripts/*.py`，通过 python3 执行
+- 🐍 **Python 脚本**: `lib/py/*.py`，通过 python3 执行
 - 💠 **PowerShell 脚本**: `lib/ps1/*.ps1`，通过 pwsh/powershell 执行（Windows）
 
 ## 主要功能
@@ -174,16 +174,16 @@ krun install_python3.sh     # 无 python3 时 bootstrap
 
 ```bash
 # Docker 安装
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/install_docker.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/install_docker.py | sudo python3
 
 # FFmpeg 安装
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/install_ffmpeg.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/install_ffmpeg.py | sudo python3
 
 # Rocky Linux 仓库配置
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/config_rocky_repo.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/config_rocky_repo.py | sudo python3
 
 # 系统初始化与性能优化
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/init_system.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/init_system.py | sudo python3
 
 # Python3 依赖安装（唯一 shell 脚本）
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/install_python3.sh | bash
@@ -202,8 +202,8 @@ source ~/.bashrc  # 或 source ~/.zshrc
 krun list
 
 # 方式 3.2: 直接执行脚本
-./lib/py/scripts/install_docker.py
-./lib/py/scripts/init_system.py
+./lib/py/install_docker.py
+./lib/py/init_system.py
 
 # 方式 3.3: 使用本地 krun 工具
 ./bin/krun install_git.py
@@ -230,7 +230,7 @@ cat meta/lib-manifest.json
 | 开发环境 | `install_asdf.py`, `install_oh_my_zsh.py`, `install_rbenv.py` |
 | Windows | `install_chrome.ps1`, `config_remote.ps1`, `disable_firewall.ps1` |
 
-- `lib/sh/`：独立完整 bash（不调用 Python）；与 `lib/py/scripts/*.py` 同名对应
+- `lib/sh/`：独立完整 bash（不调用 Python）；与 `lib/py/*.py` 同名对应
 - `lib/ps1/`：Windows PowerShell；与 Linux 脚本独立，不互相委托
 
 ## Windows（PowerShell）
@@ -308,7 +308,7 @@ krun install_oh_my_zsh.py
 
 ```bash
 # 修复 Rocky Linux 9 的 IPv6 源导致的包管理器问题
-curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/config_rocky_repo.py | sudo python3
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/config_rocky_repo.py | sudo python3
 ```
 
 ### Kubernetes 环境搭建
@@ -324,7 +324,7 @@ krun install_k9s.py
 
 ```bash
 # 自动格式化并挂载数据盘到 /data
-data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/scripts/config_disk_data.py
+data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/config_disk_data.py
 ```
 
 ## 注意事项
@@ -340,12 +340,12 @@ data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/scripts/config_disk
 
 ### Python 脚本
 
-`lib/py/scripts/*.py` 与 Shell/PowerShell 一样：**一文件完整实现**（平台分支 + 业务逻辑）。无 registry/handlers/bootstrap。说明见 [`lib/py/README.md`](lib/py/README.md)。
+`lib/py/*.py` 与 Shell/PowerShell 一样：**一文件完整实现**（平台分支 + 业务逻辑）。无 registry/handlers/bootstrap。说明见 [`lib/py/README.md`](lib/py/README.md)。
 
 ### 创建新脚本
 
 ```bash
-# Python：从 templates/python.py.erb 生成 lib/py/scripts/<action>_<name>.py，填 common()
+# Python：从 templates/python.py.erb 生成 lib/py/<action>_<name>.py，填 common()
 # Shell：lib/sh/<action>_<name>.sh（完整 bash）
 # PowerShell：templates/powershell.ps1.erb → lib/ps1/<action>_<name>.ps1
 # 最后刷新清单：
@@ -367,8 +367,8 @@ rake lib:manifest
 ## 常见问题
 
 ### Q: curl 执行 Python 脚本报错？
-每个 `lib/py/scripts/*.py` 已是独立脚本（仅标准库）。请确认：
-1. URL 指向 `lib/py/scripts/<name>.py`
+每个 `lib/py/*.py` 已是独立脚本（仅标准库）。请确认：
+1. URL 指向 `lib/py/<name>.py`
 2. 使用 `python3`（多数脚本需 `sudo`）
 3. 网络可访问 `raw.githubusercontent.com`
 
@@ -385,7 +385,7 @@ source ~/.bashrc  # 或 source ~/.zshrc
 krun list
 
 # 或直接查看 lib 目录
-ls -l lib/sh/*.sh lib/py/scripts/*.py
+ls -l lib/sh/*.sh lib/py/*.py
 ```
 
 ### Q: 脚本执行失败怎么办？

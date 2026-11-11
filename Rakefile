@@ -24,7 +24,7 @@ namespace :lib do
   desc 'Generate meta/lib-manifest.json from lib/sh, lib/py, and lib/ps1'
   task :manifest do
     sh_files = Dir['lib/sh/*.sh'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
-    py_files = Dir['lib/py/scripts/*.py'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
+    py_files = Dir['lib/py/*.py'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
     ps1_files = Dir['lib/ps1/*.ps1'].select { |f| File.file?(f) }.map { |f| File.basename(f) }.sort
     FileUtils.mkdir_p(MANIFEST_DIR)
     File.write(

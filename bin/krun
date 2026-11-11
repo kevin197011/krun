@@ -65,7 +65,7 @@ _  ,<  _  /   / /_/ /_  / / /
         if '/' in script_name:
             rel = script_name.lstrip('/')
             if rel.startswith('scripts/'):
-                return f'lib/py/{rel}'
+                return f"lib/py/{rel[len('scripts/'):]}"  # legacy
             return f'lib/{rel}'
 
         stem = (
@@ -74,7 +74,7 @@ _  ,<  _  /   / /_/ /_  / / /
             .replace('.ps1', '')
             .replace('-', '_')
         )
-        py_new = os.path.join(self.repo_root, 'lib', 'py', 'scripts', f'{stem}.py')
+        py_new = os.path.join(self.repo_root, 'lib', 'py', f'{stem}.py')
         py_old = os.path.join(self.repo_root, 'lib', 'py', f'{stem}.py')
         sh_underscore = os.path.join(self.repo_root, 'lib', 'sh', f'{stem}.sh')
         ps1_path = os.path.join(self.repo_root, 'lib', 'ps1', f'{stem}.ps1')
@@ -93,12 +93,12 @@ _  ,<  _  /   / /_/ /_  / / /
                 return f'lib/ps1/{stem}.ps1'
 
         if os.path.isfile(py_new):
-            return f'lib/py/scripts/{stem}.py'
+            return f'lib/py/{stem}.py'
         if os.path.isfile(py_old):
             return f'lib/py/{stem}.py'
         sh_scripts, py_scripts, ps1_scripts = self.get_script_list()
         if f'{stem}.py' in py_scripts:
-            return f'lib/py/scripts/{stem}.py'
+            return f'lib/py/{stem}.py'
         if f'{stem}.ps1' in ps1_scripts:
             return f'lib/ps1/{stem}.ps1'
 
@@ -113,7 +113,7 @@ _  ,<  _  /   / /_/ /_  / / /
         if lang == 'ps1' or script_name.endswith('.ps1'):
             return f'lib/ps1/{stem}.ps1'
         if lang == 'py' or script_name.endswith('.py'):
-            return f'lib/py/scripts/{stem}.py'
+            return f'lib/py/{stem}.py'
         return f'lib/sh/{stem}.sh'
 
     def get_interpreter(self, filename, content=None):
@@ -295,7 +295,7 @@ _  ,<  _  /   / /_/ /_  / / /
             print()
 
         if py_scripts:
-            print("🐍 python scripts (lib/py/scripts/)")
+            print("🐍 python scripts (lib/py/)")
             print("─" * 40)
             for script in py_scripts:
                 print(f"    [{num:2}] {script}")
@@ -326,7 +326,7 @@ _  ,<  _  /   / /_/ /_  / / /
         print(self.BANNER)
         print("\nsupported:")
         print("  ✓ shell       lib/sh/*.sh            interpreter: bash")
-        print("  ✓ python      lib/py/scripts/*.py    interpreter: python3")
+        print("  ✓ python      lib/py/*.py    interpreter: python3")
         print("  ✓ powershell  lib/ps1/*.ps1          interpreter: pwsh|powershell")
 
     def show_help(self):
