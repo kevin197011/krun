@@ -156,6 +156,21 @@ def install_devbox() -> None:
     curl_pipe("https://get.jetpack.io/devbox", shell="bash")
 
 
+def install_nexttrace() -> None:
+    """Install NextTrace (nxtrace/NTrace-core) visual traceroute CLI."""
+    if has_cmd("nexttrace"):
+        print("✓ nexttrace already installed")
+        run(["nexttrace", "--version"], check=False)
+        return
+    if platform() == "mac" and has_cmd("brew"):
+        run(["brew", "install", "nexttrace"])
+        print("✓ nexttrace installed via Homebrew")
+        return
+    # Official one-key installer: https://github.com/nxtrace/NTrace-core
+    curl_pipe("https://nxtrace.org/nt")
+    print("✓ nexttrace done")
+
+
 def install_cursor_cli() -> None:
     curl_pipe("https://cursor.com/install", shell="bash")
 
