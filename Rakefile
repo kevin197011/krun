@@ -82,17 +82,27 @@ def write_commands_md!
   lines << ''
   lines << '## 部署 CLI'
   lines << ''
+  lines << '安装 / **覆盖更新** / 卸载。重复执行安装会写回已有路径并清其它残留。'
+  lines << ''
   lines << '### Linux / macOS'
   lines << ''
   lines << '```bash'
+  lines << "# 安装或覆盖更新到最新 Release"
   lines << "curl -fsSL #{RAW_BASE}/deploy.sh | bash"
+  lines << '# 钉版本'
+  lines << "KRUN_VERSION=v2.2.0 curl -fsSL #{RAW_BASE}/deploy.sh | bash"
+  lines << '# 卸载'
   lines << "curl -fsSL #{RAW_BASE}/deploy.sh | bash -s -- --uninstall"
   lines << '```'
   lines << ''
   lines << '### Windows'
   lines << ''
   lines << '```powershell'
+  lines << '# 安装或覆盖更新到最新 Release'
   lines << "irm #{RAW_BASE}/deploy.ps1 | iex"
+  lines << '# 钉版本'
+  lines << "$env:KRUN_VERSION='v2.2.0'; irm #{RAW_BASE}/deploy.ps1 | iex"
+  lines << '# 卸载'
   lines << "$env:KRUN_ACTION='uninstall'; irm #{RAW_BASE}/deploy.ps1 | iex"
   lines << '```'
   lines << ''

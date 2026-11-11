@@ -26,7 +26,7 @@ krun/
 │   ├── fs.go                # go:embed sh + ps1
 │   ├── sh/*.sh              # Linux/mac 脚本（权威，打进二进制）
 │   └── ps1/*.ps1            # Windows 脚本（权威，打进二进制）
-├── deploy.sh / deploy.ps1 # 从 GitHub Release 安装/卸载 CLI（Linux/mac / Windows）
+├── deploy.sh / deploy.ps1 # 从 GitHub Release 安装/覆盖更新/卸载 CLI
 └── .goreleaser.yaml         # 多平台发布
 ```
 
@@ -156,18 +156,24 @@ flowchart LR
 ### 方式一：安装 Krun 工具（推荐）
 
 ```bash
-# Linux / macOS — 安装
+# Linux / macOS — 安装或覆盖更新
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
 source ~/.bashrc  # 或 source ~/.zshrc
+
+# 钉版本（可选）
+# KRUN_VERSION=v2.2.0 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
 
 # 卸载
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash -s -- --uninstall
 ```
 
 ```powershell
-# Windows — 安装
+# Windows — 安装或覆盖更新
 irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
 # 新开终端后可用 krun（已写入 User PATH）
+
+# 钉版本（可选）
+# $env:KRUN_VERSION='v2.2.0'; irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
 
 # 卸载
 $env:KRUN_ACTION='uninstall'; irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
@@ -211,8 +217,9 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/init_s
 git clone https://github.com/kevin197011/krun.git
 cd krun
 
-# 方式 3.1: 使用安装脚本部署 krun CLI
-./deploy.sh
+# 方式 3.1: 部署 / 覆盖更新 / 卸载 krun CLI
+./deploy.sh                 # 安装或覆盖更新
+./deploy.sh --uninstall     # 卸载
 source ~/.bashrc  # 或 source ~/.zshrc
 krun list
 
@@ -226,7 +233,7 @@ krun list
 
 ## 脚本列表
 
-以嵌入清单为准（约 **95**：sh 84 + ps1 11）。命名统一 `snake_case`：
+以嵌入清单为准（约 **96**：sh 84 + ps1 12）。命名统一 `snake_case`：
 
 ```bash
 krun list
@@ -261,7 +268,8 @@ krun list
 | `install_obs.ps1` | OBS Studio |
 | `install_caddy.ps1` | Caddy |
 | `install_vscode.ps1` | VS Code System Installer |
-| `install_windows_all.ps1` | 按 manifest 批量跑 `install_*.ps1` |
+| `install_cursor.ps1` | Cursor User Installer（官方 API 拉最新；`-Force` 覆盖升级） |
+| `install_windows_all.ps1` | 批量跑嵌入的 `install_*.ps1` |
 | `config_timezone_utc8_ntp.ps1` | 东八区 + NTP |
 | `disable_firewall.ps1` | 关闭全部防火墙配置文件 |
 | `config_remote.ps1` | 全自动 RDP + WinRM；开 RDP 后重启 TermService；防火墙开着才加规则，全关则跳过 |
@@ -353,17 +361,15 @@ data_disk="/dev/sdb" mount_point="/data" sudo bash lib/sh/config_disk_data.sh
 
 ## 开发者指南
 
-### Python 脚本
-
-运维脚本只在 `lib/sh` 与 `lib/ps1`。新增：复制同目录现有脚本改名，再 `rake build`。
-
-
 ### 创建新脚本
 
+运维脚本只在 `lib/sh`（bash）与 `lib/ps1`（PowerShell）。新增：复制同目录现有脚本改名，再 `rake build`（嵌入进 CLI）与 `rake docs:commands`（刷新 `docs/COMMANDS.md`）。
+
 ```bash
-# Shell：lib/sh/<action>_<name>.sh（完整 bash）
-# 最后刷新清单：
+# Shell：lib/sh/<action>_<name>.sh
+# PowerShell：lib/ps1/<action>_<name>.ps1
 rake build
+rake docs:commands
 ```
 
 ## 贡献指南
@@ -380,18 +386,23 @@ rake build
 
 ## 常见问题
 
-### Q: curl 执行 Python 脚本报错？
+### Q: curl / irm 执行脚本失败？
 每个运维脚本在 `lib/sh` 或 `lib/ps1`。请确认：
 1. URL 指向 `lib/sh/<name>.sh` 或 `lib/ps1/<name>.ps1`
-2. 使用 `python3`（多数脚本需 `sudo`）
+2. Linux/mac 多数需 `sudo bash`；Windows 用 `irm … | iex`（管理员按脚本要求）
 3. 网络可访问 `raw.githubusercontent.com`
 
 ### Q: 如何更新 krun 工具？
+再跑一次部署脚本即可（**覆盖更新**已有二进制，优先原路径，并清理其它残留）：
 ```bash
-# 重新运行安装脚本即可（会自动下载最新版本）
+# Linux / macOS
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
-source ~/.bashrc  # 或 source ~/.zshrc
 ```
+```powershell
+# Windows
+irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
+```
+钉某一版：设 `KRUN_VERSION=vX.Y.Z`（PowerShell：`$env:KRUN_VERSION='vX.Y.Z'`）后再执行。
 
 ### Q: 如何查看所有可用脚本？
 ```bash
@@ -451,7 +462,7 @@ SKIP_TAG=1 ruby push.rb   # 只提交不打 tag
 **项目地址**: https://github.com/kevin197011/krun
 **作者**: [kevin197011](https://github.com/kevin197011)
 **更新时间**: 2026-11-11
-**脚本数量**: 170+
+**脚本数量**: ~95（sh + ps1，embed）
 **支持平台**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS、Windows
 
 **Star ⭐ 支持项目发展！**

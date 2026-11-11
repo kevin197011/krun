@@ -4,7 +4,7 @@
 
 运维脚本工具集：`lib/sh`（bash）+ `lib/ps1`（PowerShell），由 Go CLI（`cmd/krun`）**`go:embed` 打进单一二进制**后执行。
 
-`deploy.sh` 只从 GitHub Release 安装 CLI；**运行脚本不再访问网络**。
+`deploy.sh` / `deploy.ps1` 从 GitHub Release **安装、覆盖更新或卸载** CLI；**运行脚本不再访问网络**。
 
 **非目标**
 
@@ -38,7 +38,7 @@
 - `deploy.sh`（Linux/mac）/ `deploy.ps1`（Windows）：按 OS/Arch **安装/覆盖更新或卸载** CLI（优先写回已有路径，清其它残留）；`KRUN_VERSION` 可钉版本；`--uninstall` / `-Uninstall` / `KRUN_ACTION=uninstall`
 - **`rake push` / `ruby push.rb`**：有新 commit 时自动 **patch +1** 打 `vX.Y.Z` annotated tag 并 `git push` tag（触发 Release）。`KRUN_BUMP=minor|major` 可改；`SKIP_TAG=1` 跳过
 
-**验收**：`v*` tag 发布后 `curl …/deploy.sh | bash` 得到可用 `krun`；`--uninstall` 可卸；本地 `rake push` 后出现新 tag。
+**验收**：`v*` tag 发布后 `curl …/deploy.sh | bash` 得到可用 `krun`；再跑一次可覆盖到新版本；`--uninstall` 可卸；本地 `rake push` 后出现新 tag。
 
 ### FR-KRUN-WIN 远程与装机
 
@@ -67,12 +67,25 @@ flowchart TB
 
 | 日期 | 说明 |
 | --- | --- |
+| 2026-11-11 | 新增 `lib/ps1/install_cursor.ps1`（Cursor User 静默安装/Force 升级） |
 | 2026-11-11 | deploy 安装覆盖更新：优先原路径、原子替换、清残留副本 |
 | 2026-11-11 | `deploy.sh` / `deploy.ps1`（含卸载）；取代 install.sh/ps1 |
 | 2026-11-11 | 删除 meta/manifest、旧 nfpm、空壳 compose deploy、lib/py；CLI 仅 embed |
 | 2026-11-11 | go:embed；Go CLI + GoReleaser；config_remote TermService |
 
 ## 开发进度记录
+
+### 2026-11-11（install_cursor.ps1）
+
+- **做了什么**：新增 `lib/ps1/install_cursor.ps1` — 官方 `cursor.com/api/download` 拉最新 User Installer，静默安装；已装则跳过，`-Force` / `FORCE_INSTALL` 覆盖升级
+- **决策**：默认 User 安装（无需 Admin），对齐桌面常见路径 `%LOCALAPPDATA%\Programs\cursor`；不走 winget（与 chrome/vscode 直链一致）
+- **验证**：API 返回 `win32-x64-user` / `win32-arm64-user` JSON；`rake docs:commands`
+
+### 2026-11-11（deploy 覆盖更新 + 文档）
+
+- **做了什么**：`deploy.sh` / `deploy.ps1` 安装优先写回已有路径、原子替换、清残留；文档（README / COMMANDS / REQUIREMENTS）同步安装·更新·卸载与 `KRUN_VERSION`
+- **决策**：升级=再跑安装，不单开 upgrade 子命令（YAGNI）
+- **验证**：`bash -n deploy.sh`；`rake docs:commands` 重生成 COMMANDS
 
 ### 2026-11-11（auto tag on push）
 

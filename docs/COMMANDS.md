@@ -6,17 +6,27 @@
 
 ## 部署 CLI
 
+安装 / **覆盖更新** / 卸载。重复执行安装会写回已有路径并清其它残留。
+
 ### Linux / macOS
 
 ```bash
+# 安装或覆盖更新到最新 Release
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
+# 钉版本
+KRUN_VERSION=v2.2.0 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash
+# 卸载
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/deploy.sh | bash -s -- --uninstall
 ```
 
 ### Windows
 
 ```powershell
+# 安装或覆盖更新到最新 Release
 irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
+# 钉版本
+$env:KRUN_VERSION='v2.2.0'; irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
+# 卸载
 $env:KRUN_ACTION='uninstall'; irm https://raw.githubusercontent.com/kevin197011/krun/main/deploy.ps1 | iex
 ```
 
@@ -570,6 +580,12 @@ irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_cadd
 
 ```powershell
 irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_chrome.ps1 | iex
+```
+
+#### `install_cursor.ps1`
+
+```powershell
+irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_cursor.ps1 | iex
 ```
 
 #### `install_obs.ps1`
