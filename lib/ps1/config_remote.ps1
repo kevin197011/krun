@@ -155,6 +155,14 @@ class RemoteServiceConfigurator {
 
         $this.EnsureService("TermService", "Automatic")
         $this.EnsureService("UmRdpService", "Automatic")
+        # Registry enable while TermService already Running does not always bind :3389
+        # until the service is recycled (full reboot not required).
+        try {
+            Restart-Service -Name TermService -Force -ErrorAction Stop
+            Write-Host "  restarted TermService (pick up fDenyTSConnections)" -ForegroundColor Green
+        } catch {
+            Write-Host "  TermService restart failed: $_" -ForegroundColor Yellow
+        }
         $this.ConfigureFirewallForRemote(
             "Remote Desktop",
             "Krun-RDP-TCP-3389",
