@@ -11,11 +11,11 @@ _  ,<  _  /   / /_/ /_  / / /
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-2.1-blue.svg)](https://github.com/kevin197011/krun)
-[![Scripts](https://img.shields.io/badge/scripts-80+-green.svg)](https://github.com/kevin197011/krun/tree/main/lib)
+[![Scripts](https://img.shields.io/badge/scripts-170+-green.svg)](https://github.com/kevin197011/krun/tree/main/lib)
 
 ## 项目简介
 
-Krun 是一个面向运维工程师的脚本工具集，提供 **Shell** 与 **Python** 两类运维脚本，覆盖系统初始化、安全加固、服务部署、性能优化等场景。支持 CentOS/RHEL、Debian/Ubuntu、macOS 等多个平台，可通过 curl 直接执行。
+Krun 是一个面向运维工程师的脚本工具集，提供 **Shell**、**Python** 与 **PowerShell** 三类运维脚本，覆盖系统初始化、安全加固、服务部署、性能优化以及 Windows 装机配置等场景。支持 CentOS/RHEL、Debian/Ubuntu、macOS、Windows，可通过 curl / `irm | iex` 直接执行。
 
 ### 目录结构
 
@@ -31,17 +31,7 @@ krun/
 │   ├── ps1/
 │   │   └── *.ps1                # Windows PowerShell 安装/配置
 │   └── py/
-│       ├── krun/                # Python 核心库
-│       │   ├── bootstrap.py     # 远程执行时拉取依赖
-│       │   ├── common.py        # 平台检测、装包、run()
-│       │   ├── registry.py      # 脚本名 → handler
-│       │   └── handlers/        # 业务逻辑
-│       │       ├── install.py
-│       │       ├── config.py
-│       │       ├── ops.py
-│       │       └── system.py
-│       ├── scripts/             # Python 可执行入口（薄 wrapper）
-│       └── generate_wrappers.py # rake lib:py:generate
+│       └── scripts/             # 独立完整 Python 脚本（与 sh/ps1 同风格）
 └── install.sh               # 安装 krun CLI
 ```
 
@@ -57,43 +47,26 @@ flowchart TB
     subgraph Runner["运行层"]
         KRUN["bin/krun"]
         PY3["python3"]
+        BASH["bash"]
+        PS1["pwsh"]
     end
 
-    subgraph Entry["入口层 lib/py/scripts/"]
-        WRAP["install_docker.py 等薄 wrapper"]
-    end
-
-    subgraph Core["核心库 lib/py/krun/"]
-        BOOT["bootstrap.py"]
-        REG["registry.py"]
-        COM["common.py"]
-        subgraph Handlers["handlers/"]
-            INS["install.py"]
-            CFG["config.py"]
-            OPS["ops.py"]
-            SYS["system.py"]
-        end
-    end
-
-    subgraph Remote["远程执行缓存"]
-        CACHE["~/.cache/krun/py/krun/"]
+    subgraph Scripts["脚本层（各自完整实现）"]
+        SH["lib/sh/*.sh"]
+        PY["lib/py/scripts/*.py"]
+        PS["lib/ps1/*.ps1"]
     end
 
     CLI --> KRUN
-    CURL --> PY3
-    KRUN --> WRAP
-    PY3 --> WRAP
-    WRAP --> BOOT
-    BOOT -->|本地开发| REG
-    BOOT -->|curl 管道| CACHE
-    CACHE --> REG
-    REG --> Handlers
-    Handlers --> COM
+    KRUN --> SH
+    KRUN --> PY
+    KRUN --> PS
+    CURL --> PY3 --> PY
 ```
 
 ### 调用流程
 
-**方式 A：krun CLI（本地优先，无本地则拉 GitHub）**
+**方式 A：krun CLI**
 
 ```mermaid
 sequenceDiagram
@@ -101,73 +74,47 @@ sequenceDiagram
     participant K as bin/krun
     participant M as meta/lib-manifest.json
     participant S as lib/py/scripts/xxx.py
-    participant B as krun/bootstrap
-    participant R as krun/registry
-    participant H as krun/handlers
 
     U->>K: krun install_docker.py
-    K->>M: 解析脚本名（兼容 install_docker.sh）
-    alt 本地仓库存在
-        K->>S: 读取 lib/py/scripts/
-    else 远程下载
-        K->>S: raw.githubusercontent.com/.../scripts/
-    end
-    K->>S: python3（PYTHONPATH=lib/py）
-    S->>B: bootstrap.setup()
-    B->>R: 加载 registry
-    S->>R: run_script("install_docker")
-    R->>H: install.install_docker()
-    H-->>U: ✓ 完成
+    K->>M: 解析脚本名
+    K->>S: python3 直接执行该文件
+    S-->>U: 完成
 ```
 
-**方式 B：curl 管道（无需克隆仓库）**
+**方式 B：curl 管道**
 
 ```mermaid
 sequenceDiagram
     actor U as 用户
-    participant S as scripts/xxx.py（stdin）
-    participant B as krun/bootstrap
-    participant GH as GitHub raw
-    participant C as ~/.cache/krun/py
-    participant R as krun/registry
-    participant H as krun/handlers
+    participant S as scripts/xxx.py
 
     U->>S: curl | sudo python3
-    Note over S: 无 __file__，无法 import 本地模块
-    S->>B: 内联 prefetch → 下载 bootstrap
-    B->>GH: GET krun/bootstrap.py
-    GH->>C: 写入缓存
-    B->>GH: 下载 krun/common registry handlers/*
-    B->>C: 缓存完整 krun 包
-    B->>R: sys.path 指向缓存
-    S->>R: run_script(name)
-    R->>H: 执行 handler
-    H-->>U: ✓ 完成
+    Note over S: 单文件完整脚本，仅标准库
+    S-->>U: 完成
 ```
 
 **开发者新增脚本**
 
 ```mermaid
 flowchart LR
-    A["handlers/ 写逻辑"] --> B["registry.py 注册"]
-    B --> C["rake lib:py:generate"]
-    C --> D["scripts/ 生成入口"]
-    D --> E["rake lib:manifest"]
-    E --> F["krun list 可见"]
+    A["手写或套模版"] --> B["lib/sh|py/scripts|ps1"]
+    B --> C["rake lib:manifest"]
+    C --> D["krun list 可见"]
 ```
 
 
 ### 核心特性
 
-- 🚀 **一键安装**: 80+ 运维脚本，按语言分目录管理
+- 🚀 **一键安装**: 170+ 运维脚本，按语言分目录管理（sh / py / ps1）
 - 🔧 **系统配置**: 完善的系统初始化和安全加固脚本
-- 🌐 **多平台支持**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS
+- 🌐 **多平台支持**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS、Windows
 - 📦 **模块化设计**: 每个脚本独立运行，可单独使用或组合使用
 - 🔒 **安全可靠**: MIT 许可证，所有脚本开源可审查
 - 🎯 **远程执行**: 支持 curl 直接执行，无需克隆仓库
 - ⚡ **自动依赖**: 安装脚本自动检测并安装所需依赖（Python3、curl 等）
 - 🐚 **Shell 脚本**: `lib/sh/*.sh`，通过 bash 执行
 - 🐍 **Python 脚本**: `lib/py/scripts/*.py`，通过 python3 执行
+- 💠 **PowerShell 脚本**: `lib/ps1/*.ps1`，通过 pwsh/powershell 执行（Windows）
 
 ## 主要功能
 
@@ -182,6 +129,11 @@ flowchart LR
 - **开发环境**: Python、Node.js、Go、Ruby 环境安装
 - **数据库**: MySQL、PostgreSQL、Redis、MongoDB 部署
 - **Web服务**: Nginx、Apache 配置
+
+### Windows 装机与远程
+- **软件安装**: winget、Chrome、Bandizip、Snipaste、OBS、Caddy、VS Code（`lib/ps1/install_*.ps1`）
+- **系统配置**: 东八区 NTP、关闭防火墙、RDP + WinRM 远程服务
+- **批量安装**: `install_windows_all.ps1`（读 manifest `ps1` 列表）
 
 ### 运维工具
 - **监控工具**: Node Exporter、系统监控脚本
@@ -259,7 +211,7 @@ krun list
 
 ## 脚本列表
 
-共 80 个脚本（79 Python + 1 Shell）。命名统一为 `snake_case.py`，完整清单：
+以 `meta/lib-manifest.json` 为准（当前约 **177**：sh 84 + py 82 + ps1 11）。命名统一 `snake_case`：
 
 ```bash
 krun list
@@ -273,15 +225,31 @@ cat meta/lib-manifest.json
 |------|------|
 | 系统初始化 | `init_system.py`, `config_system_baseline.py`, `disable_firewall_selinux.py` |
 | 软件源/磁盘 | `config_rocky_repo.py`, `config_disk_data.py`, `disk_cleanup.py` |
-| 安装类 | `install_docker.py`, `install_nginx.py`, `install_golang.py` |
+| 安装类 | `install_docker.py`, `install_nginx.py`, `install_golang.py`, `install_nexttrace.py` |
 | 运维工具 | `deploy_node_exporter.py`, `crane_copy.py`, `check_ip_quality.py` |
 | 开发环境 | `install_asdf.py`, `install_oh_my_zsh.py`, `install_rbenv.py` |
+| Windows | `install_chrome.ps1`, `config_remote.ps1`, `disable_firewall.ps1` |
 
-`lib/sh/`：独立完整 bash 实现（不调用 Python）；与 `lib/py/scripts/*.py` 同名对应。
+- `lib/sh/`：独立完整 bash（不调用 Python）；与 `lib/py/scripts/*.py` 同名对应
+- `lib/ps1/`：Windows PowerShell；与 Linux 脚本独立，不互相委托
 
 ## Windows（PowerShell）
 
-并入原 [windows-utils](https://github.com/kevin197011/windows-utils) 能力，脚本在 `lib/ps1/`：
+原独立仓 **windows-utils** 能力已并入本仓 `lib/ps1/`（原仓废弃，请只使用 krun）。需求权威：[`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md)；目录说明：[`lib/ps1/README.md`](lib/ps1/README.md)。
+
+| 脚本 | 说明 |
+|------|------|
+| `install_winget.ps1` | 安装/升级 winget |
+| `install_chrome.ps1` | Google Chrome |
+| `install_bandizip.ps1` | Bandizip |
+| `install_snipaste.ps1` | Snipaste（便携） |
+| `install_obs.ps1` | OBS Studio |
+| `install_caddy.ps1` | Caddy |
+| `install_vscode.ps1` | VS Code System Installer |
+| `install_windows_all.ps1` | 按 manifest 批量跑 `install_*.ps1` |
+| `config_timezone_utc8_ntp.ps1` | 东八区 + NTP |
+| `disable_firewall.ps1` | 关闭全部防火墙配置文件 |
+| `config_remote.ps1` | 全自动 RDP + WinRM；防火墙开着才加规则，全关则跳过 |
 
 ```powershell
 # 单脚本（远程）
@@ -290,15 +258,15 @@ irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_chro
 # 强制重装
 $env:FORCE_INSTALL='true'; irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_vscode.ps1 | iex
 
-# 批量安装（manifest 中 install_*.ps1）
+# 批量安装
 irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_windows_all.ps1 | iex
+
+# 远程服务 + 关防火墙（按需）
+irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/config_remote.ps1 | iex
+irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/disable_firewall.ps1 | iex
 ```
 
-本机已装 `krun` 且有 `pwsh`/`powershell` 时：`krun install_chrome.ps1`。
-
-包含：winget、Chrome、Bandizip、Snipaste、OBS、Caddy、VS Code、东八区 NTP（`config_timezone_utc8_ntp.ps1`）。
-
-详细需求见 [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md)。
+本机已装 `krun` 且有 `pwsh`/`powershell`：`krun install_chrome.ps1` / `krun config_remote.ps1`。
 
 ## 支持平台
 
@@ -308,6 +276,7 @@ irm https://raw.githubusercontent.com/kevin197011/krun/main/lib/ps1/install_wind
 - **Debian**: 10, 11, 12
 - **Ubuntu**: 18.04, 20.04, 22.04, 24.04
 - **macOS**: 10.15+ (部分脚本)
+- **Windows**: 10/11 / Server（`lib/ps1`，需 PowerShell；部分需管理员）
 
 ## 使用示例
 
@@ -369,34 +338,18 @@ data_disk="/dev/sdb" mount_point="/data" sudo python3 lib/py/scripts/config_disk
 
 ## 开发者指南
 
-### Python 模块职责
+### Python 脚本
 
-| 模块 | 路径 | 职责 |
-|------|------|------|
-| 入口 | `lib/py/scripts/*.py` | 生成 stub：curl 头 + `SCRIPT` 常量（勿手改） |
-| 预加载 | `krun/prefetch.py` | Stage 1：curl 管道时预置 `sys.path` |
-| 缓存 | `krun/bootstrap.py` | Stage 2：下载/同步 `~/.cache/krun/py/krun/` |
-| 调度 | `krun/entry.py` | Stage 3：`main(script)` 统一入口 |
-| 注册 | `krun/registry.py` | Stage 4：`脚本名 → handler` |
-| 公共 | `krun/common.py` | `platform()`、`install_packages()`、`run()` |
-| 安装 | `krun/handlers/install.py` | Docker、Helm、包管理器等 |
-| 配置 | `krun/handlers/config.py` | SSH、磁盘、软件源、时区等 |
-| 运维 | `krun/handlers/ops.py` | 磁盘清理、crane、部署等 |
-| 网络 | `krun/handlers/network.py` | `check_ip_quality` 公网质量检测 |
-| 初始化 | `krun/handlers/system.py` | `init_system` 系统调优 |
-
-更细的目录说明见 [`lib/py/README.md`](lib/py/README.md)。
+`lib/py/scripts/*.py` 与 Shell/PowerShell 一样：**一文件完整实现**（平台分支 + 业务逻辑）。无 registry/handlers/bootstrap。说明见 [`lib/py/README.md`](lib/py/README.md)。
 
 ### 创建新脚本
 
 ```bash
-# Python：
-# 1. 在 krun/handlers/ 添加逻辑
-# 2. 在 krun/registry.py 的 SCRIPTS 注册名称
-# 3. 生成入口并更新清单
-rake lib:py:generate   # → lib/py/scripts/ + meta/lib-manifest.json
-
-# Shell：直接在 lib/sh/ 新增完整 bash（命名与 py stem 一致，如 install_foo.sh）
+# Python：从 templates/python.py.erb 生成 lib/py/scripts/<action>_<name>.py，填 common()
+# Shell：lib/sh/<action>_<name>.sh（完整 bash）
+# PowerShell：templates/powershell.ps1.erb → lib/ps1/<action>_<name>.ps1
+# 最后刷新清单：
+rake lib:manifest
 ```
 
 ## 贡献指南
@@ -413,25 +366,11 @@ rake lib:py:generate   # → lib/py/scripts/ + meta/lib-manifest.json
 
 ## 常见问题
 
-### Q: curl 执行报 ModuleNotFoundError？
-远程 `curl | python3` 首次运行会从 GitHub 下载 `krun/` 核心库到 `~/.cache/krun/py/`。确保：
-1. 使用 `lib/py/scripts/` 路径（非旧的 `lib/py/xxx.py`）
-2. 网络可访问 `raw.githubusercontent.com`
-3. 强制刷新缓存：`KRUN_REFRESH=1 curl ... | sudo python3`
-
-### Q: 缓存后 GitHub 更新了，本地还是旧逻辑？
-`bootstrap` 每次执行会比对远程 `krun/VERSION` 与本地缓存版本，**不一致时自动重新下载**全部核心模块，一般无需手动清缓存。
-
-仍看到旧输出时（例如只 ping 两个 DNS）：
-```bash
-# 立即强制刷新
-KRUN_REFRESH=1 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/check_ip_quality.py | sudo python3
-
-# 或删除缓存目录
-rm -rf ~/.cache/krun/py
-```
-
-缓存目录：`~/.cache/krun/py/krun/`（可用 `KRUN_PY_CACHE` 自定义路径）。
+### Q: curl 执行 Python 脚本报错？
+每个 `lib/py/scripts/*.py` 已是独立脚本（仅标准库）。请确认：
+1. URL 指向 `lib/py/scripts/<name>.py`
+2. 使用 `python3`（多数脚本需 `sudo`）
+3. 网络可访问 `raw.githubusercontent.com`
 
 ### Q: 如何更新 krun 工具？
 ```bash
@@ -487,8 +426,8 @@ rm -rf ~/.krun
 
 **项目地址**: https://github.com/kevin197011/krun
 **作者**: [kevin197011](https://github.com/kevin197011)
-**更新时间**: 2026-07-02
-**脚本数量**: 80+
-**支持平台**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS
+**更新时间**: 2026-11-11
+**脚本数量**: 170+
+**支持平台**: CentOS/RHEL 7-9、Debian/Ubuntu、macOS、Windows
 
 **Star ⭐ 支持项目发展！**

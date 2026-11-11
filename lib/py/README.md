@@ -1,27 +1,38 @@
-# lib/py layout
+# lib/py — standalone Python scripts
+
+Each file under `scripts/` is a **complete** runnable script (same idea as `lib/sh` / `lib/ps1`).
 
 ```
 lib/py/
-├── krun/                 # core library
-│   ├── prefetch.py       # stage 1: sys.path (curl pipe inline)
-│   ├── bootstrap.py      # stage 2: cache sync
-│   ├── entry.py          # stage 3: main(script)
-│   ├── common.py
-│   ├── registry.py       # stage 4: dispatch
-│   └── handlers/         # stage 5: logic
-├── scripts/              # generated stubs (curl targets)
-└── generate_wrappers.py
+├── README.md
+└── scripts/
+    ├── install_git.py
+    ├── init_system.py
+    └── …
 ```
 
-Call chain:
+## Run
 
-```mermaid
-flowchart LR
-    S["scripts/foo.py"] --> P["prefetch"]
-    P --> E["entry.main"]
-    E --> B["bootstrap.setup"]
-    B --> R["registry.run_script"]
-    R --> H["handlers/*"]
+```bash
+# local
+python3 lib/py/scripts/install_git.py
+./bin/krun install_git.py
+
+# remote
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/install_git.py | sudo python3
 ```
 
-Add a script: handler → `registry.py` → `rake lib:py:generate`
+No `registry` / `handlers` / `bootstrap` package. Open the file → see the logic.
+
+## Structure (per script)
+
+- Copyright + curl one-liner
+- Small helpers (`platform` / `run` / `install_packages` / …) inlined when needed
+- `centos()` / `debian()` / `mac()` → `common()`
+- `main()` entry
+
+## Add a script
+
+1. Copy [templates/python.py.erb](../../templates/python.py.erb) → `scripts/<action>_<name>.py` (or hand-write)
+2. Fill `common()` (and platform overrides if needed)
+3. `rake lib:manifest`

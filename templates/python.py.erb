@@ -5,13 +5,78 @@
 # https://opensource.org/licenses/MIT
 
 # curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/<%= @action %>_<%= @name %>.py | python3
+# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/py/scripts/<%= @action %>_<%= @name %>.py | sudo python3
 #
 # idempotent: check state before each change; safe to re-run
 
+from __future__ import annotations
+
+import os
+import shutil
+import subprocess
+import sys
+
+
+def has_cmd(name: str) -> bool:
+    return shutil.which(name) is not None
+
+
+def platform() -> str:
+    if sys.platform == "darwin":
+        return "mac"
+    if has_cmd("dnf") or has_cmd("yum"):
+        return "centos"
+    if has_cmd("apt-get"):
+        return "debian"
+    return "unknown"
+
+
+def run(cmd: list[str] | str, *, check: bool = True, shell: bool = False) -> int:
+    print(f"+ {cmd if isinstance(cmd, str) else ' '.join(cmd)}")
+    proc = subprocess.run(cmd, check=False, shell=shell)
+    if check and proc.returncode != 0:
+        raise SystemExit(proc.returncode)
+    return proc.returncode
+
+
+def require_root() -> None:
+    if os.geteuid() != 0:
+        print("✗ please run as root")
+        raise SystemExit(1)
+
+
+def centos() -> None:
+    common()
+
+
+def debian() -> None:
+    common()
+
+
+def mac() -> None:
+    common()
+
+
+def common() -> None:
+    # TODO: implement <%= @action %>_<%= @name %>
+    print(f"✓ <%= @action %>_<%= @name %>")
+
+
+def run_script() -> None:
+    plat = platform()
+    if plat == "mac":
+        mac()
+    elif plat == "centos":
+        centos()
+    elif plat == "debian":
+        debian()
+    else:
+        print(f"✗ unsupported platform: {plat}")
+        raise SystemExit(1)
+
 
 def main() -> None:
-    print("<%= @action %>-<%= @name %>")
+    run_script()
 
 
 if __name__ == "__main__":

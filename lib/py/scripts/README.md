@@ -1,21 +1,5 @@
-# scripts/ — generated entrypoints only
+# scripts/
 
-Do not edit `*.py` here by hand. Run `rake lib:py:generate`.
+Standalone Python entrypoints. See [../README.md](../README.md).
 
-Each file is a thin stub:
-
-```
-scripts/foo.py          # curl URL + SCRIPT name
-    ↓ prefetch (inline) # stage 1: sys.path
-    ↓ krun.bootstrap.setup  # stage 2: sync cache (must run before other krun imports)
-    ↓ krun.registry         # stage 3: dispatch handler
-    ↓ krun/handlers/    # business logic
-```
-
-| Layer | Module | Role |
-|-------|--------|------|
-| 1 | `krun/prefetch.py` | Put krun on `sys.path` (curl pipe) |
-| 2 | `krun/bootstrap.py` | Download/sync cached `krun/` |
-| 3 | `krun/entry.py` | `main(script)` unified entry |
-| 4 | `krun/registry.py` | Name → handler |
-| 5 | `krun/handlers/*` | Implementation |
+Do not generate stubs here — edit each `.py` directly.

@@ -34,16 +34,7 @@ namespace :lib do
     puts "Wrote #{MANIFEST_PATH} (sh: #{sh_files.size}, py: #{py_files.size}, ps1: #{ps1_files.size})"
   end
 
-  desc 'Regenerate lib/py entrypoints from registry'
-  task 'py:generate' do
-    system('python3', 'lib/py/generate_wrappers.py') || raise('generate failed')
-    ver = `git rev-parse --short HEAD 2>/dev/null`.strip
-    ver = Time.now.utc.strftime('%Y%m%d%H%M') if ver.empty?
-    File.write('lib/py/krun/VERSION', "#{ver}\n")
-    puts "Wrote lib/py/krun/VERSION (#{ver})"
-    Rake::Task['lib:manifest'].invoke
-  end
 
-  desc 'Regenerate py entrypoints (lib/sh is hand-maintained bash)'
-  task generate: %w[lib:py:generate]
+  desc 'Alias: refresh manifest only (py/sh/ps1 are hand-maintained)'
+  task generate: %w[lib:manifest]
 end
