@@ -67,6 +67,9 @@ flowchart TB
 
 | 日期 | 说明 |
 | --- | --- |
+| 2026-11-11 | 提交空 `go.sum`（无第三方依赖）；CI 恢复 setup-go cache |
+| 2026-11-11 | `go.mod` / Release CI → Go 1.27.x（当前最新稳定） |
+| 2026-11-11 | Release CI：checkout@v5 / setup-go@v6（Node 24）、关 go.sum cache、deploy.sh |
 | 2026-11-11 | 新增 `lib/ps1/install_cursor.ps1`（Cursor User 静默安装/Force 升级） |
 | 2026-11-11 | deploy 安装覆盖更新：优先原路径、原子替换、清残留副本 |
 | 2026-11-11 | `deploy.sh` / `deploy.ps1`（含卸载）；取代 install.sh/ps1 |
@@ -74,6 +77,11 @@ flowchart TB
 | 2026-11-11 | go:embed；Go CLI + GoReleaser；config_remote TermService |
 
 ## 开发进度记录
+
+### 2026-11-11（Release workflow Node 24）
+
+- **做了什么**：`actions/checkout@v5` + `actions/setup-go@v6`（Node 24）；`cache: false`（无 `go.sum`）；chmod 改为 `deploy.sh`（去掉已删的 `install.sh` / `scripts/`）
+- **验证**：action.yml 确认 checkout v5 / setup-go ≥v6.2 为 `node24`；本地 `go build ./cmd/krun` 通过
 
 ### 2026-11-11（install_cursor.ps1）
 

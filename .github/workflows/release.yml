@@ -21,14 +21,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: "1.22.x"
+          go-version: "1.27.x"
 
       - name: Tag for workflow_dispatch
         if: github.event_name == 'workflow_dispatch'
@@ -40,8 +40,8 @@ jobs:
           git tag -f "v${VERSION}"
           git push -f origin "v${VERSION}"
 
-      - name: Make package scripts executable
-        run: chmod +x scripts/*.sh install.sh
+      - name: Make deploy scripts executable
+        run: chmod +x deploy.sh
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
