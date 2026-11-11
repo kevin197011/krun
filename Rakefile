@@ -5,7 +5,11 @@
 
 require 'bundler/setup'
 require 'shellwords'
+require 'fileutils'
 require 'kk/git/rake_tasks'
+
+RAW_BASE = 'https://raw.githubusercontent.com/kevin197011/krun/main'
+COMMANDS_MD = 'docs/COMMANDS.md'
 
 task default: %w[push]
 
@@ -15,10 +19,20 @@ task :build do
   sh 'go build -ldflags "-s -w -X main.version=dev -X main.commit=local" -o bin/krun ./cmd/krun'
 end
 
+namespace :docs do
+  desc 'Regenerate docs/COMMANDS.md from lib/sh + lib/ps1'
+  task :commands do
+    write_commands_md!
+  end
+end
+
 desc 'Commit + push, then bump and push a new v* tag (triggers Release)'
-task :push do
+task push: 'docs:commands' do
   # kk-git defaults to `git pull --ff-only`, which fails on diverged branches.
   ENV['KK_GIT_PULL_ARGS'] ||= '--no-rebase'
+
+  # Ensure regenerated catalog is included in the upcoming commit.
+  sh "git add -- #{Shellwords.escape(COMMANDS_MD)}"
 
   head_before = `git rev-parse HEAD`.strip
 
@@ -49,11 +63,126 @@ task :push do
   puts "Tagged and pushed #{tag}"
 end
 
+def write_commands_md!
+  sh_files = Dir['lib/sh/*.sh'].map { |f| File.basename(f) }.sort
+  ps1_files = Dir['lib/ps1/*.ps1'].map { |f| File.basename(f) }.sort
+
+  sh_groups = Hash.new { |h, k| h[k] = [] }
+  sh_files.each { |n| sh_groups[group_sh(n)] << n }
+
+  ps1_groups = Hash.new { |h, k| h[k] = [] }
+  ps1_files.each { |n| ps1_groups[group_ps1(n)] << n }
+
+  lines = []
+  lines << '# Krun 快捷命令清单'
+  lines << ''
+  lines << '复制即用。脚本已 `go:embed` 进 CLI；也可 curl/irm 单文件执行。'
+  lines << ''
+  lines << '刷新本页：`rake docs:commands`'
+  lines << ''
+  lines << '## 安装 CLI'
+  lines << ''
+  lines << '```bash'
+  lines << "curl -fsSL #{RAW_BASE}/install.sh | bash"
+  lines << '```'
+  lines << ''
+  lines << '```bash'
+  lines << 'krun list'
+  lines << 'krun languages'
+  lines << 'krun version'
+  lines << '```'
+  lines << ''
+  lines << '## Shell（Linux / macOS）'
+  lines << ''
+  lines << '通用：'
+  lines << ''
+  lines << '```bash'
+  lines << 'krun <name>.sh'
+  lines << "curl -fsSL #{RAW_BASE}/lib/sh/<name>.sh | sudo bash"
+  lines << '```'
+  lines << ''
+
+  %w[安装 配置 检查 部署 其它].each do |group|
+    items = sh_groups[group]
+    next if items.empty?
+
+    lines << "### #{group}"
+    lines << ''
+    items.each do |name|
+      lines << "#### `#{name}`"
+      lines << ''
+      lines << '```bash'
+      lines << "krun #{name}"
+      lines << "curl -fsSL #{RAW_BASE}/lib/sh/#{name} | sudo bash"
+      lines << '```'
+      lines << ''
+    end
+  end
+
+  lines << '## PowerShell（Windows）'
+  lines << ''
+  lines << '通用（管理员）：'
+  lines << ''
+  lines << '```powershell'
+  lines << 'krun <name>.ps1'
+  lines << "irm #{RAW_BASE}/lib/ps1/<name>.ps1 | iex"
+  lines << '```'
+  lines << ''
+  lines << "强制重装：`$env:FORCE_INSTALL='true'` 或 `-Force`。"
+  lines << ''
+
+  %w[安装 配置 其它].each do |group|
+    items = ps1_groups[group]
+    next if items.empty?
+
+    lines << "### #{group}"
+    lines << ''
+    items.each do |name|
+      lines << "#### `#{name}`"
+      lines << ''
+      lines << '```powershell'
+      lines << "krun #{name}"
+      lines << "irm #{RAW_BASE}/lib/ps1/#{name} | iex"
+      lines << '```'
+      lines << ''
+    end
+  end
+
+  lines << '## 发布'
+  lines << ''
+  lines << '```bash'
+  lines << 'ruby push.rb                 # 提交 + 推送 + 自动 v* tag（patch+1）'
+  lines << 'KRUN_BUMP=minor ruby push.rb'
+  lines << 'SKIP_TAG=1 ruby push.rb'
+  lines << 'rake build                   # 本地编译 bin/krun'
+  lines << 'rake docs:commands           # 刷新本清单'
+  lines << '```'
+  lines << ''
+
+  FileUtils.mkdir_p(File.dirname(COMMANDS_MD))
+  File.write(COMMANDS_MD, "#{lines.join("\n")}\n")
+  puts "wrote #{COMMANDS_MD} (#{sh_files.size} sh + #{ps1_files.size} ps1)"
+end
+
+def group_sh(name)
+  return '安装' if name.start_with?('install_')
+  return '配置' if name.start_with?('config_')
+  return '检查' if name.start_with?('check_')
+  return '部署' if name.start_with?('deploy_')
+
+  '其它'
+end
+
+def group_ps1(name)
+  return '安装' if name.start_with?('install_')
+  return '配置' if name.start_with?('config_', 'disable_')
+
+  '其它'
+end
+
 def next_semver_tag
   bump = (ENV['KRUN_BUMP'] || 'patch').downcase
-  unless %w[major minor patch].include?(bump)
-    abort "KRUN_BUMP must be major|minor|patch (got #{bump})"
-  end
+  abort "KRUN_BUMP must be major|minor|patch (got #{bump})" unless %w[major minor patch].include?(bump)
 
   tags = `git tag -l 'v*'`.split("\n").filter_map do |t|
     m = t.match(/\Av(\d+)\.(\d+)\.(\d+)\z/)

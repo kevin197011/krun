@@ -54,6 +54,8 @@ flowchart TB
     BIN --> PS["embed ps1"]
 ```
 
+快捷命令清单：[`COMMANDS.md`](COMMANDS.md)（`rake docs:commands` 刷新）。
+
 ## 测试验收
 
 1. `go test ./...` && `rake build`
