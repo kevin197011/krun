@@ -36,8 +36,9 @@
 - GoReleaser：linux/darwin/windows × amd64/arm64 + deb/rpm + checksums
 - 产物：`krun_<ver>_<os>_<arch>.tar.gz`（Windows zip）
 - `install.sh`：按 OS/Arch 安装；`KRUN_VERSION` 可钉版本
+- **`rake push` / `ruby push.rb`**：有新 commit 时自动 **patch +1** 打 `vX.Y.Z` annotated tag 并 `git push` tag（触发 Release）。`KRUN_BUMP=minor|major` 可改；`SKIP_TAG=1` 跳过
 
-**验收**：`v*` tag 发布后 `curl …/install.sh | bash` 得到可用 `krun`。
+**验收**：`v*` tag 发布后 `curl …/install.sh | bash` 得到可用 `krun`；本地 `rake push` 后出现新 tag。
 
 ### FR-KRUN-WIN 远程与装机
 
@@ -68,6 +69,11 @@ flowchart TB
 | 2026-11-11 | go:embed；Go CLI + GoReleaser；config_remote TermService |
 
 ## 开发进度记录
+
+### 2026-11-11（auto tag on push）
+
+- **做了什么**：`rake push` 在新 commit 后自动 patch 递增打 annotated `v*` tag 并推送
+- **验证**：本地计算 next tag 逻辑；未对本机执行真实 push
 
 ### 2026-11-11（cleanup more）
 

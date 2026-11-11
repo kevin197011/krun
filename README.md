@@ -416,6 +416,17 @@ rm -rf ~/.krun
 # 如果系统已有这些依赖，则跳过安装步骤
 ```
 
+
+## 发布
+
+```bash
+ruby push.rb          # 或 rake push：提交 + 推送 + 自动打 v* tag（默认 patch+1）
+KRUN_BUMP=minor ruby push.rb
+SKIP_TAG=1 ruby push.rb   # 只提交不打 tag
+```
+
+打 `v*` tag 后 GitHub Actions（GoReleaser）发多平台二进制；`install.sh` 拉 latest。
+
 ## 许可证
 
 本项目采用 MIT 许可证，详情请查看 [LICENSE](LICENSE) 文件。
