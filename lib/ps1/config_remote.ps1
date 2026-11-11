@@ -1,4 +1,4 @@
-# Copyright (c) 2026 kk
+﻿# Copyright (c) 2026 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -21,6 +21,7 @@ $ErrorActionPreference = 'Stop'
 # Note: Requires Administrator. Enables RDP + WinRM.
 # Firewall rules are added only when at least one firewall profile is enabled;
 # if all profiles are disabled, firewall steps are skipped.
+# Compatible with Windows PowerShell 5.1 (no class method default params).
 
 # Description: Fully automate Windows remote access (Remote Desktop + WinRM)
 
@@ -71,7 +72,11 @@ class RemoteServiceConfigurator {
         return $false
     }
 
-    [void] EnsureService([string] $Name, [string] $StartupType = "Automatic") {
+    # PS 5.1: class methods cannot have default parameter values.
+    [void] EnsureService([string] $Name, [string] $StartupType) {
+        if ([string]::IsNullOrWhiteSpace($StartupType)) {
+            $StartupType = "Automatic"
+        }
         $svc = Get-Service -Name $Name -ErrorAction SilentlyContinue
         if (-not $svc) {
             Write-Host "  skip: service $Name not found" -ForegroundColor Yellow
@@ -120,10 +125,10 @@ class RemoteServiceConfigurator {
     # Add/enable rules only when firewall is on; skip entirely when all profiles are off.
     [void] ConfigureFirewallForRemote([string] $DisplayGroup, [string] $RuleName, [string] $RuleDisplayName, [int] $Port) {
         if (-not $this.IsFirewallActive()) {
-            Write-Host "  firewall disabled on all profiles — skip rules ($DisplayGroup / $RuleName)" -ForegroundColor Yellow
+            Write-Host "  firewall disabled on all profiles -- skip rules ($DisplayGroup / $RuleName)" -ForegroundColor Yellow
             return
         }
-        Write-Host "  firewall active — ensuring rules..." -ForegroundColor Cyan
+        Write-Host "  firewall active -- ensuring rules..." -ForegroundColor Cyan
         $this.EnableFirewallGroup($DisplayGroup)
         $this.EnsureAllowRule($RuleName, $RuleDisplayName, $Port)
     }
