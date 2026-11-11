@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2025 kk
+# Copyright (c) 2026 kk
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
@@ -9,209 +9,173 @@ set -o nounset
 set -o pipefail
 
 # curl exec:
-# curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/install.sh | bash
+#
+# Env:
+#   KRUN_VERSION   tag or bare version (v2.2.0 / 2.2.0); default: latest GitHub release
+#   KRUN_INSTALL_DIR  install dir (default: ~/.krun/bin, or /usr/local/bin if root + writable)
+#   KRUN_REPO      owner/name (default: kevin197011/krun)
 
-# vars
-KRUN_VERSION="${KRUN_VERSION:-2.0.0}"
-KRUN_REPO="https://github.com/kevin197011/krun"
-KRUN_RELEASES_URL="${KRUN_REPO}/releases/download/v${KRUN_VERSION}"
-KRUN_CURL_UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 krun/2.1'
+KRUN_REPO="${KRUN_REPO:-kevin197011/krun}"
+KRUN_CURL_UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 krun/2.2'
 
-krun::install::browser_curl() {
-    curl -fsSL \
-        -A "$KRUN_CURL_UA" \
-        -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
-        -H 'Accept-Language: en-US,en;q=0.9' \
-        -H 'Connection: keep-alive' \
-        -H 'Upgrade-Insecure-Requests: 1' \
-        -H 'Sec-Fetch-Dest: document' \
-        -H 'Sec-Fetch-Mode: navigate' \
-        -H 'Sec-Fetch-Site: none' \
-        -H 'Sec-Fetch-User: ?1' \
-        -H 'DNT: 1' \
-        "$@"
+krun::install::log() { printf '%s\n' "$*"; }
+krun::install::die() { printf '✗ %s\n' "$*" >&2; exit 1; }
+
+krun::install::curl() {
+    curl -fsSL -A "$KRUN_CURL_UA" "$@"
 }
 
-# run code
-krun::install::run() {
-    local platform='debian'
-    command -v yum >/dev/null && platform='centos'
-    command -v dnf >/dev/null && platform='centos'
-    command -v brew >/dev/null && platform='mac'
-    eval "${FUNCNAME/::run/::${platform}}"
+krun::install::detect_os() {
+    case "$(uname -s 2>/dev/null || echo unknown)" in
+        Linux) echo linux ;;
+        Darwin) echo darwin ;;
+        *) krun::install::die "unsupported OS (need Linux or macOS). For Windows download the zip from GitHub Releases." ;;
+    esac
 }
 
-# centos code
-krun::install::centos() {
-    [[ "$OSTYPE" != "darwin"* ]] && [[ $EUID -ne 0 ]] && echo "✗ Please run as root" && exit 1
+krun::install::detect_arch() {
+    case "$(uname -m 2>/dev/null || echo unknown)" in
+        x86_64 | amd64) echo amd64 ;;
+        aarch64 | arm64) echo arm64 ;;
+        *) krun::install::die "unsupported arch: $(uname -m) (need amd64 or arm64)" ;;
+    esac
+}
 
-    krun::install::install_deps_centos
-
-    # Try to install from RPM package
-    if krun::install::install_from_package "rpm"; then
-        return 0
+krun::install::resolve_version() {
+    if [[ -n "${KRUN_VERSION:-}" ]]; then
+        local v="$KRUN_VERSION"
+        [[ "$v" != v* ]] && v="v${v}"
+        echo "$v"
+        return
     fi
-
-    # Fallback to direct binary installation
-    krun::install::install_binary
+    local tag
+    tag="$(krun::install::curl "https://api.github.com/repos/${KRUN_REPO}/releases/latest" \
+        | grep -m1 '"tag_name"' \
+        | sed -E 's/.*"tag_name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')" || true
+    [[ -n "$tag" ]] || krun::install::die "could not resolve latest release; set KRUN_VERSION=vX.Y.Z"
+    echo "$tag"
 }
 
-# debian code
-krun::install::debian() {
-    [[ "$OSTYPE" != "darwin"* ]] && [[ $EUID -ne 0 ]] && echo "✗ Please run as root" && exit 1
-
-    krun::install::install_deps_debian
-
-    # Try to install from DEB package
-    if krun::install::install_from_package "deb"; then
-        return 0
+krun::install::pick_dir() {
+    if [[ -n "${KRUN_INSTALL_DIR:-}" ]]; then
+        echo "$KRUN_INSTALL_DIR"
+        return
     fi
-
-    # Fallback to direct binary installation
-    krun::install::install_binary
-}
-
-# mac code
-krun::install::mac() {
-    krun::install::install_deps_mac
-    krun::install::install_binary
-}
-
-# install deps for centos
-krun::install::install_deps_centos() {
-    if command -v python3 >/dev/null 2>&1 && (command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1); then
-        return 0
+    if [[ "${EUID:-$(id -u)}" -eq 0 ]] && [[ -d /usr/local/bin ]] && [[ -w /usr/local/bin ]]; then
+        echo /usr/local/bin
+        return
     fi
-    echo "Installing dependencies..."
-    if command -v dnf >/dev/null 2>&1; then
-        ! command -v python3 >/dev/null 2>&1 && sudo dnf install -y python3
-        ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1 && sudo dnf install -y curl
+    echo "${HOME}/.krun/bin"
+}
+
+krun::install::ensure_path() {
+    local dir="$1"
+    case ":$PATH:" in
+        *":$dir:"*) return 0 ;;
+    esac
+    local rc=""
+    if [[ -f "${HOME}/.zshrc" ]]; then
+        rc="${HOME}/.zshrc"
+    elif [[ -f "${HOME}/.bashrc" ]]; then
+        rc="${HOME}/.bashrc"
     else
-        ! command -v python3 >/dev/null 2>&1 && sudo yum install -y python3
-        ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1 && sudo yum install -y curl
+        rc="${HOME}/.bashrc"
+    fi
+    if ! grep -Fq "$dir" "$rc" 2>/dev/null; then
+        printf '\nexport PATH="%s:$PATH"\n' "$dir" >>"$rc"
+        krun::install::log "added PATH entry to $rc — run: source $rc"
     fi
 }
 
-# install deps for debian
-krun::install::install_deps_debian() {
-    if command -v python3 >/dev/null 2>&1 && (command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1); then
-        return 0
-    fi
-    echo "Installing dependencies..."
-    sudo apt-get update -qq
-    ! command -v python3 >/dev/null 2>&1 && sudo apt-get install -y python3
-    ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1 && sudo apt-get install -y curl
-}
+# Optional: deb/rpm when available (same Go binary packaged by GoReleaser).
+krun::install::try_package() {
+    local os="$1" arch="$2" tag="$3" ver="${3#v}"
+    [[ "$os" == linux ]] || return 1
+    command -v curl >/dev/null 2>&1 || return 1
 
-# install deps for mac
-krun::install::install_deps_mac() {
-    if command -v python3 >/dev/null 2>&1 && (command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1); then
-        return 0
-    fi
-    echo "Installing dependencies..."
-    if ! command -v brew >/dev/null 2>&1; then
-        echo "Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    fi
-    ! command -v python3 >/dev/null 2>&1 && brew install python3
-    ! command -v curl >/dev/null 2>&1 && brew install curl
-}
+    local base="https://github.com/${KRUN_REPO}/releases/download/${tag}"
+    local tmp
+    tmp="$(mktemp -d)"
+    # shellcheck disable=SC2064
+    trap "rm -rf '$tmp'" RETURN
 
-# install from package (deb/rpm)
-krun::install::install_from_package() {
-    local pkg_type="$1"
-    local download_cmd
-    local pkg_file
-    local arch
-
-    # Detect architecture
-    arch=$(uname -m)
-    [[ "$arch" == "x86_64" ]] && arch="amd64"
-    [[ "$arch" == "aarch64" ]] && arch="arm64"
-
-    # Set download command
-    if command -v curl >/dev/null 2>&1; then
-        download_cmd="krun::install::browser_curl -o"
-    elif command -v wget >/dev/null 2>&1; then
-        download_cmd="wget -qO"
-    else
-        return 1
-    fi
-
-    # Construct package filename
-    if [[ "$pkg_type" == "deb" ]]; then
-        pkg_file="krun_${KRUN_VERSION}_${arch}.deb"
-    else
-        pkg_file="krun_${KRUN_VERSION}_${arch}.rpm"
-    fi
-
-    local pkg_url="${KRUN_RELEASES_URL}/${pkg_file}"
-    local temp_pkg="/tmp/${pkg_file}"
-
-    echo "Downloading ${pkg_file}..."
-    if $download_cmd "$temp_pkg" "$pkg_url" 2>/dev/null; then
-        echo "Installing package..."
-        if [[ "$pkg_type" == "deb" ]]; then
-            if dpkg -i "$temp_pkg" 2>/dev/null || apt-get install -y "$temp_pkg" 2>/dev/null; then
-                rm -f "$temp_pkg"
-                echo "krun installed successfully from package"
-                return 0
-            fi
-        else
-            if rpm -i "$temp_pkg" 2>/dev/null || yum install -y "$temp_pkg" 2>/dev/null || dnf install -y "$temp_pkg" 2>/dev/null; then
-                rm -f "$temp_pkg"
-                echo "krun installed successfully from package"
+    if command -v dpkg >/dev/null 2>&1; then
+        local deb="krun_${ver}_${arch}.deb"
+        if krun::install::curl -o "${tmp}/${deb}" "${base}/${deb}" 2>/dev/null; then
+            if dpkg -i "${tmp}/${deb}" 2>/dev/null || apt-get install -y "${tmp}/${deb}" 2>/dev/null; then
+                krun::install::log "installed via ${deb}"
                 return 0
             fi
         fi
-        rm -f "$temp_pkg"
     fi
-
+    if command -v rpm >/dev/null 2>&1; then
+        local rpm="krun_${ver}_${arch}.rpm"
+        if krun::install::curl -o "${tmp}/${rpm}" "${base}/${rpm}" 2>/dev/null; then
+            if rpm -Uvh "${tmp}/${rpm}" 2>/dev/null || yum install -y "${tmp}/${rpm}" 2>/dev/null || dnf install -y "${tmp}/${rpm}" 2>/dev/null; then
+                krun::install::log "installed via ${rpm}"
+                return 0
+            fi
+        fi
+    fi
     return 1
 }
 
-# install binary directly (fallback)
 krun::install::install_binary() {
-    local download_cmd
-    local KRUN_HOME="${KRUN_HOME:-$HOME/.krun}"
-    local KRUN_BIN_DIR="$KRUN_HOME/bin"
-    local KRUN_URL="https://raw.githubusercontent.com/kevin197011/krun/refs/heads/main/bin/krun"
+    local os="$1" arch="$2" tag="$3" ver="${3#v}"
+    local archive="krun_${ver}_${os}_${arch}.tar.gz"
+    local url="https://github.com/${KRUN_REPO}/releases/download/${tag}/${archive}"
+    local dest
+    dest="$(krun::install::pick_dir)"
+    mkdir -p "$dest"
 
-    # Set download command
-    if command -v curl >/dev/null 2>&1; then
-        download_cmd="krun::install::browser_curl"
-    elif command -v wget >/dev/null 2>&1; then
-        download_cmd="wget -qO-"
+    local tmp
+    tmp="$(mktemp -d)"
+    # shellcheck disable=SC2064
+    trap "rm -rf '$tmp'" RETURN
+
+    krun::install::log "Downloading ${archive}..."
+    krun::install::curl -o "${tmp}/${archive}" "$url" \
+        || krun::install::die "download failed: ${url}"
+
+    tar -xzf "${tmp}/${archive}" -C "$tmp" \
+        || krun::install::die "extract failed"
+
+    local bin=""
+    if [[ -f "${tmp}/krun" ]]; then
+        bin="${tmp}/krun"
     else
-        echo "Error: curl or wget is required" >&2
-        exit 1
+        bin="$(find "$tmp" -type f -name krun | head -1 || true)"
+    fi
+    [[ -n "$bin" && -f "$bin" ]] || krun::install::die "archive missing krun binary"
+
+    install -m 0755 "$bin" "${dest}/krun"
+    krun::install::log "installed ${dest}/krun (${tag}, ${os}/${arch})"
+
+    if [[ "$dest" != /usr/local/bin ]]; then
+        krun::install::ensure_path "$dest"
     fi
 
-    # Create directory and install
-    mkdir -p "$KRUN_BIN_DIR"
-    $download_cmd "$KRUN_URL" >"$KRUN_BIN_DIR/krun"
-    chmod +x "$KRUN_BIN_DIR/krun"
-
-    # Add to PATH
-    local shell_rc
-    if [ -f "$HOME/.zshrc" ]; then
-        shell_rc="$HOME/.zshrc"
-    elif [ -f "$HOME/.bashrc" ]; then
-        shell_rc="$HOME/.bashrc"
-    else
-        shell_rc="$HOME/.bashrc"
+    if command -v "${dest}/krun" >/dev/null 2>&1 || [[ -x "${dest}/krun" ]]; then
+        "${dest}/krun" version || true
     fi
-
-    if ! grep -q "$KRUN_BIN_DIR" "$shell_rc" 2>/dev/null; then
-        echo "" >>"$shell_rc"
-        echo "export PATH=\"\$PATH:$KRUN_BIN_DIR\"" >>"$shell_rc"
-    fi
-
-    export PATH="$PATH:$KRUN_BIN_DIR"
-
-    echo "krun installed to $KRUN_BIN_DIR/krun"
-    echo "Please run: source $shell_rc"
 }
 
-# run main
+krun::install::run() {
+    command -v curl >/dev/null 2>&1 || krun::install::die "curl is required"
+    command -v tar >/dev/null 2>&1 || krun::install::die "tar is required"
+
+    local os arch tag
+    os="$(krun::install::detect_os)"
+    arch="$(krun::install::detect_arch)"
+    tag="$(krun::install::resolve_version)"
+
+    krun::install::log "Installing krun ${tag} (${os}/${arch})"
+
+    if krun::install::try_package "$os" "$arch" "$tag"; then
+        return 0
+    fi
+    krun::install::install_binary "$os" "$arch" "$tag"
+}
+
 krun::install::run "$@"

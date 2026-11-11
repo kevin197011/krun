@@ -1,127 +1,53 @@
-name: Build and Release Packages
+# Copyright (c) 2026 kk
+name: Release
 
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (e.g., 2.0.0)'
+        description: "Version to release without leading v (e.g. 2.2.0)"
         required: true
         type: string
 
-env:
-  NFPM_VERSION: v2.35.2
+permissions:
+  contents: write
 
 jobs:
-  build:
-    name: Build Packages
+  goreleaser:
+    name: GoReleaser
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: "1.22.x"
 
-      - name: Install nfpm
+      - name: Tag for workflow_dispatch
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          VERSION: ${{ github.event.inputs.version }}
         run: |
-          go install github.com/goreleaser/nfpm/v2/cmd/nfpm@${NFPM_VERSION}
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git tag -f "v${VERSION}"
+          git push -f origin "v${VERSION}"
 
-      - name: Get version
-        id: version
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            VERSION="${{ github.event.inputs.version }}"
-          else
-            VERSION="${GITHUB_REF#refs/tags/v}"
-          fi
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "Version: ${VERSION}"
+      - name: Make package scripts executable
+        run: chmod +x scripts/*.sh install.sh
 
-      - name: Update nfpm.yaml version
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          sed -i "s/^version:.*/version: \"${VERSION}\"/" .nfpm.yaml
-
-      - name: Create dist directory
-        run: mkdir -p dist
-
-      - name: Make scripts executable
-        run: chmod +x scripts/*.sh
-
-      - name: Build DEB package (amd64)
-        run: |
-          nfpm package \
-            -f .nfpm.yaml \
-            -p deb \
-            --target dist/krun_${{ steps.version.outputs.version }}_amd64.deb
-
-      - name: Build RPM package (amd64)
-        run: |
-          nfpm package \
-            -f .nfpm.yaml \
-            -p rpm \
-            --target dist/krun_${{ steps.version.outputs.version }}_amd64.rpm
-
-      - name: Build DEB package (arm64)
-        run: |
-          sed -i 's/arch: "amd64"/arch: "arm64"/' .nfpm.yaml
-          nfpm package \
-            -f .nfpm.yaml \
-            -p deb \
-            --target dist/krun_${{ steps.version.outputs.version }}_arm64.deb
-          sed -i 's/arch: "arm64"/arch: "amd64"/' .nfpm.yaml
-
-      - name: Build RPM package (arm64)
-        run: |
-          sed -i 's/arch: "amd64"/arch: "arm64"/' .nfpm.yaml
-          nfpm package \
-            -f .nfpm.yaml \
-            -p rpm \
-            --target dist/krun_${{ steps.version.outputs.version }}_arm64.rpm
-          sed -i 's/arch: "arm64"/arch: "amd64"/' .nfpm.yaml
-
-      - name: List artifacts
-        run: |
-          ls -lh dist/
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
         with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: Release v${{ steps.version.outputs.version }}
-          body: |
-            ## Changes
-            
-            See [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
-            
-            ## Installation
-            
-            ### Debian/Ubuntu (amd64)
-            ```bash
-            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | bash
-            ```
-            
-            ### CentOS/RHEL (amd64)
-            ```bash
-            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | bash
-            ```
-            
-            ### Manual Installation
-            Download the appropriate package for your system:
-            - **Debian/Ubuntu**: `krun_${{ steps.version.outputs.version }}_amd64.deb` or `krun_${{ steps.version.outputs.version }}_arm64.deb`
-            - **CentOS/RHEL**: `krun_${{ steps.version.outputs.version }}_amd64.rpm` or `krun_${{ steps.version.outputs.version }}_arm64.rpm`
-          files: |
-            dist/krun_${{ steps.version.outputs.version }}_amd64.deb
-            dist/krun_${{ steps.version.outputs.version }}_amd64.rpm
-            dist/krun_${{ steps.version.outputs.version }}_arm64.deb
-            dist/krun_${{ steps.version.outputs.version }}_arm64.rpm
-          draft: false
-          prerelease: false
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -3,3 +3,6 @@ Gemfile.lock
 .cursor
 dist/
 __pycache__/
+bin/krun
+bin/krun.exe
+*.exe
