@@ -11,8 +11,8 @@ set -o pipefail
 # curl exec:
 # curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_devops_user.sh | bash
 #
-# Create devops user (if missing), grant passwordless sudo, install SSH pubkey.
-# Supports Rocky/RHEL (dnf/yum) and Ubuntu/Debian (apt). Requires root.
+# Create devops user, passwordless sudo, SSH authorized_keys only.
+# Rocky/RHEL (wheel) and Ubuntu/Debian (sudo). Requires root.
 
 # vars
 DEVOPS_USER="${DEVOPS_USER:-devops}"
@@ -30,24 +30,12 @@ krun::config::devops_user::run() {
 # centos / rocky / rhel
 krun::config::devops_user::centos() {
     echo "Configuring devops user on Rocky/RHEL..."
-    if command -v dnf >/dev/null 2>&1; then
-        dnf install -y openssh-server openssh-clients sudo shadow-utils
-    else
-        yum install -y openssh-server openssh-clients sudo shadow-utils
-    fi
-    systemctl enable sshd >/dev/null 2>&1 || true
-    systemctl start sshd || true
     krun::config::devops_user::common wheel
 }
 
 # ubuntu / debian
 krun::config::devops_user::debian() {
     echo "Configuring devops user on Ubuntu/Debian..."
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update -qq
-    apt-get install -y openssh-server openssh-client sudo passwd
-    systemctl enable ssh >/dev/null 2>&1 || systemctl enable sshd >/dev/null 2>&1 || true
-    systemctl start ssh || systemctl start sshd || true
     krun::config::devops_user::common sudo
 }
 
@@ -71,13 +59,11 @@ krun::config::devops_user::common() {
 
     if id "$DEVOPS_USER" &>/dev/null; then
         echo "✓ User '${DEVOPS_USER}' already exists"
+        usermod -aG "$admin_group" "$DEVOPS_USER"
     else
         useradd -m -s /bin/bash -G "$admin_group" "$DEVOPS_USER"
         echo "✓ Created user '${DEVOPS_USER}' (group: ${admin_group})"
     fi
-
-    # Ensure membership even if user already existed
-    usermod -aG "$admin_group" "$DEVOPS_USER"
 
     home_dir="$(getent passwd "$DEVOPS_USER" | cut -d: -f6)"
     if [[ -z "$home_dir" || ! -d "$home_dir" ]]; then
@@ -87,7 +73,7 @@ krun::config::devops_user::common() {
 
     sudoers_file="/etc/sudoers.d/${DEVOPS_USER}"
     cat >"$sudoers_file" <<EOF
-# Managed by krun config_devops_user.sh — passwordless sudo for ops
+# Managed by krun config_devops_user.sh
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD:ALL
 EOF
     chmod 440 "$sudoers_file"
@@ -116,15 +102,11 @@ EOF
         echo "✓ Appended SSH key: ${auth_keys}"
     fi
 
-    # SELinux: restore context when present (Rocky)
     if command -v restorecon >/dev/null 2>&1; then
         restorecon -R "$ssh_dir" 2>/dev/null || true
     fi
 
-    echo ""
-    echo "Done. Test from a machine that holds the matching private key:"
-    echo "  ssh ${DEVOPS_USER}@<host>"
-    echo "  ssh ${DEVOPS_USER}@<host> 'sudo -n true && echo sudo-ok'"
+    echo "✓ Done (user + sudo NOPASSWD + SSH key)"
 }
 
 # run main
