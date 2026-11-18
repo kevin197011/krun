@@ -67,6 +67,7 @@ flowchart TB
 
 | 日期 | 说明 |
 | --- | --- |
+| 2026-11-19 | 新增 `lib/sh/config_devops_user.sh`：创建 devops + NOPASSWD sudo + SSH 公钥（Rocky/Ubuntu） |
 | 2026-11-11 | 提交空 `go.sum`（无第三方依赖）；CI 恢复 setup-go cache |
 | 2026-11-11 | `go.mod` / Release CI → Go 1.27.x（当前最新稳定） |
 | 2026-11-11 | Release CI：checkout@v5 / setup-go@v6（Node 24）、关 go.sum cache、deploy.sh |
@@ -77,6 +78,13 @@ flowchart TB
 | 2026-11-11 | go:embed；Go CLI + GoReleaser；config_remote TermService |
 
 ## 开发进度记录
+
+### 2026-11-19（config_devops_user.sh）
+
+- **做了什么**：新增 `lib/sh/config_devops_user.sh` — 创建 `devops` 用户、写入 `/etc/sudoers.d/devops`（NOPASSWD）、幂等追加 SSH 公钥；Rocky/RHEL 用 `wheel`，Ubuntu/Debian 用 `sudo`
+- **决策**：独立脚本（不改旧 `config_ssh_authorized_keys.sh`，那只追加 key、不建用户）；公钥默认内嵌，可用 `DEVOPS_SSH_KEY` / `DEVOPS_USER` 覆盖；mac 明确不支持
+- **验证**：`bash -n lib/sh/config_devops_user.sh`；`rake docs:commands`；`go test ./...`；`rake build`；`krun list` 含 `config_devops_user.sh`
+- **遗留**：未在真实 Rocky/Ubuntu 容器内跑端到端（本机 mac）
 
 ### 2026-11-11（Release workflow Node 24）
 

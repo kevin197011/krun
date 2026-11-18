@@ -360,6 +360,12 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_cursor.sh | sudo bash
 ```
 
+#### `config_devops_user.sh`
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/config_devops_user.sh | sudo bash
+```
+
 #### `config_disk_data.sh`
 
 ```bash
