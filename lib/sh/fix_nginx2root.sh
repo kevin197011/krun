@@ -58,17 +58,20 @@ module_hotfixes=true
 EOF
 
     echo "↑ Force upgrade nginx to latest security build (nginx.org mainline)..."
+    # Rocky/RHEL appstream nginx-mod-* pins nginx(abi)=1.20.x and blocks ngx packages
+    krun::fix::nginx2root::purge_distro_mods
+
     if command -v dnf >/dev/null 2>&1; then
         dnf module disable nginx -y 2>/dev/null || true
         dnf clean metadata
         dnf makecache
-        dnf install -y nginx
-        dnf upgrade -y nginx
+        dnf install -y nginx --allowerasing
+        dnf upgrade -y nginx --allowerasing
     else
         yum clean metadata
         yum makecache
-        yum install -y nginx
-        yum update -y nginx
+        yum install -y nginx --allowerasing
+        yum update -y nginx --allowerasing
     fi
 
     krun::fix::nginx2root::common
@@ -134,6 +137,21 @@ EOF
 krun::fix::nginx2root::mac() {
     echo "✗ macOS not supported (use Rocky/Ubuntu)"
     return 1
+}
+
+# Drop Rocky/RHEL nginx-mod-* (ABI lock on distro nginx 1.20.x)
+krun::fix::nginx2root::purge_distro_mods() {
+    local pkgs
+    pkgs="$(rpm -qa 'nginx-mod-*' 2>/dev/null || true)"
+    [[ -n "$pkgs" ]] || return 0
+
+    echo "↑ Removing distro nginx-mod-* (ABI conflict with nginx.org)..."
+    # shellcheck disable=SC2086
+    if command -v dnf >/dev/null 2>&1; then
+        dnf remove -y $pkgs || dnf remove -y 'nginx-mod-*' || true
+    else
+        yum remove -y $pkgs || yum remove -y 'nginx-mod-*' || true
+    fi
 }
 
 # common: SCTP block + restart + verify
