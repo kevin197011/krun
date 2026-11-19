@@ -67,6 +67,7 @@ flowchart TB
 
 | 日期 | 说明 |
 | --- | --- |
+| 2026-11-19 | 新增 `lib/sh/fix_nginx2root.sh`：NGINX2Root 修复（nginx.org 升到 1.30.7/1.31.9 + restart + 禁 SCTP；Rocky/Ubuntu） |
 | 2026-11-19 | 新增 `lib/sh/config_devops_user.sh`：创建 devops + NOPASSWD sudo + SSH 公钥（Rocky/Ubuntu） |
 | 2026-11-11 | 提交空 `go.sum`（无第三方依赖）；CI 恢复 setup-go cache |
 | 2026-11-11 | `go.mod` / Release CI → Go 1.27.x（当前最新稳定） |
@@ -78,6 +79,13 @@ flowchart TB
 | 2026-11-11 | go:embed；Go CLI + GoReleaser；config_remote TermService |
 
 ## 开发进度记录
+
+### 2026-11-19（fix_nginx2root.sh）
+
+- **做了什么**：新增 `lib/sh/fix_nginx2root.sh` — 针对 [NGINX2Root](https://nginx2root.com)（CVE-2026-123007 等）：加 nginx.org 源、安装/升级到 fixed（stable≥1.30.7 / mainline≥1.31.9）、`systemctl restart`（禁止只 reload）、默认写 `/etc/modprobe.d/disable-sctp.conf`；`MITIGATE_ONLY=1` 仅关 HTTP/2
+- **决策**：发行版包当时常未修 → **固定 nginx.org mainline**（最新安全版，无 `NGINX_CHANNEL`）；每次强制清缓存并 upgrade；不改旧 `install_nginx.sh`；结构对齐 `install_nginx.sh`；mac 不支持
+- **验证**：`bash -n lib/sh/fix_nginx2root.sh`；`go test ./...`；`rake build`；`krun list` 含该脚本
+- **遗留**：未在真实 Rocky/Ubuntu 容器内跑端到端（本机 mac）
 
 ### 2026-11-19（config_devops_user.sh）
 

@@ -6,3 +6,4 @@ __pycache__/
 bin/krun
 bin/krun.exe
 *.exe
+.ecc/

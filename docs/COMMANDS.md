@@ -534,6 +534,12 @@ curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/disabl
 curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/disk_cleanup.sh | sudo bash
 ```
 
+#### `fix_nginx2root.sh`
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kevin197011/krun/main/lib/sh/fix_nginx2root.sh | sudo bash
+```
+
 #### `hello_world.sh`
 
 ```bash
