@@ -58,8 +58,8 @@ module_hotfixes=true
 EOF
 
     echo "↑ Force upgrade nginx to latest security build (nginx.org mainline)..."
-    # Rocky/RHEL appstream nginx-mod-* pins nginx(abi)=1.20.x and blocks ngx packages
-    krun::fix::nginx2root::purge_distro_mods
+    # Rocky splits nginx/nginx-core/nginx-mod-*; file+ABI conflict with ngx — replace set
+    krun::fix::nginx2root::replace_distro_nginx
 
     if command -v dnf >/dev/null 2>&1; then
         dnf module disable nginx -y 2>/dev/null || true
@@ -74,6 +74,7 @@ EOF
         yum update -y nginx --allowerasing
     fi
 
+    krun::fix::nginx2root::restore_nginx_conf
     krun::fix::nginx2root::common
 }
 
@@ -139,19 +140,44 @@ krun::fix::nginx2root::mac() {
     return 1
 }
 
-# Drop Rocky/RHEL nginx-mod-* (ABI lock on distro nginx 1.20.x)
-krun::fix::nginx2root::purge_distro_mods() {
-    local pkgs
-    pkgs="$(rpm -qa 'nginx-mod-*' 2>/dev/null || true)"
-    [[ -n "$pkgs" ]] || return 0
+# Backup + remove Rocky/RHEL nginx set (nginx-core owns files ngx needs)
+krun::fix::nginx2root::replace_distro_nginx() {
+    local stamp bak pkgs
+    stamp="$(date +%Y%m%d%H%M%S)"
+    bak="/root/nginx-etc-backup-${stamp}.tgz"
+    mkdir -p /root
+    if [[ -d /etc/nginx ]]; then
+        tar czf "$bak" -C / etc/nginx
+        echo "✓ Config backup: $bak"
+        echo "$bak" >/root/.krun-nginx2root-last-backup
+    fi
 
-    echo "↑ Removing distro nginx-mod-* (ABI conflict with nginx.org)..."
+    # Distro packages only (skip already-installed *.ngx.*)
+    pkgs="$(rpm -qa 'nginx*' 2>/dev/null | grep -v '\.ngx\.' || true)"
+    if [[ -z "$pkgs" ]]; then
+        echo "✓ No distro nginx* packages to remove"
+        return 0
+    fi
+
+    echo "↑ Removing distro nginx packages (file/ABI conflict with nginx.org):"
+    echo "$pkgs" | sed 's/^/  - /'
     # shellcheck disable=SC2086
     if command -v dnf >/dev/null 2>&1; then
-        dnf remove -y $pkgs || dnf remove -y 'nginx-mod-*' || true
+        dnf remove -y $pkgs || dnf remove -y nginx nginx-core nginx-filesystem 'nginx-mod-*' || true
     else
-        yum remove -y $pkgs || yum remove -y 'nginx-mod-*' || true
+        yum remove -y $pkgs || yum remove -y nginx nginx-core nginx-filesystem 'nginx-mod-*' || true
     fi
+}
+
+# Put site configs back after package replace
+krun::fix::nginx2root::restore_nginx_conf() {
+    local bak
+    bak="$(cat /root/.krun-nginx2root-last-backup 2>/dev/null || true)"
+    [[ -n "$bak" && -f "$bak" ]] || return 0
+
+    echo "↑ Restoring /etc/nginx from $bak ..."
+    tar xzf "$bak" -C /
+    echo "✓ /etc/nginx restored from backup"
 }
 
 # common: SCTP block + restart + verify

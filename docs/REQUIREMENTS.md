@@ -83,7 +83,7 @@ flowchart TB
 ### 2026-11-19（fix_nginx2root.sh）
 
 - **做了什么**：新增 `lib/sh/fix_nginx2root.sh` — 针对 [NGINX2Root](https://nginx2root.com)（CVE-2026-123007 等）：加 nginx.org 源、安装/升级到 fixed（stable≥1.30.7 / mainline≥1.31.9）、`systemctl restart`（禁止只 reload）、默认写 `/etc/modprobe.d/disable-sctp.conf`；`MITIGATE_ONLY=1` 仅关 HTTP/2
-- **决策**：发行版包当时常未修 → **固定 nginx.org mainline**（最新安全版，无 `NGINX_CHANNEL`）；每次强制清缓存并 upgrade；Rocky `nginx-mod-*` 会 ABI 锁 1.20.x → 先 `purge_distro_mods` 再 `dnf install/upgrade --allowerasing`；不改旧 `install_nginx.sh`；mac 不支持
+- **决策**：固定 nginx.org mainline；Rocky 的 `nginx`/`nginx-core`/`nginx-mod-*` 与 ngx 文件+ABI 冲突 → 备份 `/etc/nginx` 后卸掉全部非 `.ngx` 的 `nginx*`，再 `dnf install --allowerasing`，最后还原配置；mac 不支持
 - **验证**：`bash -n lib/sh/fix_nginx2root.sh`；`go test ./...`；`rake build`；`krun list` 含该脚本
 - **遗留**：Rocky 主机端到端需在卸 mod 后重跑脚本确认
 
